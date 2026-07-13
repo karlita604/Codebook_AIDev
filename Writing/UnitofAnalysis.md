@@ -1,5 +1,5 @@
 
-In order to standardize the analysis of each pull request. There are different levels, there is the analysis at the metadata stage and at the visual stage.
+
 
 
 ### Repository Pull Request Life Cycle
@@ -84,6 +84,15 @@ In order to standardize the analysis of each pull request. There are different l
 - **[V15]** Vasilescu, Yu, Wang, Devanbu, Filkov. *Quality and Productivity Outcomes Relating to Continuous Integration in GitHub.* ESEC/FSE 2015. https://doi.org/10.1145/2786805.2786850
 - **[B16]** Baysal, Kononenko, Holmes, Godfrey. *Investigating Technical and Non-Technical Factors Influencing Modern Code Review.* EMSE 21(3), 2016. https://doi.org/10.1007/s10664-015-
 
+
+
+### Dataset
+
+GitHub is a rich data source for software development, but repositories, issues, and pull requests can be noisy, ad-hoc, or poorly documented or maintained. To find high-quality PRs and standar
+
+
+
+
 ### Visual Inspection
 
 
@@ -91,4 +100,8 @@ From the visual inspection, we derive the different metrics, ontop of the metric
 
 
 
-### Metric Analysis
+
+#### Task Formulation
+
+
+*Model Input*:
