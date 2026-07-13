@@ -22,6 +22,20 @@ Arguably, the foundational paper for this research scope, introducing the founda
 
 **2. Jimenez et al. (2024) — "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?" (ICLR 2024).** SWE-bench is the canonical evaluation framework connecting the benchmark world to the PR world, and it's essential context for understanding why agents submit PRs at all. The benchmark sources task instances from real Python repositories by linking GitHub issues to the merged pull requests that resolved them; given the issue text and a codebase snapshot, models must generate a patch that is then evaluated against real tests. Resolving these issues frequently requires coordinating changes across multiple functions, classes, and files, processing very long contexts, and reasoning well beyond traditional code generation — and at publication, the best model (Claude 2) solved only 1.96% of issues. That humbling baseline (now vastly exceeded by agent scaffolds) frames the whole subsequent literature: benchmark scores rose dramatically, yet the field studies below show real-world merge rates still lag human PRs, which is precisely the "benchmark-to-deployment gap" that motivates PR-level research.
 
+https://proceedings.iclr.cc/paper_files/paper/2024/file/edac78c3e300629acfe6cbe9ca88fb84-Paper-Conference.pdf
+
+@inproceedings{ICLR2024_edac78c3,
+ author = {Jimenez, Carlos E and Yang, John and Wettig, Alexander and Yao, Shunyu and Pei, Kexin and Press, Ofir and Narasimhan, Karthik},
+ booktitle = {International Conference on Learning Representations},
+ editor = {B. Kim and Y. Yue and S. Chaudhuri and K. Fragkiadaki and M. Khan and Y. Sun},
+ pages = {54107--54157},
+ title = {SWE-bench: Can Language Models Resolve Real-world Github Issues?},
+ url = {https://proceedings.iclr.cc/paper_files/paper/2024/file/edac78c3e300629acfe6cbe9ca88fb84-Paper-Conference.pdf},
+ volume = {2024},
+ year = {2024}
+}
+
+
 **3. Nachuma & Zibran (2026) — "When AI Teammates Meet Code Review" (arXiv:2602.19441).** This study asks what actually determines whether an agent-authored PR gets merged, and its answer reframes the problem as social rather than purely technical. Using logistic regression with repository-clustered standard errors over the AIDev dataset, the authors find that reviewer engagement has the strongest correlation with successful integration, whereas larger change sizes and coordination-disrupting actions such as force pushes lower the likelihood of merging; iteration intensity alone provides limited explanatory power once collaboration signals are considered. Their qualitative analysis shows successful integration occurs when agents engage in actionable review loops that converge toward reviewer expectations, leading to the conclusion that effective agentic software engineering requires alignment with established code review and coordination practices — i.e., agents must behave like good open-source citizens, not just good coders.
 
 **4. Haque, Ingale & Csallner (2026) — "Do Autonomous Agents Contribute Test Code?" (arXiv:2601.03556).** Directly targeting the testing dimension, this study is the first large-scale look at whether agents test their own work. The authors mine the AIDev-pop subset of 33.5k PRs from repositories with more than 100 stars — where expectations around testing and review are likely to be more clearly established — and ask how often agentic PRs include test code, how adoption changes over time, and how testing behavior differs across the five major agents. The paper's framing is important: despite the growing presence of agentic contributors, we lack a clear understanding of how often autonomous agents integrate testing into the PR lifecycle. This matters for workflows because test inclusion is one of the strongest trust signals human reviewers use, and heterogeneity across agents suggests test discipline is a property of agent design (prompting, scaffolding, verification loops) rather than an emergent LLM behavior.

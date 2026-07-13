@@ -1,8 +1,98 @@
 # Characteristic Metrics in Literature
 
-This document specifies every metric as a standardized entry: definition, unit, data requirements against the local schema and the GitHub REST/GraphQL APIs, an exact computation, a step-by-step procedure, and known caveats, with a literature reference for each.
+The index tables below list every metric by type. Click a metric name to jump to its full specification — definition, unit, data requirements, exact computation, step-by-step procedure, and caveats — in the sections that follow. All detail lives in those sections; the tables are only for orientation. Reference keys resolve in the [References](#references) list.
 
-**Notation.** Formulas reference the local schema (`pull_request`, `pr_commits`, `pr_commit_details`, `pr_timeline`, `pr_comments`, `pr_reviews`, `pr_review_comments`, `related_issue`, `issue`, `user`, `repository`, `pr_task_type`). Throughout: `t₀ = pull_request.created_at`, `t₁ = pull_request.closed_at`, `A = pull_request.user` (the author/contributor), `R = pull_request.repo_id`. Data not in the schema is marked **REST** or **GQL** with the exact endpoint. The test-file pattern is `TEST_RE = (^|/)(tests?|specs?)/ | _test\. | \.test\. | Test.*\.java`. Bots are identified by `login` ending in `[bot]` or matching a curated bot list. General caveat: profile-level fields (followers, company) reflect *collection-time* state; point-in-time values require replaying GH Archive events up to `t₀`.
+**Notation** (used throughout the specifications): `t₀ = pull_request.created_at`, `t₁ = pull_request.closed_at`, `A = pull_request.user` (the author/contributor), `R = pull_request.repo_id`. Formulas reference the local schema tables (`pull_request`, `pr_commits`, `pr_commit_details`, `pr_timeline`, `pr_comments`, `pr_reviews`, `pr_review_comments`, `related_issue`, `issue`, `user`, `repository`, `pr_task_type`); data not in the schema is marked **REST** or **GQL** with the exact endpoint. The test-file pattern is `TEST_RE = (^|/)(tests?|specs?)/ | _test\. | \.test\. | Test.*\.java`. Bots are identified by `login` ending in `[bot]` or matching a curated bot list. General caveat: profile-level fields (followers, company) reflect *collection-time* state; point-in-time values require replaying GH Archive events up to `t₀`.
+
+## Index
+
+### Pull Request Characteristics (PR-Level Signals)
+
+| Metric | Definition | Ref |
+|---|---|---|
+| [`bug_fix`](#bug_fix--does-the-pr-fix-a-bug) | Whether the PR's purpose is to repair a defect | [Z22] |
+| [`description_length`](#description_length--length-of-the-pr-description) | Size of the natural-language description provided at open | [Y15] |
+| [`hash_tag`](#hash_tag--does-the-description-reference-an-issue-by-number) | Whether the description references an issue by number (`#N`) | [Z22] |
+| [`num_participants`](#num_participants--participants-in-the-pr-discussion) | Distinct humans commenting on the PR in any channel | [T14] |
+| [`ci_exists`](#ci_exists--does-the-pr-run-ci) | Whether any CI system ran against the head commit | [V15] |
+| [`ci_latency`](#ci_latency--time-until-the-first-ci-result) | Time from PR creation to the first finished CI build | [Y15] |
+| [`part_num_code`](#part_num_code--participants-in-code-level-discussion) | Distinct users in code-anchored discussion (inline + commit comments) | [Z22] |
+| [`num_code_comments`](#num_code_comments--number-of-inline-code-comments) | Review comments anchored to specific diff lines | [Z22] |
+| [`reopen_or_not`](#reopen_or_not--was-the-pr-reopened) | Whether the PR was closed and subsequently reopened | [Z22] |
+| [`rework`](#rework--post-review-rework) | New work pushed after the first review feedback | [G15] |
+| [`friday_effect`](#friday_effect--was-the-pr-submitted-on-a-friday) | Whether the PR was opened on a Friday | [S05], [Z22] |
+| [`has_comments`](#has_comments--does-the-pr-have-any-comment) | Whether any discussion or inline comment exists | [Z22] |
+| [`num_comments`](#num_comments--number-of-discussion-comments) | Count of conversation-thread comments | [G14] |
+| [`num_comments_con`](#num_comments_con--contributors-own-discussion-comments) | Discussion comments written by the author | [Z22] |
+| [`at_tag`](#at_tag--does-the-pr-text--mention-anyone) | Whether an `@username` mention appears in the PR text | [Y15] |
+| [`num_code_comments_con`](#num_code_comments_con--contributors-inline-code-comments) | Inline code comments written by the author | [Z22] |
+| [`ci_test_passed`](#ci_test_passed--did-all-ci-builds-pass) | Whether every CI check on the final head commit succeeded | [V15] |
+| [`comment_conflict`](#comment_conflict--is-a-merge-conflict-discussed) | Whether a merge conflict is mentioned in the discussion | [Z22] |
+| [`num_commits_open` / `_close`](#num_commits_open--num_commits_close--commit-counts-at-open-and-close) | Commit count at open vs at close | [G14] |
+| [`src_churn_open` / `_close`](#src_churn_open--src_churn_close--code-churn-at-open-and-close) | Lines added + deleted, at open vs at close | [G14] |
+| [`files_changed_open` / `_close`](#files_changed_open--files_changed_close--files-touched-at-open-and-close) | Distinct files modified, at open vs at close | [G14] |
+| [`commits_touched_open` / `_close`](#commits_touched_open--commits_touched_close--recent-activity-on-touched-files) | Recent base-repo activity on the touched files ("hotness") | [G14] |
+| [`churn_addition_open` / `_close`](#churn_addition_open--churn_addition_close--added-lines) | Lines added, at open vs at close | [G14] |
+| [`churn_deletion_open` / `_close`](#churn_deletion_open--churn_deletion_close--deleted-lines) | Lines deleted, at open vs at close | [G14] |
+| [`test_churn_open` / `_close`](#test_churn_open--test_churn_close--test-code-churn) | Test-code lines changed, at open vs at close | [G14] |
+| [`test_inclusion_open` / `_close`](#test_inclusion_open--test_inclusion_close--does-the-pr-touch-tests) | Whether any test file is modified | [G14], [T14] |
+
+### Developer Characteristics
+
+| Metric | Definition | Ref |
+|---|---|---|
+| [`first_pr`](#first_pr--is-this-the-authors-first-pr-in-the-repository) | Whether this is the author's first PR in the repository | [Z22] |
+| [`prior_review_num`](#prior_review_num--authors-prior-reviews-in-the-project) | PRs in the repository the author reviewed before this one | [Z22] |
+| [`core_member`](#core_member--is-the-author-a-core-member) | Whether the author holds commit/maintainer rights | [G14] |
+| [`first_response_time`](#first_response_time--time-to-first-human-response) | Time from open to the first non-author response | [Y15] |
+| [`contrib_gender`](#contrib_gender--inferred-gender-of-the-contributor) | Author gender inferred from profile information | [TR17] |
+| [`contrib_affiliation`](#contrib_affiliation--contributors-organizational-affiliation) | Organization the author belongs to | [B16] |
+| [`same_affiliation`](#same_affiliation--do-contributor-and-integrator-share-an-affiliation) | Whether author and integrator share an organization | [B16] |
+| [`inte_affiliation`](#inte_affiliation--integrators-organizational-affiliation) | Organization the integrator belongs to | [B16] |
+| [`social_strength`](#social_strength--contributors-social-connectedness-to-the-core-team) | Fraction of the core team the author interacted with (90 d) | [T14] |
+| [`prev_pullreqs`](#prev_pullreqs--authors-previous-prs-in-the-repository) | PRs the author submitted to the repository before this one | [G14] |
+| [`followers`](#followers--authors-follower-count) | Author's GitHub follower count | [T14] |
+| [`same_user`](#same_user--did-the-author-merge-their-own-pr) | Whether contributor and integrator are the same person | [Z22] |
+
+### Project Characteristics
+
+| Metric | Definition | Ref |
+|---|---|---|
+| [`sloc`](#sloc--project-size-in-executable-lines) | Executable lines of code of the project at the base revision | [G14] |
+| [`team_size`](#team_size--active-core-team-size) | People actively integrating code in the prior 90 days | [G14] |
+| [`project_age`](#project_age--project-age-at-submission) | Time from repository creation to the PR's creation | [G14] |
+| [`open_pr_num`](#open_pr_num--open-pr-queue-length-at-submission) | PRs open in the repository at the moment of creation | [G14] |
+| [`integrator_availability`](#integrator_availability--recency-of-integrator-activity) | Recency of the two most active integrators at submission | [Z22] |
+| [`test_lines_per_kloc`](#test_lines_per_kloc--test-code-density) | Test code lines per KLOC of project code | [G14] |
+| [`test_cases_per_kloc`](#test_cases_per_kloc--test-case-density) | Individual test cases per KLOC | [G14] |
+| [`asserts_per_kloc`](#asserts_per_kloc--assertion-density) | Assertion statements per KLOC | [G14] |
+| [`perc_external_contribs`](#perc_external_contribs--share-of-external-contributions) | Share of recently merged PRs from outside the core team | [G14] |
+| [`requester_succ_rate`](#requester_succ_rate--authors-historical-merge-rate) | Fraction of the author's previously closed PRs that were merged | [G14] |
+
+### Derived Features for the APR Signal Set
+
+| Metric | Type | Definition | Ref |
+|---|---|---|---|
+| [`rejected`](#rejected--pr-closed-without-merge) | Outcome | PR closed without being merged (the outcome label) | [G14] |
+| [`diffhunk_size`](#diffhunk_size--total-modified-lines-within-diff-hunks) | Diff-Level | Changed lines summed over all hunks of the final diff | [G14] |
+| [`ngrams`](#ngrams--bigrams-and-trigrams-from-pr-text) | Textual | Bag of bigrams/trigrams from the PR's natural-language text | [H12] |
+| [`keyword_density`](#keyword_density--density-of-process-keywords) | Textual | Fraction of tokens from a fixed process-keyword lexicon | [Z22] |
+| [`duplicate_code`](#duplicate_code--clone-detected-in-pr-code) | Static Quality | Whether the PR introduces or touches duplicated code | [RC09] |
+| [`unused_vars`](#unused_vars--unused-variables-in-touched-code) | Static Quality | Variables declared but never referenced in touched files | [AY08] |
+| [`large_class`](#large_class--oversized-class-touched) | Design & Arch. | Whether a touched class is oversized relative to the repo | [F99] |
+| [`long_method`](#long_method--long-method-touched) | Design & Arch. | Whether a touched method exceeds 100 lines | [F99] |
+| [`god_object`](#god_object--god-class-touched) | Design & Arch. | Whether a touched class matches the God Class strategy | [VA09] |
+| [`interaction_count`](#interaction_count--total-pr-interactions) | Social | Total recorded activity on the PR across its lifetime | [T14] |
+| [`num_participants` (APR)](#num_participants-apr-variant--distinct-participants-all-channels) | Social | Distinct participants across all channels, incl. commits/events | [T14] |
+| [`conflict`](#conflict--mergeworkflow-conflict-signal) | Social | Merge-conflict signal (keywords ∪ GitHub conflict state) | [Z22] |
+| [`cyclomatic_complexity`](#cyclomatic_complexity--aggregate-control-flow-complexity) | Size & Complexity | McCabe complexity summed over functions in touched files | [M76] |
+| [`loc`](#loc--lines-of-code-touched-including-comments) | Size & Complexity | Total size of the files the PR modifies, incl. comments | [G14] |
+| [`halstead_volume`](#halstead_volume--halstead-program-volume) | Size & Complexity | Halstead volume `V = N·log₂(n)` of the touched code | [HA77] |
+| [`nesting_depth`](#nesting_depth--maximum-control-structure-nesting) | Size & Complexity | Deepest control-structure nesting in the touched files | [D84] |
+| [`prev_pr`](#prev_pr--authors-prior-prs-apr-alias) | Process | Author's prior PRs (alias of `prev_pullreqs`) | [G14] |
+| [`linked_issues`](#linked_issues--issues-linked-after-submission) | Process | Issues linked to the PR after its creation | [Z22] |
+| [`codechurn`](#codechurn--magnitude-of-code-modification-apr-alias) | Process | Final-diff churn (alias of `src_churn_close`) | [N05] |
+| [`author_experience`](#author_experience--account-longevity) | Process | Age of the author's GitHub account at PR creation | [Z22] |
 
 ---
 
