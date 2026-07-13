@@ -5,7 +5,7 @@
 
 https://arxiv.org/abs/2507.15003
 
-LiteratureReview\2507.15003v1.pdf
+references\2507.15003v1.pdf
 
 @misc{li2025riseaiteammatessoftware,
       title={The Rise of AI Teammates in Software Engineering (SE) 3.0: How Autonomous Coding Agents Are Reshaping Software Engineering}, 
@@ -23,6 +23,8 @@ Arguably, the foundational paper for this research scope, introducing the founda
 **2. Jimenez et al. (2024) — "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?" (ICLR 2024).** SWE-bench is the canonical evaluation framework connecting the benchmark world to the PR world, and it's essential context for understanding why agents submit PRs at all. The benchmark sources task instances from real Python repositories by linking GitHub issues to the merged pull requests that resolved them; given the issue text and a codebase snapshot, models must generate a patch that is then evaluated against real tests. Resolving these issues frequently requires coordinating changes across multiple functions, classes, and files, processing very long contexts, and reasoning well beyond traditional code generation — and at publication, the best model (Claude 2) solved only 1.96% of issues. That humbling baseline (now vastly exceeded by agent scaffolds) frames the whole subsequent literature: benchmark scores rose dramatically, yet the field studies below show real-world merge rates still lag human PRs, which is precisely the "benchmark-to-deployment gap" that motivates PR-level research.
 
 https://proceedings.iclr.cc/paper_files/paper/2024/file/edac78c3e300629acfe6cbe9ca88fb84-Paper-Conference.pdf
+
+references\ICLR-2024-swe-bench-can-language-models-resolve-real-world-github-issues-Paper-Conference.pdf
 
 @inproceedings{ICLR2024_edac78c3,
  author = {Jimenez, Carlos E and Yang, John and Wettig, Alexander and Yao, Shunyu and Pei, Kexin and Press, Ofir and Narasimhan, Karthik},

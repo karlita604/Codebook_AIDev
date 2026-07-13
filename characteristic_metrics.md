@@ -13,7 +13,7 @@ The index tables below list every metric by type. Click a metric name to jump to
 | [`bug_fix`](#bug_fix--does-the-pr-fix-a-bug) | Whether the PR's purpose is to repair a defect | [Z22] |
 | [`description_length`](#description_length--length-of-the-pr-description) | Size of the natural-language description provided at open | [Y15] |
 | [`hash_tag`](#hash_tag--does-the-description-reference-an-issue-by-number) | Whether the description references an issue by number (`#N`) | [Z22] |
-| [`num_participants`](#num_participants--participants-in-the-pr-discussion) | Distinct humans commenting on the PR in any channel | [T14] |
+| [`num_participants`](#num_participants--participants-in-the-pr-discussion) | Distinct accounts commenting on the PR in any channel and capacity along lifetime | [T14] |
 | [`ci_exists`](#ci_exists--does-the-pr-run-ci) | Whether any CI system ran against the head commit | [V15] |
 | [`ci_latency`](#ci_latency--time-until-the-first-ci-result) | Time from PR creation to the first finished CI build | [Y15] |
 | [`part_num_code`](#part_num_code--participants-in-code-level-discussion) | Distinct users in code-anchored discussion (inline + commit comments) | [Z22] |
