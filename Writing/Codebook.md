@@ -11,5 +11,5 @@ We attempt to classify rejection reasons and construct an inductive codebook:
 
 
 
-|Theme| Code Name| Description| Example |
-|...|...|...|...|
+| Theme | Code Name | Description | Example |
+|---|---|---|---|
