@@ -38,7 +38,20 @@ references\ICLR-2024-swe-bench-can-language-models-resolve-real-world-github-iss
 }
 
 
-**3. Nachuma & Zibran (2026) — "When AI Teammates Meet Code Review" (arXiv:2602.19441).** This study asks what actually determines whether an agent-authored PR gets merged, and its answer reframes the problem as social rather than purely technical. Using logistic regression with repository-clustered standard errors over the AIDev dataset, the authors find that reviewer engagement has the strongest correlation with successful integration, whereas larger change sizes and coordination-disrupting actions such as force pushes lower the likelihood of merging; iteration intensity alone provides limited explanatory power once collaboration signals are considered. Their qualitative analysis shows successful integration occurs when agents engage in actionable review loops that converge toward reviewer expectations, leading to the conclusion that effective agentic software engineering requires alignment with established code review and coordination practices — i.e., agents must behave like good open-source citizens, not just good coders.
+**3. Nachuma & Zibran (2026) — "When AI Teammates Meet Code Review" (arXiv:2602.19441).** This study asks what actually determines whether an agent-authored PR gets merged, and its answer reframes the problem as social rather than purely technical. Using logistic regression with repository-clustered standard errors over the AIDev dataset, the authors find that reviewer engagement has the strongest correlation with successful integration, whereas larger change sizes and coordination-disrupting actions such as force pushes lower the probability of merging; iteration intensity alone provides limited explanatory power once collaboration signals are considered. Their qualitative analysis shows successful integration occurs when agents engage in actionable review loops that converge toward reviewer expectations, leading to the conclusion that effective agentic software engineering requires alignment with established code review and coordination practices — i.e., agents must behave like good open-source citizens, not just good coders.
+
+https://arxiv.org/pdf/2602.19441
+
+
+@misc{nachuma2026aiteammatesmeetcode,
+      title={When AI Teammates Meet Code Review: Collaboration Signals Shaping the Integration of Agent-Authored Pull Requests}, 
+      author={Costain Nachuma and Minhaz Zibran},
+      year={2026},
+      eprint={2602.19441},
+      archivePrefix={arXiv},
+      primaryClass={cs.SE},
+      url={https://arxiv.org/abs/2602.19441}, 
+}
 
 **4. Haque, Ingale & Csallner (2026) — "Do Autonomous Agents Contribute Test Code?" (arXiv:2601.03556).** Directly targeting the testing dimension, this study is the first large-scale look at whether agents test their own work. The authors mine the AIDev-pop subset of 33.5k PRs from repositories with more than 100 stars — where expectations around testing and review are likely to be more clearly established — and ask how often agentic PRs include test code, how adoption changes over time, and how testing behavior differs across the five major agents. The paper's framing is important: despite the growing presence of agentic contributors, we lack a clear understanding of how often autonomous agents integrate testing into the PR lifecycle. This matters for workflows because test inclusion is one of the strongest trust signals human reviewers use, and heterogeneity across agents suggests test discipline is a property of agent design (prompting, scaffolding, verification loops) rather than an emergent LLM behavior.
 
