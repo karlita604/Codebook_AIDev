@@ -1,6 +1,22 @@
 
 
-**Li, Zhang & Hassan (2025) — "The Rise of AI Teammates in SE 3.0" (arXiv:2507.15003).** 
+## Related Work
+
+1. Agentic Sotware Development
+
+
+
+
+
+
+
+
+---
+
+
+
+
+**1. Li, Zhang & Hassan (2025) — "The Rise of AI Teammates in SE 3.0" (arXiv:2507.15003).** 
 <!-- This is arguably the foundational paper for the entire research area, introducing both the "SE 3.0" framing and the AIDev dataset that nearly every subsequent study builds on. The authors introduce AIDev, the first large-scale dataset capturing how autonomous coding agents operate in the wild, spanning over 456,000 pull requests by five leading agents — OpenAI Codex, Devin, GitHub Copilot, Cursor, and Claude Code — across 61,000 repositories and 47,000 developers. Their core argument is that agents have moved from autocomplete-style assistance to being genuine "teammates" that initiate PRs and **participate in feedback loops**. Two findings stand out for workflow design: although agents often outperform humans in speed, their PRs are accepted less frequently, revealing a trust and utility gap; and while agents massively accelerate submission — one developer submitted as many PRs in three days as they had in the previous three years — agentic PRs are structurally simpler by code-complexity metrics. The paper explicitly positions itself against synthetic benchmarks, arguing that real-world PR data answers questions that benchmarks like SWE-bench cannot. -->
 
 https://arxiv.org/abs/2507.15003
@@ -19,7 +35,7 @@ references\2507.15003v1.pdf
 
 Arguably, the foundational paper for this research scope, introducing the foundational AIDev dataset, and marking a distinct shift to ongoing agentic integrations along the PR workflow pipeline. The dataset introduced the first large-scale capture of how  autonomous coding agents operate in real world projects, spanning over 456,000 pull requests by five leading agents (OpenAI Codex, Devin, GitHub Copilot, Cursor, and Claude Code) across 61,000 repositories and 47,000 developers. The core argument of the study is that agents have moved from autocomplete-style assistance to being genuine "teammates" that initiate PRs and critically participate in project modifications. Two important findings stand out: although agents often outperform humans in time-to-merge speed, their PRs are accepted less frequently, revealing a trust and utility gap; and while agents massively accelerate, agentic PRs are structurally simpler by code-complexity metrics.
 
-
+<!--  Testing set to evaluate agent refactoring-->
 **2. Jimenez et al. (2024) — "SWE-bench: Can Language Models Resolve Real-World GitHub Issues?" (ICLR 2024).** SWE-bench is the canonical evaluation framework connecting the benchmark world to the PR world, and it's essential context for understanding why agents submit PRs at all. The benchmark sources task instances from real Python repositories by linking GitHub issues to the merged pull requests that resolved them; given the issue text and a codebase snapshot, models must generate a patch that is then evaluated against real tests. Resolving these issues frequently requires coordinating changes across multiple functions, classes, and files, processing very long contexts, and reasoning well beyond traditional code generation — and at publication, the best model (Claude 2) solved only 1.96% of issues. That humbling baseline (now vastly exceeded by agent scaffolds) frames the whole subsequent literature: benchmark scores rose dramatically, yet the field studies below show real-world merge rates still lag human PRs, which is precisely the "benchmark-to-deployment gap" that motivates PR-level research.
 
 https://proceedings.iclr.cc/paper_files/paper/2024/file/edac78c3e300629acfe6cbe9ca88fb84-Paper-Conference.pdf
@@ -42,6 +58,7 @@ references\ICLR-2024-swe-bench-can-language-models-resolve-real-world-github-iss
 
 https://arxiv.org/pdf/2602.19441
 
+references\2602.19441v1.pdf
 
 @misc{nachuma2026aiteammatesmeetcode,
       title={When AI Teammates Meet Code Review: Collaboration Signals Shaping the Integration of Agent-Authored Pull Requests}, 
@@ -75,8 +92,7 @@ https://arxiv.org/pdf/2602.19441
 
 **14. "Rethinking Code Review Workflows with LLM Assistance" (2025, arXiv:2505.16339).** This mixed-method industrial study (field study plus field experiment) examines how LLMs should be *positioned* within review workflows rather than whether they work at all. The field study identifies key challenges in traditional code reviews — frequent context switching and insufficient contextual information — and highlights both opportunities (automatic summarization of complex pull requests) and concerns (false positives and trust issues); the authors then built two prototypes, one offering LLM-generated reviews upfront and one enabling on-demand interaction, both using a retrieval-augmented semantic search pipeline to assemble relevant context. In real-world evaluation, AI-led reviews were overall preferred, but preference remained conditional on reviewers' familiarity with the codebase and on the severity of the pull request — a nuanced result suggesting LLM review assistance should be adaptive: front-loaded for routine changes, human-led for high-severity ones.
 
-**15. "Code Change Characteristics and Description Alignment: Agentic versus Human PRs" (2026, arXiv:2601.17627).** This comparative study quantifies structural differences between agent and human contributions at the symbol level. Comparing 33,596 agentic PRs against 6,618 human PRs, the authors find that agent-introduced symbols are removed sooner (median 3 vs. 34 days) and churn more (7.33% vs. 4.10%), indicating a focus on narrow tasks; agents produce stronger commit-level messages (semantic similarity 0.72 vs. 0.68) but lag in PR-level summarization, highlighting limited full-PR reasoning. The churn finding is particularly consequential for maintenance: agent code that gets rewritten within days imposes hidden downstream costs invisible at merge time, and the commit-vs-PR asymmetry suggests agents reason well locally but struggle to synthesize a coherent narrative across a whole changeset — informing task assignment, review practices, and agent training.
+**15. "Code Change Characteristics and Description Alignment: Agentic versus Human PRs" (2026, arXiv:2601.17627).** This comparative study quantifies structural differences between agent and human contributions at the symbol level. Comparing 33,596 agentic PRs against 6,618 human PRs, the authors find that agent-introduced symbols are removed sooner (median 3 vs. 34 days) and churn more (7.33% vs. 4.10%), indicating a focus on narrow tasks; agents produce stronger commit-level messages (semantic similarity 0.72 vs. 0.68) but lag in PR-level summarization, highlighting limited full-PR reasoning. The churn finding is particularly consequential for maintenance: *agent code that gets rewritten within days imposes hidden downstream costs invisible at merge time, and the commit-vs-PR asymmetry suggests agents reason well locally but struggle to synthesize a coherent narrative across a whole changeset* — informing task assignment, review practices, and agent training.
 
 ---
 
-**Cross-cutting synthesis.** A few themes recur across these fifteen sources. First, there's a persistent *benchmark–reality gap*: agents that excel on SWE-bench-style tasks (source 2) still merge at materially lower rates than humans in the wild (sources 1, 5, 6). Second, *integration is social*: reviewer engagement, description quality, submitter reputation, and coordination hygiene (no force pushes, timely responses) predict merges as much or more than code quality does (sources 3, 6, 10). Third, a clear *task gradient* exists — docs, CI, and config PRs sail through while bug fixes and performance work fail often (sources 5, 11) — and the fast-merged categories may be *under*-reviewed (source 11). Fourth, *mechanical friction is real*: ~28% merge-conflict rates (source 7) and frequent CI failures (source 5) suggest agents need repository-freshness awareness and verification loops. Finally, the *review side* of the equation is maturing unevenly: LLM review assistants add value under human oversight (sources 12, 14) but autonomous review agents generate mostly noise (source 13). If you'd like, I can package this into a formatted document (Word or Markdown) or expand it with a BibTeX file of the citations.
