@@ -18,4 +18,5 @@ We attempt to classify rejection reasons and construct an inductive codebook:
 | Process | Agent Draft |  Opened and closed as draft. A follow-up PR contains the actual implementation. &
 PR was not intended to be merged in this form. ||
 | Process | Unresolved Merge State|||
-| Process | Author Dissatisfaction |||
+| Process | Incomplete Solution | Partial solution achieved.|"Almost", "Not quite" |
+| Process |
