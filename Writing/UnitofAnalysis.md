@@ -29,12 +29,23 @@ Artifacts:
 * distribution of commits and prs (#) by associated ai agent
 
 
-We also want to analyze these behaviours through longitudinal analysis.
+We also want to analyze these behaviors through longitudinal analysis. To quantify the impact we extract object-oriented metrics and design smells before and after agents were introduced. 
+
+In theory:
 * class lines of code in project delta (class size and complexity)
 * design and implementation smells
 * defect density
 * post-release defects 
 * effort
+
+In practice: 
+* size: lines of code
+* complexity: cyclomatic complexity, weighted methods per class
+* coupling: fan-in, fan-out
+* cohesion: lack of cohesion in methods
+* inheritance depth (depth of inheritance tree)
+* design and implementation smells 
+
 
 ### Visual Inspection
 
