@@ -6,7 +6,7 @@ Given a csv where each row is a PR, calculate metrics for each PR and return a d
 Dataframe is returned as a csv file metrics_[inputfilename].csv in the same directory as the input csv.
 
 
-Our default input csv: results\phase0\07-21-500-pycsharp-1434.csv
+Our default input csv: results\phase0\07-21-500-pycsharp-947.csv
 
 
 Phase 1: Construct the dataframe with the following columns, where each row is a PR:
@@ -23,10 +23,12 @@ Phase 1: Construct the dataframe with the following columns, where each row is a
 # html_url
 
 
-
-
 Phase 1.5: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
 - rejected: Boolean metric indicating whether the PR was rejected or not.
+- num_commits: Number of commits in the PR.
+- num_issues: Number of issues associated with the PR.
+- num_reviews: Number of reviews for the PR.
+
 - num_diffhunks: Number of diff hunks in the PR.
 - ave_diffhunk_size: Average size of the diff hunks in the PR.
 - ngrams: N-grams found in the PR.
@@ -47,20 +49,20 @@ all_repo_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_repository.parquet
 all_user_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_user.parquet")
 
 
-
 # ------------------------------------------------------------------------------- # 
 # rejected
 # ------------------------------------------------------------------------------- # 
 # Description: 
 # Boolean metric indicating whether the PR was rejected or not. 
-# Closed but not merged PRs are considered rejected. 
-#
-# Columns used: closed_at, merged_at
+# Columns used: closed_at, merged_at (already present after phase 1)
+# Formula: If closed_at is not null and merged_at is null, then rejected is True, else False.
 # ------------------------------------------------------------------------------- # 
 
-
-
-
+def calculate_rejected(pr_row):
+    if pd.notnull(pr_row["closed_at"]) and pd.isnull(pr_row["merged_at"]):
+        return True
+    else:
+        return False
 
 # ------------------------------------------------------------------------------- # 
 # num_diffhunks
