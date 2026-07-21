@@ -6,9 +6,10 @@ Given a csv where each row is a PR, calculate metrics for each PR and return a d
 Dataframe is returned as a csv file metrics_[inputfilename].csv in the same directory as the input csv.
 
 
-Our default input csv: results/phase0/07-20-500-pyccpp-42.csv 
+Our default input csv: results\phase0\07-21-500-pycsharp-1434.csv
 
-Phase 1: Construct the dataframe with the following columns:
+
+Phase 1: Construct the dataframe with the following columns, where each row is a PR:
 # id 
 # title
 # body
