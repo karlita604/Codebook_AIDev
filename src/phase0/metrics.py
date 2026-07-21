@@ -1,13 +1,14 @@
 """
 Calculate and return various metrics for the codebase.
 Given a csv where each row is a PR, calculate metrics for each PR and return a dataframe with the metrics.
-Dataframe is returned as a csv file metrics_[inputfilename]_[date].csv in the same directory as the input csv.
 
 
-Our default input csv: results/phase0/07-20-500-pyccpp-42.csv (for star_minimum=500, language="Python, C, C++") or results/phase0/07-20-default-7312.csv
+Dataframe is returned as a csv file metrics_[inputfilename].csv in the same directory as the input csv.
 
 
-The csv has the following columns:`
+Our default input csv: results/phase0/07-20-500-pyccpp-42.csv 
+
+Phase 1: Construct the dataframe with the following columns:
 # id 
 # title
 # body
@@ -19,7 +20,31 @@ The csv has the following columns:`
 # repo_id
 # repo_url
 # html_url
+
+
+
+
+Phase 1.5: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
+- rejected: Boolean metric indicating whether the PR was rejected or not.
+- num_diffhunks: Number of diff hunks in the PR.
+- ave_diffhunk_size: Average size of the diff hunks in the PR.
+- ngrams: N-grams found in the PR.
+- keyword_density: Density of keywords in the PR.
+- duplicate_code: Boolean metric indicating whether the PR contains duplicate code.
+- unused_vars: Boolean metric indicating whether the PR contains unused variables.
+- large_class: Boolean metric indicating whether the PR contains a large class.
+- long_method: Boolean metric indicating whether the PR contains a long method.
+- god_object: Boolean metric indicating whether the PR contains a god object.
+- interaction_count: Number of interactions with the PR.
+- num_participants: Number of participants in the PR.
 """
+
+
+import pandas as pd
+all_pr_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_pull_request.parquet")
+all_repo_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_repository.parquet")
+all_user_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_user.parquet")
+
 
 
 # ------------------------------------------------------------------------------- # 
