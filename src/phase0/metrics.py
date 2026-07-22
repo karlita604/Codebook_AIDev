@@ -9,7 +9,7 @@ Dataframe is returned as a csv file metrics_[inputfilename].csv in the same dire
 Our default input csv: results\phase0\07-21-500-pycsharp-1387.csv
 
 
-Phase 1: Construct the dataframe with the following columns, where each row is a PR:
+Phase 1 (phase1.py) Construct the dataframe with the following columns, where each row is a PR:
 # id 
 # title
 # body
@@ -23,7 +23,7 @@ Phase 1: Construct the dataframe with the following columns, where each row is a
 # html_url
 
 
-Phase 1.5: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
+Phase 2: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
 - rejected: Boolean metric indicating whether the PR was rejected or not.
 - num_commits: Number of commits in the PR.
 - num_issues: Number of issues associated with the PR.
