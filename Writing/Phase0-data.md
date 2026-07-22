@@ -12,6 +12,7 @@
 - `forks_minimum` (default `None`) — repo fork count
 - `age_minimum` / `age_maximum` (default `None`) — days since PR creation
 - `require_body` (default `True`) — excludes PRs whose body is null or whitespace-only
+- `require_live_url` (default `True`) — excludes PRs whose GitHub `html_url` 404s
 
 It can be run as a CLI (`python PRfilter.py --star-minimum 500 --language "Python, C, C++"`) or imported as a function (`from PRfilter import filter_prs`). Running it as a script prints the matching PR ids to stdout and writes them to a CSV in `results/phase0/`, named `<MM>-<DD>-<filters>-<count>.csv` (e.g. `07-20-500-pyccpp-1110.csv`, or `07-20-default-7312.csv` when no filter is overridden) — so every filtered pull is reproducible and dated.
 
@@ -24,6 +25,16 @@ Filename descriptor tag alllangs when disabled, so output CSVs stay distinguisha
 Similarly, `require_body=True` (new default-True param) drops PRs with a null or
 whitespace-only body. CLI: `--no-require-body` to disable it; filename descriptor
 tag `allbodies` when disabled.
+
+`require_live_url=True` (new default-True param) drops PRs whose `html_url` 404s —
+the AIDev dataset includes PRs from repos that have since been deleted, made private,
+or renamed, and those PR pages 404 even though the row still looks valid in the
+parquet tables. Checked live via concurrent HTTP HEAD requests (16 workers), applied
+last since it's by far the most expensive filter (one network round-trip per
+surviving PR, versus the others which are plain column lookups). Only a *confirmed*
+404 drops a PR — timeouts, rate limiting, and other non-404 responses are treated as
+"keep", since they're not proof the PR is actually gone. CLI: `--no-require-live-url`
+to disable it; filename descriptor tag `deadlinks` when disabled.
 
 ### Language filter — valid values
 
@@ -42,7 +53,7 @@ The `language` filter matches GitHub Linguist names exactly (case-sensitive). Th
 ## Current default candidate set
 
 Running `PRfilter.py --star-minimum 500 --language "Python, C#"` against the current
-dataset produces `results/phase0/07-21-500-pycsharp-1398.csv` (1,398 PRs) — this is
+dataset produces `results/phase0/07-21-500-pycsharp-1387.csv` (1,387 PRs) — this is
 the default input for Phase 1 below.
 
 ## Figures and metrics
@@ -58,7 +69,7 @@ figures for the curated 250-PR sample (`data/04_pr250 - 04_pr250.csv`) live in
 ## Metadata compilation (`src/phase0/phase1.py`)
 
 `phase1.py` takes the PR-id csv produced by `PRfilter.py` (default input:
-`results/phase0/07-21-500-pycsharp-1398.csv`) and joins each id against
+`results/phase0/07-21-500-pycsharp-1387.csv`) and joins each id against
 `all_pull_request.parquet` to build a short metadata dataframe, one row per PR:
 
 - `id`, `title`, `body`, `agent`, `state`, `created_at`, `closed_at`, `merged_at`,
@@ -74,8 +85,8 @@ being silently dropped (this hasn't happened in practice — every id from a
 It can be run as a CLI (`python phase1.py --input path/to/prs.csv`) or imported as a
 function (`from phase1 import build_metadata`). Running it as a script writes
 `phase1_<inputfilename>.csv` next to the input csv — e.g.
-`results/phase0/07-21-500-pycsharp-1398.csv` →
-`results/phase0/phase1_07-21-500-pycsharp-1398.csv`.
+`results/phase0/07-21-500-pycsharp-1387.csv` →
+`results/phase0/phase1_07-21-500-pycsharp-1387.csv`.
 
 This metadata csv is the input to Phase 1.5 (`metrics.py`), which will add the actual
 metric columns (`rejected`, `num_diffhunks`, `ngrams`, `interaction_count`, etc. — see

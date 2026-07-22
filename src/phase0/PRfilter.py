@@ -16,6 +16,12 @@ Possible filters include:
   penalized for emoji or accented characters.
 - require_body = default True, only PRs with a non-empty body will be returned (excludes PRs
   whose body is null or whitespace-only).
+- require_live_url = default True, only PRs whose GitHub html_url does not 404 will be
+  returned. Checked live via HTTP HEAD requests (concurrently, since the AIDev dataset
+  includes PRs from repos that have since been deleted/made private/renamed). Only a
+  confirmed 404 excludes a PR - timeouts, rate limiting, and other non-404 responses are
+  treated as "keep", since they aren't proof the PR is actually gone. Applied last (after
+  every other filter), since it's by far the most expensive check.
 
 Dryrun:
 
@@ -26,9 +32,11 @@ Example (CLI): PRs with 500+ stars in Python, C, or C++
     python PRfilter.py --star-minimum 500 --language "Python, C, C++"
 
 Running this file:
-- Install deps first: pip install -r requirements.txt (pandas, pyarrow, huggingface_hub)
+- Install deps first: pip install -r requirements.txt (pandas, pyarrow, huggingface_hub, requests)
 - Needs network access - reads directly from the hao-li/AIDev dataset on Hugging Face
-  via hf:// paths on every run, nothing is cached locally by this script.
+  via hf:// paths on every run, nothing is cached locally by this script. Also makes a
+  live HTTP request per surviving PR to check require_live_url (see above), so a run
+  can take a while once other filters are narrow enough to reach that step.
 - Running as a script prints the matching PR ids and also writes them to a CSV in
   results/phase0/ (created if missing), named <MM>-<DD>-<filters>-<count>.csv where
   <filters> is "default" if no filter differs from the function defaults, otherwise
@@ -39,12 +47,14 @@ Running this file:
 """
 
 import argparse
+import concurrent.futures
 import os
 import unicodedata
 from datetime import date
 from pathlib import Path
 
 import pandas as pd
+import requests
 from huggingface_hub import login
 
 RESULTS_DIR = Path(__file__).resolve().parents[2] / "results" / "phase0"
@@ -119,6 +129,38 @@ def _is_english_title(title, threshold=NON_ENGLISH_LETTER_RATIO_THRESHOLD):
 
 
 # ------------------------------------------ #
+# require_live_url: drop PRs whose html_url is a confirmed 404 (e.g. the repo
+# was later deleted, made private, or renamed). Checked concurrently since
+# this is a live network call per PR, not a column lookup.
+URL_CHECK_WORKERS = 16
+URL_CHECK_TIMEOUT = 10  # seconds
+URL_CHECK_HEADERS = {"User-Agent": "Codebook-AIDev-PRfilter/1.0"}
+
+
+def _is_live_url(url, timeout=URL_CHECK_TIMEOUT):
+    try:
+        resp = requests.head(
+            url, headers=URL_CHECK_HEADERS, timeout=timeout, allow_redirects=True
+        )
+        if resp.status_code == 405:  # some servers don't support HEAD
+            resp = requests.get(
+                url, headers=URL_CHECK_HEADERS, timeout=timeout,
+                allow_redirects=True, stream=True,
+            )
+        return resp.status_code != 404
+    except requests.RequestException:
+        # Not proof the PR is gone - keep it rather than risk a false drop.
+        return True
+
+
+def _filter_live_urls(df, workers=URL_CHECK_WORKERS):
+    urls = df["html_url"].tolist()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=workers) as pool:
+        alive = list(pool.map(_is_live_url, urls))
+    return df[alive]
+
+
+# ------------------------------------------ #
 # return a filtered list of the PR ids which match the filters.
 
 def filter_prs(
@@ -132,6 +174,7 @@ def filter_prs(
     age_maximum=None,
     english_title=True,
     require_body=True,
+    require_live_url=True,
 ):
     df = all_pr_df.merge(
         all_repo_df, left_on="repo_id", right_on="id", how="left", suffixes=("", "_repo")
@@ -172,6 +215,9 @@ def filter_prs(
         if age_maximum is not None:
             df = df[age_days <= age_maximum]
 
+    if require_live_url:
+        df = _filter_live_urls(df)
+
     return df["id"].tolist()
 
 
@@ -192,7 +238,9 @@ def _parse_args():
                          help="include non-English titles too (default: English titles only)")
     parser.add_argument("--no-require-body", dest="require_body", action="store_false",
                          help="include empty-body PRs too (default: non-empty body only)")
-    parser.set_defaults(rejected=True, english_title=True, require_body=True)
+    parser.add_argument("--no-require-live-url", dest="require_live_url", action="store_false",
+                         help="include PRs whose html_url 404s too (default: live urls only)")
+    parser.set_defaults(rejected=True, english_title=True, require_body=True, require_live_url=True)
     return parser.parse_args()
 
 
@@ -229,6 +277,8 @@ def _build_descriptor(args):
         tokens.append("alllangs")
     if not args.require_body:
         tokens.append("allbodies")
+    if not args.require_live_url:
+        tokens.append("deadlinks")
     return "-".join(tokens) if tokens else "default"
 
 
@@ -247,6 +297,7 @@ if __name__ == "__main__":
         age_maximum=args.age_maximum,
         english_title=args.english_title,
         require_body=args.require_body,
+        require_live_url=args.require_live_url,
     )
     print(f"{len(ids)} matching PR(s)")
     for pr_id in ids:

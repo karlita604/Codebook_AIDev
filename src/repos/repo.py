@@ -6,7 +6,7 @@ Since the AIDev dataset is read live from Hugging Face and can change between
 runs, this script also logs the dataset version (commit sha + last-modified)
 it used to logs/phase0/<date>_<inputcsvname>.log.
 
-Default input: results/phase0/07-21-500-pycsharp-1434.csv
+Default input: results/phase0/07-21-500-pycsharp-1398.csv
 
 Output: repos_[inputcsvname].csv written next to the input csv, one row per
 unique repo, with columns: id, full_name, language, stars, forks, url,
@@ -17,8 +17,8 @@ Running this file:
   (pandas, pyarrow, huggingface_hub)
 - Needs network access - reads directly from the hao-li/AIDev dataset
   on Hugging Face.
-    python repos.py
-    python repos.py --input results/phase0/07-20-default-7312.csv
+    python repo.py
+    python repo.py --input results/phase0/07-20-default-7312.csv
 """
 
 import argparse
@@ -31,7 +31,7 @@ from huggingface_hub import HfApi
 ROOT = Path(__file__).resolve().parents[2]
 RESULTS_DIR = ROOT / "results" / "phase0"
 LOGS_DIR = ROOT / "logs" / "phase0"
-DEFAULT_INPUT = RESULTS_DIR / "07-21-500-pycsharp-1434.csv"
+DEFAULT_INPUT = RESULTS_DIR / "07-21-500-pycsharp-1398.csv"
 
 DATASET_REPO = "hao-li/AIDev"
 

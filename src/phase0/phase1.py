@@ -21,7 +21,7 @@ The result is written to phase1_[inputfilename].csv in the same directory
 as the input csv. (Phase 1.5, in metrics.py, adds the actual metric columns
 on top of this metadata and stores the result under data/.)
 
-Our default input csv: results/phase0/07-21-500-pycsharp-1398.csv
+Our default input csv: results/phase0/07-21-500-pycsharp-1387.csv
 
 Running this file:
 - Install deps first: pip install -r requirements.txt (pandas, pyarrow)
@@ -37,7 +37,7 @@ from pathlib import Path
 import pandas as pd
 
 DEFAULT_INPUT = (
-    Path(__file__).resolve().parents[2] / "results" / "phase0" / "07-21-500-pycsharp-1398.csv"
+    Path(__file__).resolve().parents[2] / "results" / "phase0" / "07-21-500-pycsharp-1387.csv"
 )
 
 METADATA_COLUMNS = [
