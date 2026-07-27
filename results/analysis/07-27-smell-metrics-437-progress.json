@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-07-27T17:12:57.782015+00:00",
+  "updated_at": "2026-07-27T18:21:16.577367+00:00",
+  "total": 437,
+  "done": 10,
+  "ok": 10,
+  "failed": 0,
+  "elapsed_seconds": 4098.8,
+  "eta_seconds": 175018.6,
+  "current": "airbytehq/airbyte A1 2022-10-01 @aaa94f1c"
+}

@@ -385,16 +385,39 @@ directly, matching the design this doc already specified.
 **Result:** full `--dry-run` across all 5 repos resolves 435/437 eligible
 rows instantly — no network, no checkout, just a directory lookup — with the
 2 failures being exactly the 2 known-unmaterialized crewAI commits (§8),
-cleanly logged to the errors CSV. A real (non-dry-run) pass against `Dock`
-failed both test rows with a clean `DESIGNITE_EXECUTABLE not set` error
-instead of crashing. Orchestration confirmed working end to end; purely
-blocked on tool install now.
+cleanly logged to the errors CSV.
+
+**Update 2026-07-27 — both tools installed, two new concrete blockers.**
+`DPy.exe` and `DesigniteConsole.exe` are now installed
+(`C:\Users\kvrlv\Downloads\`). `run_dpy()`'s CLI is now confirmed for real
+(`DPy.exe analyze -i <dir> -o <dir> -f csv`) and wired in — verified against
+both a real `mlflow` snapshot and a tiny synthetic file, which gave the
+confirmed CSV schema now documented in `parse_tool_output()`'s docstring
+(`_class_module_metrics.csv`, `_function_metrics.csv`,
+`_implementation_smells.csv`). But neither tool can produce real pilot-scale
+output yet:
+- **DPy** — Trial license caps CSV export at <10,000 LOC. Every pilot
+  snapshot is far over that (smallest ~60K LOC: a Dock A1 point), so it only
+  writes a log file against real data. Needs Professional.
+- **Designite** — `-i`/`--input` requires an actual `.sln` (it's Roslyn
+  `MSBuildWorkspace`-based, confirmed via its `BuildHost-net472`/`netcore`
+  DLLs), not a plain source scanner. Pointing it directly at a materialized
+  Dock snapshot fails immediately (`Argument error!! The specified file
+  doesn't exists`), since Phase 1e only archives `*.cs` files, no
+  `.sln`/`.csproj`. Also no .NET SDK is installed here, only runtimes, which
+  `MSBuildWorkspace` may need regardless. `run_designite()` now raises a
+  clear `NotImplementedError` explaining this instead of attempting a call
+  already known to fail. Needs a design decision: re-materialize C# repos
+  with project/solution files included (and get the SDK installed), or find
+  a Designite input mode that accepts loose files (undocumented "batch file"
+  mode, meaning unconfirmed).
 
 ### Not yet built
 
 - **Phase 1b** — Tracks B1/B2 (§5). Blocked on `GITHUB_TOKEN`.
-- **Phase 1d tool execution** — orchestration is built (above), but neither
-  DPy nor Designite is installed, so no actual smell/metric output exists
+- **Phase 1d tool execution** — orchestration is built (above) and DPy's CLI
+  is wired in, but a Trial license blocks real DPy output and Designite
+  needs a `.sln` Phase 1e doesn't currently produce - see Update above
   yet.
 
 ## 9. Metric catalog & analysis plan
@@ -470,8 +493,24 @@ age at snapshot — enter the regression models, not just the descriptives.
   already existed and already solved the exact slow-checkout problem that
   approach then hit on `airbyte`. Rewritten before it saw real use; no output
   was ever produced under the old approach.
+- **2026-07-27** — DPy/Designite installed (Trial licenses), surfacing two
+  concrete blockers before real output is possible: DPy's Trial license caps
+  CSV export at <10K LOC (every pilot snapshot exceeds this), and Designite
+  needs a `.sln` that Phase 1e's `*.cs`-only snapshots don't include. See
+  Phase 1d (§8) "Update 2026-07-27" for detail. Not resolved yet — both need
+  a decision (buy DPy Professional; decide how to get Designite a usable
+  project file) before Phase 1d can produce real data.
 
 ## Open decisions
+
+- **Designite input**: re-materialize C# snapshots with `.sln`/`.csproj`
+  included (and install the .NET SDK), or find a Designite input mode that
+  accepts loose source files (an undocumented "batch file" mode was
+  mentioned in `--help` but its format is unconfirmed) — needed before
+  `run_designite()` can be implemented for real.
+- **DPy licensing**: Trial caps CSV export at <10K LOC, which every pilot
+  snapshot exceeds — needs a Professional license before Phase 1d produces
+  real DPy output.
 
 - A2's weekly-±3mo/monthly-±12mo grid and B2's ±10-PR window are defaults,
   not confirmed — may need to change per repo based on how dense each repo's

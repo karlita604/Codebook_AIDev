@@ -1,0 +1,14 @@
+2026-07-27 10:22:05 AM - Designite Console (Version 5.3.0.0)
+2026-07-27 10:22:05 AM - (c) 2026 Designite. All rights reserved.
+2026-07-27 10:22:05 AM - .NET Framework version: 4.8.1
+2026-07-27 10:22:05 AM - Installed .NET SDKs:
+
+Installed .NET Runtimes:
+Microsoft.NETCore.App 6.0.32 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.WindowsDesktop.App 6.0.32 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+
+2026-07-27 10:22:05 AM - Parsing passed parameters ...
+2026-07-27 10:22:05 AM - Argument error!! The specified file doesn't exists: C:\Users\kvrlv\Projects\Codebook_AIDev\data\snapshots\wieslawsoltes__Dock\031625d0e0858bc7883d80fe8afe71963a3a7a84

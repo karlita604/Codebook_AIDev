@@ -123,10 +123,130 @@ consume `data/snapshots/` directly, per the design already recorded in
 **Result:** full `--dry-run` across all 5 repos resolves 435/437 eligible
 rows instantly (no network, no checkout — just a directory lookup), with the
 2 failures being exactly the 2 known-unmaterialized crewAI commits, cleanly
-logged to the errors CSV rather than crashing. A real (non-dry-run) pass
-against `Dock` failed both test rows with a clean, logged
-`DESIGNITE_EXECUTABLE not set` error instead of crashing — orchestration
-confirmed working end to end, purely blocked on tool install now.
+logged to the errors CSV rather than crashing.
+
+**Update 2026-07-27 — tools installed, two new concrete blockers found.**
+Both `DPy.exe` and `DesigniteConsole.exe` are now installed
+(`C:\Users\kvrlv\Downloads\`), so `run_dpy()`'s CLI is confirmed for real
+(`DPy.exe analyze -i <dir> -o <dir> -f csv`) and wired in. Testing against
+real data surfaced two separate problems, neither of them code bugs:
+- **DPy**: the installed license is Trial, capped at <10,000 LOC for CSV
+  export. Every pilot snapshot is far over that (smallest is ~60K LOC), so
+  DPy currently only writes a log file, not data, against any of them —
+  confirmed by running it against a real `mlflow` snapshot (271K LOC) and a
+  tiny synthetic file (which *did* export real CSVs, confirming the schema
+  — see `parse_tool_output()`'s docstring). Needs a Professional license.
+- **Designite**: `-i`/`--input` requires an actual `.sln` (it's a Roslyn
+  `MSBuildWorkspace` tool, not a plain file scanner) — confirmed by pointing
+  it directly at a materialized Dock snapshot and getting `Argument error!!
+  The specified file doesn't exists`. Phase 1e's snapshots only contain
+  `*.cs` files (see `materialize_snapshots.py`'s language pathspec), no
+  project/solution files, so there's currently nothing to point it at. Also:
+  no .NET SDK is installed, only runtimes, which `MSBuildWorkspace` may need
+  even once a `.sln` exists. `run_designite()` now raises a clear
+  `NotImplementedError` explaining this rather than attempting a call known
+  to fail.
+
+**Update 2026-07-27 (continued) — DPy chunking wrapper.** Decompiled
+`DesigniteConsole.dll`'s strings first (`InterpretBatchFile`,
+`GetAllSolutionPaths`, `IsSolutionFile`, `OpenSolutionAsync`) to check
+whether its `--help`-mentioned "batch file" input mode was a way around the
+`.sln` requirement — it isn't; a batch file is just a text file listing
+multiple `.sln` paths, so every code path still needs a real solution file.
+Designite stays parked (per decision — focus on DPy/Python first).
+
+For DPy, tested whether the Trial LOC cap is per-repo or per-invocation by
+pointing it at a small (~3K LOC) `mlflow` subdirectory: it exported full,
+real CSVs, confirming the cap is per-invocation — and along the way gave the
+confirmed schema for 2 more DPy output files (`_arch_smells.csv`,
+`_design_smells.csv`) that hadn't shown up in the earlier near-empty test.
+Built `plan_dpy_chunks()`/`run_dpy_chunked()` in `long_analysis.py`: splits
+a snapshot into sub-cap chunks along real directory boundaries (falling back
+to bin-packing loose files by LOC when a directory is flat with no
+subdirectories left to split by — needed for real, e.g. `mlflow/utils` has
+57 loose files with no children), runs DPy once per chunk, and pools results
+in `parse_tool_output()`. Per the decision above: class/method-level metrics
+and design/implementation smells are pooled across chunks since they're
+local regardless of scope; architecture-level smells and Fan-In/Fan-Out are
+collected but kept explicitly chunk-scoped (not folded into the primary
+metric row), since a chunk never sees the whole repo and computing "God
+component"/coupling from an arbitrary slice would misrepresent the real
+codebase.
+
+Validated the chunker in isolation against the real `mlflow` snapshot
+(465K raw lines by my count, 1,902 files) before spending any DPy runtime:
+first pass produced 291 chunks with 10 still over cap (flat directories with
+many loose files, e.g. `mlflow/utils`'s 57 files/17K LOC) — traced to the
+bin-packing step calling the wrong LOC-counting function (a directory-recursive
+counter given a single file, silently returning 0, so every file landed in
+one batch); fixed, re-validated: 304 chunks, zero overlaps, all 1,902 files
+covered exactly once, only 1 residual oversized chunk (a single file whose
+own LOC exceeds the cap — expected, nothing left to split it by).
+
+**Real-world cost, measured, not estimated:** timed one DPy invocation at
+~3.4s. 304 chunks/snapshot × 96 materialized `mlflow` snapshots ≈ **29 hours**
+of DPy runtime for that one repo alone — a full run across all 3 Python
+pilot repos is realistically multi-day as currently scoped.
+
+**Result — real end-to-end test:** ran the full pipeline (not `--dry-run`)
+against one real `mlflow` snapshot (2022-01-01, an early/smaller commit —
+70,274 LOC, 81 chunks). Produced a single, well-formed pooled output row:
+318 classes, 5,160 methods, class LOC p50/p90 = 23/113, method LOC p50/p90 =
+9/27, cyclomatic complexity p50/p90 = 1/3, 1,339 design smells (19.1/KLOC),
+6,465 implementation smells (92.0/KLOC), and 25 architecture smells correctly
+kept in a separate `arch_smell_count_chunk_scoped` column rather than pooled
+into the primary row. Confirms the chunking/pooling design works correctly
+on real data. Test row and raw per-chunk CSVs deleted afterward (proof of
+correctness, not meant as a kept deliverable).
+
+**Decision 2026-07-27:** accept the multi-day cost — run the full manifest
+now as a long background job rather than tuning scope first.
+
+Before launching, made the pipeline crash-resilient (a multi-day unattended
+run needs this regardless of background/foreground):
+- **Incremental writes.** `main()` previously only wrote output once, at the
+  very end — a crash at hour 20 would have lost everything. Now appends
+  each row's result to the output CSV immediately as it completes.
+- **Resumable.** On start, reads whatever's already in that run's output CSV
+  and skips those `(repo_id, track, target_date, commit_sha)` keys — a
+  restart after a crash picks up where it left off instead of redoing
+  potentially hours of already-done DPy work. Errored rows are retried, not
+  skipped, since some failures (a timeout, a transient lock) aren't
+  guaranteed to repeat.
+- **Chunk-output cleanup.** A full run touches hundreds of chunks per row
+  across hundreds of rows — left alone, raw per-chunk CSVs in
+  `data/tool_output/` would reach into the hundreds of thousands of small
+  files. Each row's raw output is now deleted once pooled into the result
+  (`--keep-tool-output` to disable, for debugging a specific row).
+
+### 🔴 RUN IN PROGRESS — started 2026-07-27
+
+Launched as a detached background process (survives independent of any
+particular chat session) — **not** tied to this conversation:
+
+```
+DPY_EXECUTABLE=C:\Users\kvrlv\Downloads\DPy\DPy.exe
+python long_analysis.py   # full manifest, all 437 eligible rows (both languages -
+                           # C# rows fail fast via run_designite()'s NotImplementedError,
+                           # logged to the errors CSV, cost is negligible)
+```
+
+- **PID:** written to `logs/phase0/long_analysis.pid` (was 32412 at launch —
+  check the file, a restart after a crash gets a new PID).
+- **Live log:** `logs/phase0/long_analysis_2026-07-27.log` (stdout, one
+  `[ok]`/`[FAIL] (i/total) ...` line per row) and
+  `long_analysis_2026-07-27.err.log` (stderr, should stay empty).
+- **Progress:** `results/analysis/07-27-smell-metrics-437-progress.json` —
+  `done`/`ok`/`failed`/`elapsed_seconds`/`eta_seconds`, updated after every row.
+- **Output so far:** `results/analysis/07-27-smell-metrics-437.csv` (pooled
+  metrics, grows one row at a time) and `...-errors.csv`.
+- **If it crashes:** check the log/err-log for what happened, then just rerun
+  `python long_analysis.py` (same command, no extra flags needed) — it
+  resumes from the existing output CSV automatically.
+- **Cost estimate:** ~29hrs for `mlflow` alone was the measured baseline: real
+  total across all 3 Python repos (crewAI, airbyte, mlflow) is multi-day.
+  This update will be replaced with actual results once the run finishes or
+  is checked in on.
 
 ## Visualization
 
@@ -138,13 +258,16 @@ Surfaced one methodological wrinkle along the way: Dock's A2 window runs to
 ±12 months from each repo's *own* intervention date regardless of the overall
 window boundary.
 
+https://claude.ai/code/artifact/e0731c42-8ff8-4b57-b797-21fdda5fd013
+
 ## Open items / blocked
 
 - **Phase 1b** (full PR history pull, Track B) — needs `GITHUB_TOKEN`; not yet
   set in this environment. Unauthenticated is 60 req/hr, not viable at scale.
-- **Phase 1d** — orchestration built and confirmed working against Phase
-  1e's materialized snapshots (435/437 eligible rows resolve); purely
-  blocked on installing DPy/Designite now.
+- **Phase 1d** — both tools now installed, but neither can produce real
+  output yet: DPy's Trial license caps CSV export at <10K LOC (need
+  Professional); Designite needs an actual `.sln` and Phase 1e snapshots
+  only contain `*.cs` files (needs a design decision — see Phase 1d above).
 - 2 crewAI commits (Phase 1e) will likely never materialize on Windows
   (NTFS-illegal filename in a test fixture) — accept the gap or find a
   Linux/WSL environment to fill it in.
