@@ -1,0 +1,107 @@
+﻿// Copyright (c) Wiesław Šoltés. All rights reserved.
+// Licensed under the MIT license. See LICENSE file in the project root for details.
+using Dock.Model.Controls;
+using Dock.Model.Core;
+using System.Collections.Generic;
+using System.Linq;
+
+namespace Dock.Model;
+
+/// <summary>
+/// Factory base class.
+/// </summary>
+public abstract partial class FactoryBase
+{
+    /// <summary>
+    /// Resolves the root dock that should own floating window registrations.
+    /// </summary>
+    /// <param name="rootDock">The root where the floating operation originated.</param>
+    /// <returns>The top-level workspace root dock.</returns>
+    protected virtual IRootDock ResolveWindowCollectionRoot(IRootDock rootDock)
+    {
+        var current = rootDock;
+        var visited = new HashSet<IRootDock> { current };
+
+        while (current.Window?.Owner is IRootDock parentRoot)
+        {
+            if (!visited.Add(parentRoot))
+            {
+                break;
+            }
+
+            current = parentRoot;
+        }
+
+        return current;
+    }
+
+    /// <inheritdoc/>
+    public virtual void AddWindow(IRootDock rootDock, IDockWindow window)
+    {
+        rootDock.Windows ??= CreateList<IDockWindow>();
+        rootDock.Windows.Add(window);
+        OnWindowAdded(window);
+        InitDockWindow(window, rootDock);
+    }
+
+    /// <inheritdoc/>
+    public virtual void InsertWindow(IRootDock rootDock, IDockWindow window, int index)
+    {
+        if (index >= 0)
+        {
+            rootDock.Windows ??= CreateList<IDockWindow>();
+            rootDock.Windows.Insert(index, window);
+            OnWindowAdded(window);
+            InitDockWindow(window, rootDock);
+        }
+    }
+
+    /// <inheritdoc/>
+    public virtual void RemoveWindow(IDockWindow window)
+    {
+        if (window.Owner is IRootDock rootDock)
+        {
+            var layout = window.Layout;
+            window.Exit();
+            rootDock.Windows?.Remove(window);
+            OnWindowRemoved(window);
+
+            if (layout is not null && ReferenceEquals(layout.Window, window))
+            {
+                layout.Window = null;
+            }
+
+            window.ParentWindow = null;
+            window.Owner = null;
+            window.Factory = null;
+            window.Layout = null;
+        }
+    }
+
+    /// <inheritdoc/>
+    public virtual void CloseWindow(IDockWindow window)
+    {
+        if (window.Layout is IDock layout)
+        {
+            void CloseDock(IDock dock)
+            {
+                if (dock.VisibleDockables is null)
+                {
+                    return;
+                }
+
+                foreach (var item in dock.VisibleDockables.ToList())
+                {
+                    if (item is IDock subDock)
+                    {
+                        CloseDock(subDock);
+                    }
+
+                    CloseDockable(item);
+                }
+            }
+
+            CloseDock(layout);
+        }
+    }
+}

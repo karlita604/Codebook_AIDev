@@ -235,22 +235,36 @@ of source files.
 - **Storage layout:** `data/snapshots/<owner>__<repo>/<commit_sha>/` —
   gitignored alongside `data/repo_cache/` (see `.gitignore`).
 
-**Implementation wrinkle hit while building this:** the clones in
-`data/repo_cache/` are partial (`--filter=blob:none` — see Phase 1c, §8):
-they have full commit/tree history but no file *contents*, which is exactly
-what made the manifest step in §5/§6 fast. That same choice now works
-against us: `git archive` against a partial clone triggers a lazy fetch of
-every missing blob it touches, one request at a time, which is slow enough
-to time out even on a single medium-sized repo (crewAI) — both a full-tree
-archive and a pathspec-limited (`*.py`-only) archive hit this, and
-`git backfill --sparse` (a bulk-fetch command meant for exactly this
-promisor-remote scenario) hit it too. **Current plan:** re-clone the 5 pilot
-repos as ordinary full clones (single bulk pack-transfer, which is how git
-is actually optimized to move a lot of history) rather than fighting the
-partial clone's on-demand fetch path — validating the real transfer
-time/size for this now before rolling it out to all 5.
+**Implementation wrinkles hit while building this:**
+- The clones in `data/repo_cache/` are partial (`--filter=blob:none` — see
+  Phase 1c, §8): full commit/tree history but no file *contents*, which is
+  exactly what made the manifest step in §5/§6 fast. That same choice
+  initially worked against this step: `git archive` against a partial clone
+  triggers a lazy fetch of every missing blob it touches, one request at a
+  time — slow enough to time out even on a single medium-sized repo
+  (crewAI). Fix: `git sparse-checkout` set to the language pathspec, then a
+  one-time `git backfill --sparse` per repo (bulk-fetches every blob
+  matching that pathspec across all history in one pass) before archiving
+  anything. After that, individual `git archive` calls are fast (seconds).
+- The backfill/archive transfers themselves hit a recurring connection reset
+  (`RPC failed; curl 56 schannel: server closed abruptly`) on longer HTTPS
+  fetches — an environment-specific TLS transport issue, not a data
+  problem. Fixed by forcing `-c http.version=HTTP/1.1` on both the backfill
+  and archive commands.
+- First materialization pass silently "succeeded" on 14 commits that were
+  actually empty — `archive_commit()` created the destination directory
+  before knowing whether the archive itself succeeded, so a failed attempt
+  still passed the idempotency check on the next run. Fixed by extracting
+  into a `.tmp` sibling dir and only renaming it into place once both the
+  `git archive` and `tar` processes exit clean and it's non-empty; the
+  "already done" check now requires the directory to exist *and* be
+  non-empty, not just exist.
+- A handful of retried renames hit a transient Windows `PermissionError`
+  (`WinError 5: Access is denied`) — a file handle briefly still held by AV
+  scanning or search indexing right after `tar` closes it. Fixed with a
+  short retry loop around the rename.
 
-**Status:** design decided, implementation in progress — not yet built.
+**Status:** done — see Phase 1e in §8.
 
 ## 8. Build log
 
@@ -306,12 +320,82 @@ enough that early-2022 grid points predate their first commit. Dock's 4
 stale points (all Track A1, all far from its intervention date) are exactly
 what the `is_stale` flag exists to catch.
 
+### Phase 1e — snapshot materialization (built 2026-07-26)
+
+[`materialize_snapshots.py`](../src/phase0/materialize_snapshots.py):
+implements §7 — for every unique `(repo, commit_sha)` in the Phase 1c
+manifest, backfills that repo's language-matching blobs once
+(`git sparse-checkout` + `git backfill --sparse`, HTTP/1.1 forced), then
+extracts each commit with a language-filtered `git archive` into
+`data/snapshots/<owner>__<repo>/<commit_sha>/`. Resumable by design — rerun
+with `--repo <full_name>` (or no argument, for all repos) and it only
+processes what's still missing.
+
+**Output:** `data/snapshots/`, 399 of 401 unique commits materialized:
+
+| repo | materialized | disk |
+|---|---|---|
+| crewAIInc/crewAI | 69 / 71 | 136M |
+| airbytehq/airbyte | 95 / 95 | 1.8G |
+| mlflow/mlflow | 96 / 96 | 1.5G |
+| wieslawsoltes/Dock | 64 / 64 | 139M |
+| dotnet/aspire | 75 / 75 | 1.2G |
+
+The 2 crewAI commits that never materialize are a genuine Windows
+filesystem incompatibility, not a transient failure: both trees contain
+`tests/cassettes/test_agent_tool_role_matching[  "Futel Official Infopoint"  -True].yaml`,
+whose `"` character is illegal in an NTFS filename. Re-running consistently
+reproduces the exact same `invalid path` / `failed to unpack tree object`
+error for just these two, with no other errors alongside — everything else
+that failed on earlier passes (connection resets, a transient Windows file
+lock) cleared on retry. These two would need a Linux/WSL environment to
+materialize; on this machine they're a known, disclosed gap in Track A2 for
+crewAI specifically (2 of its 45 A2 points).
+
+One more wrinkle: the `airbyte` clone from Phase 1c (confirmed at 1.3G
+earlier in this same work) was gone by the time this step ran — removed by
+something outside this pipeline between phases. Re-cloned it (same
+`clone_repo()` helper, already has the long-path fix) rather than treating
+it as blocking, since `data/repo_cache/` is disposable, gitignored cache
+data by design.
+
+### Phase 1d — DPy/Designite orchestration (built 2026-07-27, blocked on tool install)
+
+[`long_analysis.py`](../src/phase0/long_analysis.py): reads the Phase 1c
+manifest, drops `no_prior_commit` rows, and for each remaining row looks up
+its materialized source tree from Phase 1e
+(`data/snapshots/<owner>__<repo>/<commit_sha>/`), routes to DPy (Python) or
+Designite (C#) by `language`, and writes a consolidated smell/metric CSV plus
+a separate errors CSV (one bad row doesn't abort the run). `run_dpy()` /
+`run_designite()` / `parse_tool_output()` are stubs marked `TODO`, gated
+behind `DPY_EXECUTABLE`/`DESIGNITE_EXECUTABLE` env vars — neither tool is
+installed in this environment (no `dpy`/`designite`/even `java` present),
+and both are commercial products whose real CLI/output schema I haven't
+verified, so the actual tool invocation isn't implemented yet. `--dry-run`
+(snapshot lookup + bookkeeping only) and `--repo`/`--limit` filters let the
+orchestration itself be smoke-tested without the tools.
+
+First version checked out each commit directly in the Phase 1c clone cache
+instead of reading Phase 1e's output — built before noticing Phase 1e (§7,
+§8) already existed and already solved the exact problem that approach then
+hit (a slow lazy blob-fetch on `airbyte`'s partial clone timed out mid-run
+and left that cache half-updated). Rewritten to consume `data/snapshots/`
+directly, matching the design this doc already specified.
+
+**Result:** full `--dry-run` across all 5 repos resolves 435/437 eligible
+rows instantly — no network, no checkout, just a directory lookup — with the
+2 failures being exactly the 2 known-unmaterialized crewAI commits (§8),
+cleanly logged to the errors CSV. A real (non-dry-run) pass against `Dock`
+failed both test rows with a clean `DESIGNITE_EXECUTABLE not set` error
+instead of crashing. Orchestration confirmed working end to end; purely
+blocked on tool install now.
+
 ### Not yet built
 
 - **Phase 1b** — Tracks B1/B2 (§5). Blocked on `GITHUB_TOKEN`.
-- **Snapshot materialization** (§7) — in progress.
-- **Phase 1d** — actually running DPy/Designite against materialized
-  snapshots. Neither tool is installed in this environment yet.
+- **Phase 1d tool execution** — orchestration is built (above), but neither
+  DPy nor Designite is installed, so no actual smell/metric output exists
+  yet.
 
 ## 9. Metric catalog & analysis plan
 
@@ -371,9 +455,21 @@ age at snapshot — enter the regression models, not just the descriptives.
   airbyte, mlflow, Dock, aspire); all 5 cloned and snapshotted in Phase 1c.
 - **2026-07-22** — Snapshot storage: dedup by unique commit (401 across the 5
   repos, not 480), extract with a language-filtered `git archive` pathspec
-  rather than a full checkout, store under `data/snapshots/`. Re-cloning as
-  full (non-partial) clones for this step rather than fighting partial-clone
-  lazy-fetch performance — see §7.
+  rather than a full checkout, store under `data/snapshots/`.
+- **2026-07-26** — Snapshot materialization (Phase 1e) complete: 399/401
+  unique commits, across all 5 pilot repos. The partial-clone lazy-fetch
+  problem from §7 was solved with `git sparse-checkout` + `git backfill
+  --sparse` (one bulk fetch per repo) plus forcing HTTP/1.1, not by
+  switching to full clones as originally planned when §7 was first
+  written — see §7 and Phase 1e (§8) for what actually worked. The 2 unmaterialized
+  crewAI commits are a permanent Windows filename incompatibility, not
+  something a retry fixes.
+- **2026-07-27** — Phase 1d orchestration (`long_analysis.py`) built to read
+  per-row source from Phase 1e's `data/snapshots/`, not to check out commits
+  itself — its first draft did the latter, built without noticing Phase 1e
+  already existed and already solved the exact slow-checkout problem that
+  approach then hit on `airbyte`. Rewritten before it saw real use; no output
+  was ever produced under the old approach.
 
 ## Open decisions
 
@@ -390,6 +486,8 @@ age at snapshot — enter the regression models, not just the descriptives.
 - Phase 0 filtering is still moving in parallel (a dead-link PR filter was
   just added) — worth re-running Phase 1a once it settles, to confirm the
   pilot repos are still representative of the final candidate set.
+- crewAI's 2 unmaterialized A2 commits (§7/§8) — accept the gap, or find an
+  environment without the Windows filename restriction to fill it in.
 
 ## Artifacts
 
@@ -397,9 +495,10 @@ age at snapshot — enter the regression models, not just the descriptives.
   done.
 - `results/snapshots/07-21-repo-snapshot-manifest-480.csv` — Phase 1c, done.
 - `data/snapshots/<owner>__<repo>/<commit_sha>/` — materialized source per
-  unique resolved commit, in progress (§7).
-- Track A1/A2 metric output (smell counts, OO metrics per snapshot) — needs
-  Phase 1d (tools installed, run against materialized snapshots).
+  unique resolved commit — Phase 1e, done (399/401).
+- Track A1/A2 metric output (smell counts, OO metrics per snapshot) —
+  orchestration built (`long_analysis.py`, Phase 1d), still needs DPy/Designite
+  actually installed before it produces real output.
 - Track B1/B2 output (PR-level process metrics, delta table per
   [UnitofAnalysis.md](UnitofAnalysis.md)) — needs Phase 1b.
 - Segmented regression output per primary metric (level change, slope

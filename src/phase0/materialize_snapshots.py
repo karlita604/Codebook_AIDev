@@ -33,7 +33,9 @@ run's time budget - rerun with the same --repo and it picks up where it left off
 """
 
 import argparse
+import shutil
 import subprocess
+import time
 from pathlib import Path
 
 import pandas as pd
@@ -97,14 +99,26 @@ def backfill_repo(full_name, pathspec):
         )
 
 
+def _is_materialized(dest):
+    """A destination only counts as done if it actually has content - a
+    directory can exist and be empty from a prior failed/interrupted attempt."""
+    return dest.exists() and any(dest.iterdir())
+
+
 def archive_commit(full_name, commit_sha, pathspec, dest):
+    """Extracts into a temp dir and only renames to `dest` on success, so a
+    failed/killed attempt never leaves behind a directory that looks done."""
     repo_dir = CLONE_CACHE_DIR / _safe_dirname(full_name)
-    dest.mkdir(parents=True, exist_ok=True)
+    tmp_dest = dest.parent / (dest.name + ".tmp")
+    if tmp_dest.exists():
+        shutil.rmtree(tmp_dest)
+    tmp_dest.mkdir(parents=True)
+
     archive = subprocess.Popen(
         ["git", *GIT_HTTP_OVERRIDE, "-C", str(repo_dir), "archive", commit_sha, "--", pathspec],
         stdout=subprocess.PIPE,
     )
-    tar = subprocess.Popen(["tar", "-x", "-C", str(dest)], stdin=archive.stdout)
+    tar = subprocess.Popen(["tar", "-x", "-C", str(tmp_dest)], stdin=archive.stdout)
     archive.stdout.close()
     try:
         tar.wait(timeout=ARCHIVE_TIMEOUT_SECONDS)
@@ -112,8 +126,27 @@ def archive_commit(full_name, commit_sha, pathspec, dest):
     except subprocess.TimeoutExpired:
         archive.kill()
         tar.kill()
+        shutil.rmtree(tmp_dest, ignore_errors=True)
         return False
-    return archive.returncode == 0 and tar.returncode == 0
+
+    ok = archive.returncode == 0 and tar.returncode == 0 and any(tmp_dest.iterdir())
+    if ok:
+        if dest.exists():
+            shutil.rmtree(dest)
+        # Windows sometimes still holds a transient handle (AV scan, search
+        # indexer) right after tar closes its files - retry the rename a
+        # few times before giving up rather than losing a good extraction.
+        for attempt in range(5):
+            try:
+                tmp_dest.rename(dest)
+                break
+            except PermissionError:
+                if attempt == 4:
+                    raise
+                time.sleep(1)
+    else:
+        shutil.rmtree(tmp_dest, ignore_errors=True)
+    return ok
 
 
 def main():
@@ -137,7 +170,7 @@ def main():
             continue
 
         repo_dest_root = SNAPSHOT_DIR / _safe_dirname(full_name)
-        todo = [sha for sha in group["commit_sha"] if not (repo_dest_root / sha).exists()]
+        todo = [sha for sha in group["commit_sha"] if not _is_materialized(repo_dest_root / sha)]
         print(f"\n=== {full_name} ({language}) - {len(group)} unique commits, {len(todo)} not yet materialized ===")
         if not todo:
             print("  nothing to do")
@@ -147,7 +180,11 @@ def main():
 
         done = failed = 0
         for sha in todo:
-            ok = archive_commit(full_name, sha, pathspec, repo_dest_root / sha)
+            try:
+                ok = archive_commit(full_name, sha, pathspec, repo_dest_root / sha)
+            except OSError as e:
+                print(f"  [archive] {full_name}@{sha[:7]}: OS error - {e} - rerun to retry")
+                ok = False
             if ok:
                 done += 1
             else:

@@ -79,8 +79,54 @@ Dock, Track A1, far from its intervention date), 43 `no_prior_commit` points
 (crewAI + aspire, both young enough that early-2022 grid points predate their
 first commit — expected, not a bug).
 
+## Phase 1e — snapshot materialization (built, done)
 
+`src/phase0/materialize_snapshots.py` turns the Phase 1c manifest's commit
+resolutions into actual source trees DPy/Designite can run against: for every
+*unique* `(repo, commit_sha)` (401 of them across the 5 repos, not 480 — many
+grid points share a commit), it does a one-time per-repo blob backfill
+(`git sparse-checkout` + `git backfill --sparse`, HTTP/1.1 forced — HTTP/2
+was resetting mid-transfer in this environment) and then a language-filtered
+`git archive` (just `*.py` or `*.cs`, matching the repo) into
+`data/snapshots/<owner>__<repo>/<commit_sha>/`. Resumable by design.
 
+**Result:** 399 of 401 unique commits materialized. The 2 that never
+materialize (both crewAI) hit a permanent Windows filesystem incompatibility
+— a test fixture path containing a `"` character, illegal in NTFS filenames
+— not a transient failure; would need a Linux/WSL environment to fill in.
+
+## Phase 1d — DPy/Designite orchestration (built, blocked on tool install)
+
+`src/phase0/long_analysis.py` reads the Phase 1c manifest, drops
+`no_prior_commit` rows, and for each remaining row looks up its
+already-materialized source tree from Phase 1e
+(`data/snapshots/<owner>__<repo>/<commit_sha>/`), routes to DPy (Python) or
+Designite (C#) by the row's `language`, and writes a consolidated
+smell/metric CSV plus a separate errors CSV so one bad row can't abort the
+run. Neither tool is actually installed (no `dpy`/`designite`/even `java` on
+this machine, and both are commercial products from designite-tools.com
+whose real CLI and output schema aren't verified) — `run_dpy()` /
+`run_designite()` / `parse_tool_output()` are stubs marked `TODO`, gated
+behind `DPY_EXECUTABLE`/`DESIGNITE_EXECUTABLE` env vars, ready to fill in
+once the tools are installed. Added `--dry-run` (snapshot lookup +
+bookkeeping only, no tool call) and `--repo`/`--limit` filters so the
+orchestration itself can be smoke-tested without the tools.
+
+First version of this script did its own `git checkout` per row directly in
+the Phase 1c clone cache instead of reading Phase 1e's output — built before
+noticing Phase 1e already existed and already solved exactly the problem
+that approach then hit (a slow lazy blob-fetch on `airbyte`'s partial clone
+timed out and left that cached clone in a half-updated state). Rewritten to
+consume `data/snapshots/` directly, per the design already recorded in
+`Longitudinal.md` §7–§8.
+
+**Result:** full `--dry-run` across all 5 repos resolves 435/437 eligible
+rows instantly (no network, no checkout — just a directory lookup), with the
+2 failures being exactly the 2 known-unmaterialized crewAI commits, cleanly
+logged to the errors CSV rather than crashing. A real (non-dry-run) pass
+against `Dock` failed both test rows with a clean, logged
+`DESIGNITE_EXECUTABLE not set` error instead of crashing — orchestration
+confirmed working end to end, purely blocked on tool install now.
 
 ## Visualization
 
@@ -96,12 +142,14 @@ window boundary.
 
 - **Phase 1b** (full PR history pull, Track B) — needs `GITHUB_TOKEN`; not yet
   set in this environment. Unauthenticated is 60 req/hr, not viable at scale.
-- **Phase 1d** (actually running DPy/Designite against the Phase 1c manifest)
-  — neither tool is installed yet.
+- **Phase 1d** — orchestration built and confirmed working against Phase
+  1e's materialized snapshots (435/437 eligible rows resolve); purely
+  blocked on installing DPy/Designite now.
+- 2 crewAI commits (Phase 1e) will likely never materialize on Windows
+  (NTFS-illegal filename in a test fixture) — accept the gap or find a
+  Linux/WSL environment to fill it in.
 - Open modeling decisions logged in `Longitudinal.md`: A2's weekly/monthly
   windowing and B2's ±10-PR window are defaults, not confirmed; no minimum-
   snapshot-count rule yet for excluding a repo from the regression; whether
   informal (pre-AIDev) agent adoption needs a separate robustness check.
-- Phase 0 filtering is still moving under this work (dead-link filter just
-  added) — worth re-running Phase 1a once phase 0's candidate list settles,
-  to confirm the pilot repos are still representative of the final set.
+

@@ -1,53 +1,60 @@
 """
 Phase 1d: run DPy (Python repos) / Designite (C# repos) against every
-resolved snapshot in the Phase 1c manifest, and consolidate their
-smell/metric output into one table keyed by
+materialized snapshot from Phase 1e (materialize_snapshots.py), and
+consolidate their smell/metric output into one table keyed by
 (repo_id, track, target_date, commit_sha).
 
 BLOCKED ON TOOL INSTALL (see Writing/ProjectUpdate.md): neither DPy nor
 Designite is installed in this environment, and both are commercial tools
 from designite-tools.com whose exact CLI invocation and output format I
-have not verified. The checkout/orchestration below is real and testable
-now via --dry-run; run_dpy() / run_designite() / parse_tool_output() are
-stubs marked with TODOs - fill them in once the tools are installed and
-you've confirmed the real invocation syntax and output schema against the
-actual binaries. Point DPY_EXECUTABLE / DESIGNITE_EXECUTABLE at the
-installed executables via env var once that's done.
+have not verified. The snapshot lookup/row bookkeeping below is real and
+testable now via --dry-run; run_dpy() / run_designite() /
+parse_tool_output() are stubs marked with TODOs - fill them in once the
+tools are installed and you've confirmed the real invocation syntax and
+output schema against the actual binaries. Point DPY_EXECUTABLE /
+DESIGNITE_EXECUTABLE at the installed executables via env var once that's
+done.
 
-Pipeline, per eligible manifest row (no_prior_commit == False):
-1. Resolve the repo's cached clone (data/repo_cache/<owner>__<repo>/, built
-   by repo_snapshot_pipeline.py / Phase 1c).
-2. `git checkout --detach <commit_sha>` in that clone. The clone is a
-   blob:none partial clone, so this can trigger a lazy blob fetch from
-   origin the first time a given commit's files are touched.
-3. Route by the row's `language`: Python -> run_dpy(), C# -> run_designite().
+Pipeline, per eligible manifest row (has a resolved AND materialized commit):
+1. Look up the already-materialized source tree at
+   data/snapshots/<owner>__<repo>/<commit_sha>/ (built by
+   materialize_snapshots.py / Phase 1e - language-filtered via `git archive`,
+   so this is already just the repo's .py or .cs files at that commit,
+   nothing else). Rows whose commit was never materialized (e.g. the 2
+   crewAI commits that hit a Windows filename incompatibility - see
+   Longitudinal.md S8) are skipped and logged as errors, not silently
+   checked out from data/repo_cache/ as a fallback - that raw clone is
+   Phase 1c/1e's working data, not something this phase should touch itself.
+2. Route by the row's `language`: Python -> run_dpy(), C# -> run_designite().
    Each tool's raw output lands in data/tool_output/<repo>__<track>__<date>/
    (gitignored scratch space) and gets flattened by parse_tool_output().
-4. Append the parsed row (tagged with repo_id/track/target_date/commit_sha)
-   to the consolidated output CSV. A row that fails (checkout error, tool
+3. Append the parsed row (tagged with repo_id/track/target_date/commit_sha)
+   to the consolidated output CSV. A row that fails (missing snapshot, tool
    crash, parse error) is logged to a separate errors CSV rather than
    aborting the whole run.
 
-Use --dry-run to smoke-test steps 1-2 and the row bookkeeping without
-needing the tools installed at all. Use --limit to test on a handful of
-rows before committing to a full run across all 480 manifest rows.
+Use --dry-run to smoke-test the snapshot lookup and row bookkeeping without
+needing the tools installed at all. Use --limit/--repo to test on a handful
+of rows before committing to a full run across all manifest rows.
 """
 
 import argparse
 import os
 import subprocess
+import sys
 from datetime import date
 from pathlib import Path
 
 import pandas as pd
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from materialize_snapshots import SNAPSHOT_DIR, _is_materialized, _safe_dirname  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
-CLONE_CACHE_DIR = ROOT / "data" / "repo_cache"
 TOOL_OUTPUT_DIR = ROOT / "data" / "tool_output"
 MANIFEST_DIR = ROOT / "results" / "snapshots"
 OUT_DIR = ROOT / "results" / "analysis"
 
-CHECKOUT_TIMEOUT_SECONDS = 600
 TOOL_TIMEOUT_SECONDS = 900
 
 # Set these once DPy / Designite are installed - see module docstring.
@@ -58,10 +65,6 @@ LANGUAGE_TOOL = {
     "Python": "dpy",
     "C#": "designite",
 }
-
-
-def _safe_dirname(full_name):
-    return full_name.replace("/", "__")
 
 
 def _snapshot_key(row):
@@ -85,19 +88,7 @@ def latest_manifest():
     return manifests[-1]
 
 
-def checkout(repo_dir, commit_sha):
-    # -c core.longpaths=true: airbyte/aspire have test-fixture paths past
-    # Windows' 260-char MAX_PATH (same issue clone_repo() in
-    # repo_snapshot_pipeline.py hit and worked around at clone time).
-    subprocess.run(
-        ["git", "-c", "core.longpaths=true", "checkout",
-         "--detach", "--quiet", commit_sha],
-        cwd=repo_dir, check=True, capture_output=True, text=True,
-        timeout=CHECKOUT_TIMEOUT_SECONDS,
-    )
-
-
-def run_dpy(repo_dir, out_dir):
+def run_dpy(snapshot_dir, out_dir):
     """
     TODO (blocked on install - see module docstring): confirm DPy's real
     CLI once it's installed. This invocation is an UNCONFIRMED placeholder -
@@ -111,14 +102,14 @@ def run_dpy(repo_dir, out_dir):
         )
     out_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        [DPY_EXECUTABLE, "-i", str(repo_dir), "-o", str(out_dir)],
+        [DPY_EXECUTABLE, "-i", str(snapshot_dir), "-o", str(out_dir)],
         check=True, capture_output=True, text=True,
         timeout=TOOL_TIMEOUT_SECONDS,
     )
     return out_dir
 
 
-def run_designite(repo_dir, out_dir):
+def run_designite(snapshot_dir, out_dir):
     """
     TODO (blocked on install - see module docstring): DesigniteJava's public
     OSS variant documents `java -jar DesigniteJava.jar -i <input> -o
@@ -133,7 +124,7 @@ def run_designite(repo_dir, out_dir):
         )
     out_dir.mkdir(parents=True, exist_ok=True)
     subprocess.run(
-        [DESIGNITE_EXECUTABLE, "-i", str(repo_dir), "-o", str(out_dir)],
+        [DESIGNITE_EXECUTABLE, "-i", str(snapshot_dir), "-o", str(out_dir)],
         check=True, capture_output=True, text=True,
         timeout=TOOL_TIMEOUT_SECONDS,
     )
@@ -156,17 +147,17 @@ def parse_tool_output(out_dir, language):
 
 
 def process_row(row, dry_run):
-    repo_dir = CLONE_CACHE_DIR / _safe_dirname(row["full_name"])
-    if not (repo_dir / ".git").exists():
+    snapshot_dir = SNAPSHOT_DIR / _safe_dirname(row["full_name"]) / row["commit_sha"]
+    if not _is_materialized(snapshot_dir):
         raise FileNotFoundError(
-            f"{row['full_name']} not cloned at {repo_dir} - run "
-            "repo_snapshot_pipeline.py (Phase 1c) first"
+            f"{row['full_name']}@{row['commit_sha'][:8]} not materialized at "
+            f"{snapshot_dir} - run materialize_snapshots.py (Phase 1e) first "
+            "(or this commit is a known gap - see Longitudinal.md S8)"
         )
 
-    checkout(repo_dir, row["commit_sha"])
-
     if dry_run:
-        return {**_snapshot_key(row), "status": "dry_run"}
+        n_files = sum(1 for p in snapshot_dir.rglob("*") if p.is_file())
+        return {**_snapshot_key(row), "n_files": n_files, "status": "dry_run"}
 
     tool = LANGUAGE_TOOL.get(row["language"])
     if tool is None:
@@ -181,9 +172,9 @@ def process_row(row, dry_run):
     out_dir = TOOL_OUTPUT_DIR / snapshot_tag
 
     if tool == "dpy":
-        run_dpy(repo_dir, out_dir)
+        run_dpy(snapshot_dir, out_dir)
     else:
-        run_designite(repo_dir, out_dir)
+        run_designite(snapshot_dir, out_dir)
 
     metrics = parse_tool_output(out_dir, row["language"])
     return {**_snapshot_key(row), **metrics, "status": "ok"}
@@ -197,8 +188,8 @@ def main():
     )
     parser.add_argument(
         "--dry-run", action="store_true",
-        help="checkout each commit and record bookkeeping only - "
-             "skip the actual DPy/Designite call",
+        help="look up each materialized snapshot and record bookkeeping "
+             "only - skip the actual DPy/Designite call",
     )
     parser.add_argument(
         "--limit", type=int, default=None,
