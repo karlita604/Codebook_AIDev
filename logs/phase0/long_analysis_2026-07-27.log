@@ -12,3 +12,9 @@ manifest: C:\Users\kvrlv\Projects\Codebook_AIDev\results\snapshots\07-21-repo-sn
   [ok] (8/437) airbytehq/airbyte A1 2022-08-01 @67333aa3
     [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_qqs_2y81\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose0']
   [ok] (9/437) airbytehq/airbyte A1 2022-09-01 @827e7a55
+    [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_vq_y9in4\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose0']
+  [ok] (10/437) airbytehq/airbyte A1 2022-10-01 @aaa94f1c
+    [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_dwcb5h2u\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose0']
+  [ok] (11/437) airbytehq/airbyte A1 2022-11-01 @cb785bc1
+    [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_7qj3po6b\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose0']
+  [ok] (12/437) airbytehq/airbyte A1 2022-12-01 @39ac1ca1
