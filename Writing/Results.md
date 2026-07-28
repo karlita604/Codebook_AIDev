@@ -13,12 +13,57 @@ one row per `(repo_id, track, target_date, commit_sha)` — see `long_analysis.p
 and `Longitudinal.md` §8/§9) supports, for when enough of the background run
 has landed to actually build these.
 
-**Status as of 2026-07-27:** run in progress (`main`, PID in
-`logs/phase0/long_analysis.pid`), 18/437 rows done, all `airbytehq/airbyte`
-Track A1, 2022-01 through 2023-06 — pre-intervention only (airbyte's
-intervention date is 2025-01-21). Nothing below is buildable as a real result
-yet; only a sanity-check trend of airbyte's early metrics is possible right
-now.
+**Status as of 2026-07-28 ~18:00 UTC** (via `progress_dpy.py`, deduplicated
+across all output files): **177/437 rows done (40.5%)**, 3 parallel workers
+(`--repo crewAI`, `--repo "airbyte|Dock"`, `--repo "mlflow|aspire"`, see
+`ProjectUpdate.md`'s Phase 1d section for the full history). By repo:
+
+| repo | rows done | status |
+|---|---|---|
+| crewAIInc/crewAI | 72 | **complete** — capped at 72/74 by 2 permanently-unmaterialized commits (Phase 1e, NTFS filename gap), not still running |
+| airbytehq/airbyte | 64 | in progress |
+| mlflow/mlflow | 41 | in progress |
+| wieslawsoltes/Dock | 0 (Designite not wired up) | blocked, see below |
+| dotnet/aspire | 0 (Designite not wired up) | blocked, see below |
+
+84 rows are logged as errors, all expected/non-blocking: `DESIGNITE_EXECUTABLE
+not set` for every Dock/aspire (C#) row — Designite work is deliberately
+deferred (see `ProjectUpdate.md`) — plus the 2 permanent crewAI gaps. 0
+unexpected errors. **So Track A results below are Python-only for now**
+(crewAI, airbyte, mlflow); C# (Dock, aspire) has zero real DPy output until
+Designite is unblocked.
+
+### First real look: crewAI, Track A1 + A2 (complete — 72/72 achievable rows)
+
+crewAI is the only repo with a fully complete series so far, so this is a
+first eyeball read, **not** a result — single repo, no formal segmented
+regression yet (§9), no cross-repo comparison, no significance test. Pulled
+directly from the real pooled output (`design_smell_density_per_kloc`,
+Track A1 monthly + Track A2 weekly-around-intervention):
+
+- **Design smell density drifts steadily upward across the whole window**:
+  ~6.0/KLOC (Dec 2023) → ~8.3/KLOC right before the 2024-12-27 intervention →
+  ~11.0/KLOC by Mar 2026. The slope doesn't visibly change at the
+  intervention date.
+- **Track A2's weekly resolution right around the intervention shows no
+  jump either**: 8.6–8.8/KLOC in the 3 weeks immediately before (Dec 6–20,
+  2024) vs. 8.0–8.7/KLOC in the 3 weeks immediately after (Dec 27–Jan 10,
+  2025) — the density line crosses the intervention week essentially flat,
+  continuing whatever it was already doing.
+- **Implementation smell density and p90 cyclomatic complexity show the same
+  pattern**: density oscillates 71–85/KLOC with no level break; p90 CC
+  climbs 1→4 gradually over 2024 (as the repo grows past its earliest, tiny
+  commits) and then holds flat at 4 through nearly the entire post-
+  intervention period.
+
+Read cautiously: this is exactly the ambiguity the ITS design (§2 of
+`Longitudinal.md`) exists to resolve properly — "already trending up and
+kept trending up" vs. "jumped when agents arrived" — and on this one repo,
+the eyeball read leans toward the former, not the latter. That's a real
+observation worth flagging early, but it's one repo's worth of visual
+inspection, not the pre-registered regression the write-up will actually
+hang a claim on. Needs airbyte/mlflow/Dock to finish (and Designite unblocked
+for Dock/aspire) before any cross-repo pattern means anything.
 
 ### Core ITS charts (the primary result)
 

@@ -1,11 +1,11 @@
 {
   "started_at": "2026-07-28T14:28:24.228936+00:00",
-  "updated_at": "2026-07-28T14:49:57.311589+00:00",
+  "updated_at": "2026-07-28T15:44:07.292690+00:00",
   "total": 74,
-  "done": 74,
-  "ok": 74,
-  "failed": 0,
-  "elapsed_seconds": 1293.1,
-  "eta_seconds": 0.0,
-  "current": "crewAIInc/crewAI A1 2025-10-01 @b77074e4"
+  "done": 124,
+  "ok": 122,
+  "failed": 2,
+  "elapsed_seconds": 4543.1,
+  "eta_seconds": -1831.9,
+  "current": "crewAIInc/crewAI A2 2025-12-27 @c73b36a4"
 }

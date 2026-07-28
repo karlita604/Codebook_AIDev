@@ -4,11 +4,15 @@
 
 The goal: measure repository structural health before vs. after AI coding
 agents start contributing, using DPy/Designite smells and OO metrics as the
-outcome, on a small set of pilot repos before scaling up. Phase 0 (data
-filtering) is iterating in parallel; the longitudinal methodology is designed
-and its data-collection pipeline is built and has run end-to-end for 5 pilot
-repos. Nothing has been analyzed yet — this update is about the pipeline, not
-results.
+outcome, plus PR-level process metrics, on a small set of pilot repos before
+scaling up. Phase 0 (data filtering) is iterating in parallel; the
+longitudinal methodology is designed and both data-collection pipelines —
+Track A (repo snapshots) and Track B (PR sampling) — have run end-to-end for
+the 5-repo pilot. Real DPy output is now landing for Track A (3 parallel
+workers in progress, see Phase 1d); Track B1/B2 PR sampling is done except
+for `dotnet/aspire`, excluded for now (see Phase 1b). Nothing has been
+formally analyzed yet — this update is still about the pipelines producing
+real data, not conclusions drawn from it.
 
 ## Phase 0 — data filtering (`src/phase0/`, `src/repos/`)
 
@@ -296,6 +300,92 @@ done-set.
   deferred to the `designite-sln-support` branch) and 2 `crewAI` rows will
   never succeed (permanent Windows filename incompatibility, §8).
 
+**Live status, 2026-07-28 ~15:00 UTC (all 3 workers still running):**
+`crewAI` worker finished — 75/74 rows recorded (the global dedup counts one
+row shared with the original unscoped file, harmless, not an overcount of
+real work). `airbyte|Dock` at 51/192. `mlflow|aspire` at 131/171 (56 ok, 75
+failed — exactly the expected `dotnet/aspire` Designite-not-configured rows
+draining as designed, per the known non-blocking errors above).
+
+## Phase 1b — Track B1/B2 PR sampling (built, run)
+
+`src/phase0/pr_sampling_pipeline.py`: the GitHub-API counterpart to Phase
+1c/1e — resolves Tracks B1/B2 (`Longitudinal.md` §5) into actual PR-event
+data for the 5-repo pilot via the Search API
+(`GET /search/issues?q=repo:...+is:pr+created:...`), since AIDev has no PR
+data outside Dec 2024–Jul 2025.
+
+- **B1**: one 2-day window (day 1–2 UTC) per calendar month across the
+  51-month grid, up to 10 PRs/window by `created_at` (cap 510/repo). Months
+  with fewer than 10 PRs keep whatever's available, flagged `is_undersampled`
+  rather than excluded or padded.
+- **B2**: the 10 PRs immediately preceding and 10 immediately following each
+  repo's intervention PR, not calendar-anchored.
+- Captures PR identity + timestamps (number, title, state,
+  `created_at`/`closed_at`/`merged_at`, comment count, URL) straight from the
+  Search API response — not yet the deeper diff/review stats
+  (additions/deletions/review comments), which need a per-PR follow-up call
+  and are left for a later step, same phased split as Phase 1c → Phase 1e
+  for Track A.
+
+**Resumable and verbose by design**, mirroring `long_analysis.py`'s Phase 1d
+approach but adapted to a wrinkle specific to this data: a search query can
+legitimately return zero PRs (a quiet repo-month), so PR rows alone can't
+signal "already queried" the way manifest rows can. A separate *query
+ledger* CSV (`*-queries.csv`) records every unit's outcome (one row per B1
+month-window or B2 side — `status=ok/error`, PR count found,
+`is_undersampled`) the moment it completes; resume skips anything already
+`ok` there, and every unit prints a live terminal line (`[ok] (i/265) repo
+track unit -> N PRs | M PRs so far | eta`). Verified for real, not just in
+theory: killed a live run mid-flight (`wieslawsoltes/Dock`, Track B1, 10/51
+windows done) and confirmed the rerun printed `resuming: 10/51 already done`
+and picked up exactly at window 11.
+
+**Environment setup hit the same underlying cause as the Phase 1d Smart App
+Control incident above, discovered independently.** Needed `GITHUB_TOKEN`
+(unauthenticated GitHub API is 60 req/hr) and a proper venv with
+`requirements.txt` installed rather than a raw `pip install` into the active
+conda `base`. The first `pip install -r requirements.txt` into a fresh venv
+(built from conda's `python`) downloaded new pandas/pyarrow wheels that
+Smart App Control immediately blocked
+(`ImportError: DLL load failed... An Application Control policy has blocked
+this file`) — the same enforcement that separately blocked `DPy.exe` during
+the 3-worker launch above; the two incidents were only connected after the
+fact. Fix: rebuilt the venv from `C:\Python314\python.exe` (whose packages
+were already installed and already trusted) with `--system-site-packages`,
+so `pip install` resolved everything as already-satisfied instead of
+downloading new binaries. Hit a secondary snag getting there: deleting the
+broken venv kept failing (`Access denied` on `.venv\Scripts\python.exe`)
+because VS Code's Python extension had auto-selected it as the workspace
+interpreter and kept relaunching its language server against it, re-locking
+the file every time it was killed — resolved by closing/reloading VS Code,
+not by repeatedly killing the process. `.venv/` added to `.gitignore`.
+
+**Full run result:** 265/265 query units attempted across the 5-repo pilot
+(51 B1 windows + 2 B2 sides × 5 repos) — **212 ok, 53 failed**. Every single
+failure is `dotnet/aspire`, and only `dotnet/aspire` (100% of its 53 units;
+0% everywhere else). Root cause confirmed directly: unauthenticated
+`GET /repos/dotnet/aspire` returns `200`, but the same call with our
+(fine-grained) token returns `401`, and the Search API returns `422`
+(`"...do not have permission to view them"`). **Microsoft's `dotnet` GitHub
+org blocks fine-grained personal access tokens from its repos entirely, even
+public ones** — an org-level opt-in policy, unrelated to the Smart App
+Control incident above despite the superficially similar "one thing
+completely blocked" shape. Track A (Phase 1c/1e) already has full
+`dotnet/aspire` data since it only ever used local git clones, not this API
+— only Track B is affected.
+
+**Decision (2026-07-28):** don't retry/collect `dotnet/aspire` PRs for now —
+treat `wieslawsoltes/Dock` as the sole C# repo for Track B1/B2. This breaks
+the pilot's original Python/C# stratified balance for this track
+specifically (now 3 Python + 1 C#, not 3+2). Needs a methodology call before
+Phase 1b is considered complete: get a classic PAT (not subject to this org
+restriction), swap in a different C# pilot repo, or accept Dock-only and
+disclose the imbalance in the write-up.
+
+**Output:** `results/pr_samples/07-28-pr-sample-265.csv` (PR rows),
+`-queries.csv` (resume ledger), `-progress.json`.
+
 ## Visualization
 
 Built an interactive timeline (published as a Claude artifact) showing every
@@ -310,12 +400,16 @@ https://claude.ai/code/artifact/e0731c42-8ff8-4b57-b797-21fdda5fd013
 
 ## Open items / blocked
 
-- **Phase 1b** (full PR history pull, Track B) — needs `GITHUB_TOKEN`; not yet
-  set in this environment. Unauthenticated is 60 req/hr, not viable at scale.
-- **Phase 1d** — both tools now installed, but neither can produce real
-  output yet: DPy's Trial license caps CSV export at <10K LOC (need
-  Professional); Designite needs an actual `.sln` and Phase 1e snapshots
-  only contain `*.cs` files (needs a design decision — see Phase 1d above).
+- **Phase 1b** — `GITHUB_TOKEN` obtained and the run is done (212/265 units
+  ok), but `dotnet/aspire` is fully excluded from Track B1/B2 (fine-grained
+  PAT blocked by Microsoft's org policy — see Phase 1b above). Needs a
+  methodology call: classic PAT, a different C# pilot repo, or accept
+  Dock-only for C# and disclose the imbalance.
+- **Phase 1d** — DPy is running for real now (Trial license's <10K-LOC cap
+  worked around via per-snapshot chunking, see above), 3 parallel workers
+  in progress across the pilot. Designite is still fully blocked: needs an
+  actual `.sln` and Phase 1e's C# snapshots only contain `*.cs` files
+  (needs a design decision — see Phase 1d above).
 - 2 crewAI commits (Phase 1e) will likely never materialize on Windows
   (NTFS-illegal filename in a test fixture) — accept the gap or find a
   Linux/WSL environment to fill it in.
