@@ -43,6 +43,7 @@ of rows before committing to a full run across all manifest rows.
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -121,11 +122,20 @@ def run_dpy(snapshot_dir, out_dir):
             "its executable path before running without --dry-run."
         )
     out_dir.mkdir(parents=True, exist_ok=True)
-    subprocess.run(
-        [DPY_EXECUTABLE, "analyze", "-i", str(snapshot_dir), "-o", str(out_dir), "-f", "csv"],
-        check=True, capture_output=True, text=True,
-        timeout=TOOL_TIMEOUT_SECONDS,
-    )
+    try:
+        subprocess.run(
+            [DPY_EXECUTABLE, "analyze", "-i", str(snapshot_dir), "-o", str(out_dir), "-f", "csv"],
+            check=True, capture_output=True, text=True,
+            timeout=TOOL_TIMEOUT_SECONDS,
+        )
+    except subprocess.CalledProcessError as e:
+        # CalledProcessError's default __str__ is just "returned non-zero
+        # exit status N" - the actual DPy error message (in stdout/stderr)
+        # is what's useful in the errors CSV, so fold it in explicitly.
+        raise RuntimeError(
+            f"DPy exited {e.returncode} on {snapshot_dir}: "
+            f"{(e.stdout or '').strip()[-500:]} {(e.stderr or '').strip()[-500:]}".strip()
+        ) from e
     return out_dir
 
 
@@ -200,7 +210,7 @@ def plan_dpy_chunks(snapshot_dir, cap=DPY_LOC_CAP, stage_root=None, _label="root
     return chunks
 
 
-def run_dpy_chunked(snapshot_dir, out_dir):
+def run_dpy_chunked(snapshot_dir, out_dir, verbose=False):
     """
     Works around DPy's Trial license cap (see run_dpy) by splitting
     snapshot_dir into sub-DPY_LOC_CAP chunks along real package boundaries
@@ -208,6 +218,12 @@ def run_dpy_chunked(snapshot_dir, out_dir):
     out_dir/chunk_NNN/ subfolder - always chunked (even a single-chunk
     snapshot gets chunk_000/), so parse_tool_output() has one consistent
     shape to read.
+
+    A single row can have 100-300+ chunks (mlflow: 304) at ~3-4s each, so a
+    whole row can easily run 15-20+ minutes with *zero* output otherwise -
+    verbose=True prints one line per chunk (index/total, LOC, timing, a
+    running ETA for the rest of *this row*) so a long silence in the log
+    doesn't look indistinguishable from a hang.
 
     IMPORTANT, per the 2026-07-27 decision (Writing/ProjectUpdate.md):
     class/method-level metrics and design/implementation smells are valid
@@ -230,9 +246,24 @@ def run_dpy_chunked(snapshot_dir, out_dir):
             print(f"    [dpy] WARNING: {len(oversized)} chunk(s) still over "
                   f"{DPY_LOC_CAP} LOC and can't be split further (no "
                   f"subdirectories) - DPy will skip CSV export for these: "
-                  f"{[str(c) for c in oversized]}")
+                  f"{[str(c) for c in oversized]}", flush=True)
+
+        if verbose:
+            total_loc = sum(_py_line_count(c) for c in chunks)
+            print(f"    [dpy] {len(chunks)} chunk(s) planned, {total_loc} total LOC", flush=True)
+
+        row_started_at = time.time()
         for i, chunk_dir in enumerate(chunks):
+            chunk_started_at = time.time()
             run_dpy(chunk_dir, out_dir / f"chunk_{i:03d}")
+            if verbose:
+                chunk_elapsed = time.time() - chunk_started_at
+                row_elapsed = time.time() - row_started_at
+                avg = row_elapsed / (i + 1)
+                eta_min = avg * (len(chunks) - i - 1) / 60
+                loc = _py_line_count(chunk_dir)
+                print(f"    [dpy] chunk {i+1}/{len(chunks)} ({loc} LOC) done in "
+                      f"{chunk_elapsed:.1f}s - ~{eta_min:.1f}min left in this row", flush=True)
     finally:
         shutil.rmtree(stage_root, ignore_errors=True)
     return out_dir
@@ -361,7 +392,7 @@ def parse_tool_output(out_dir, language):
     return _parse_dpy_output(out_dir)
 
 
-def process_row(row, dry_run, keep_tool_output=False):
+def process_row(row, dry_run, keep_tool_output=False, verbose=False):
     snapshot_dir = SNAPSHOT_DIR / _safe_dirname(row["full_name"]) / row["commit_sha"]
     if not _is_materialized(snapshot_dir):
         raise FileNotFoundError(
@@ -387,7 +418,7 @@ def process_row(row, dry_run, keep_tool_output=False):
     out_dir = TOOL_OUTPUT_DIR / snapshot_tag
 
     if tool == "dpy":
-        run_dpy_chunked(snapshot_dir, out_dir)
+        run_dpy_chunked(snapshot_dir, out_dir, verbose=verbose)
     else:
         run_designite(snapshot_dir, out_dir)
 
@@ -408,17 +439,40 @@ def _row_key_tuple(row):
     return (row["repo_id"], row["track"], row["target_date"], row["commit_sha"])
 
 
-def _load_done_keys(out_path):
-    """Rows already recorded as `ok` in a prior (possibly crashed) run of
-    this exact invocation - resume skips these rather than redoing
-    potentially minutes of DPy work per row. Only successes count as done;
-    a previously-errored row is retried, since some errors (a subprocess
-    timeout, a transient file lock) aren't guaranteed to repeat."""
-    if not out_path.exists():
-        return set()
-    df = pd.read_csv(out_path)
+def _load_done_keys(tag):
+    """Rows already recorded as `ok` in ANY prior real-output CSV matching
+    this tag (results/analysis/*-<tag>-*.csv, excluding -errors.csv) - not
+    just this invocation's own output file. This is what makes running
+    several `--repo`-scoped processes in parallel safe: each one sees every
+    other's completed rows immediately at startup and skips them, rather
+    than only knowing about its own scope's file. Only successes count as
+    done; a previously-errored row is retried, since some errors (a
+    subprocess timeout, a transient file lock) aren't guaranteed to repeat."""
+    done = set()
     key_cols = ["repo_id", "track", "target_date", "commit_sha"]
-    return set(df[key_cols].itertuples(index=False, name=None))
+    for path in OUT_DIR.glob(f"*-{tag}-*.csv"):
+        if path.name.endswith("-errors.csv"):
+            continue
+        df = pd.read_csv(path)
+        done.update(df[key_cols].itertuples(index=False, name=None))
+    return done
+
+
+def _clear_stale_errors(tag, key):
+    """A row that just succeeded may have a stale error record sitting in
+    ANY errors CSV for this tag - not just this process's own - e.g. from
+    an earlier scoped run, or a transient block (today's Smart App Control
+    incident) that's since been resolved. Clear it everywhere so the errors
+    CSVs stay an accurate picture of what's still actually broken, rather
+    than accumulating entries for things that were retried and fixed."""
+    key_cols = ["repo_id", "track", "target_date", "commit_sha"]
+    for path in OUT_DIR.glob(f"*-{tag}-*-errors.csv"):
+        df = pd.read_csv(path)
+        if df.empty:
+            continue
+        mask = df[key_cols].apply(tuple, axis=1) == key
+        if mask.any():
+            df[~mask].to_csv(path, index=False)
 
 
 def _append_row(path, row_dict):
@@ -473,6 +527,13 @@ def main():
              "(default: delete, since a full run can produce hundreds of "
              "thousands of small chunk files)",
     )
+    parser.add_argument(
+        "--verbose", action="store_true",
+        help="print per-chunk progress within each row (index/total, LOC, "
+             "timing, running ETA for the rest of that row) - a single row "
+             "can be 100-300+ chunks and otherwise prints nothing until the "
+             "whole row finishes, which can be 15-20+ minutes of silence",
+    )
     args = parser.parse_args()
 
     manifest_path = args.manifest or latest_manifest()
@@ -490,14 +551,40 @@ def main():
     print(f"{total} eligible row(s) (have a resolved commit)", flush=True)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    today = date.today()
     tag = "dryrun" if args.dry_run else "smell-metrics"
-    stem = f"{today.month:02d}-{today.day:02d}-{tag}-{total}"
+
+    # Each process writes to its OWN file, scoped by --repo (falling back to
+    # just the row count when unscoped) - this is what lets several --repo
+    # processes run concurrently without racing on the same file (pandas
+    # to_csv(mode="a") isn't safe for two writers) or fighting over which of
+    # them writes the CSV header first.
+    scope = re.sub(r"[^a-zA-Z0-9]+", "", args.repo)[:30] if args.repo else None
+    scope_suffix = f"{scope}-{total}" if scope else str(total)
+
+    # A multi-day run can restart on a different calendar day than it
+    # started - stamping the filename with today's date would silently
+    # orphan the prior file and redo all completed rows instead of
+    # resuming. Reuse an existing same-scope output file (same tag + repo
+    # scope) if one exists; only mint a fresh dated name for a genuinely new
+    # run/scope.
+    existing = sorted(
+        OUT_DIR.glob(f"*-{tag}-{scope_suffix}.csv"),
+        key=lambda p: p.stat().st_mtime,
+    )
+    if existing:
+        stem = existing[-1].stem
+        print(f"continuing existing run: {existing[-1]}", flush=True)
+    else:
+        today = date.today()
+        stem = f"{today.month:02d}-{today.day:02d}-{tag}-{scope_suffix}"
     out_path = OUT_DIR / f"{stem}.csv"
     err_path = OUT_DIR / f"{stem}-errors.csv"
     progress_path = OUT_DIR / f"{stem}-progress.json"
 
-    done_keys = _load_done_keys(out_path)
+    # Global, not just this file: sees every row any concurrently-running
+    # --repo-scoped process (or a prior run under a different scope) has
+    # already completed, so parallel workers never redo each other's work.
+    done_keys = _load_done_keys(tag)
     if done_keys:
         print(f"resuming: {len(done_keys)} row(s) already done in {out_path}, skipping", flush=True)
 
@@ -511,9 +598,17 @@ def main():
         if _row_key_tuple(row) in done_keys:
             continue
 
+        if args.verbose:
+            print(f"  [row] ({i}/{total}) starting {label}", flush=True)
+
         try:
-            result = process_row(row, args.dry_run, keep_tool_output=args.keep_tool_output)
+            result = process_row(
+                row, args.dry_run,
+                keep_tool_output=args.keep_tool_output, verbose=args.verbose,
+            )
             _append_row(out_path, result)
+            if not args.dry_run:
+                _clear_stale_errors(tag, _row_key_tuple(row))
             ok_count += 1
             print(f"  [ok] ({i}/{total}) {label}", flush=True)
         except Exception as e:

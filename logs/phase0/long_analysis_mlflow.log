@@ -1,0 +1,234 @@
+manifest: C:\Users\kvrlv\Projects\Codebook_AIDev\results\snapshots\07-21-repo-snapshot-manifest-480.csv (480 rows)
+171 eligible row(s) (have a resolved commit)
+resuming: 50 row(s) already done in C:\Users\kvrlv\Projects\Codebook_AIDev\results\analysis\07-28-smell-metrics-mlflowaspire-171.csv, skipping
+  [row] (1/171) starting dotnet/aspire A1 2023-10-01 @1fecfe76
+  [FAIL] (1/171) dotnet/aspire A1 2023-10-01 @1fecfe76: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (2/171) starting dotnet/aspire A1 2023-11-01 @ea5e3e51
+  [FAIL] (2/171) dotnet/aspire A1 2023-11-01 @ea5e3e51: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (3/171) starting dotnet/aspire A1 2023-12-01 @b6fd5fd4
+  [FAIL] (3/171) dotnet/aspire A1 2023-12-01 @b6fd5fd4: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (4/171) starting dotnet/aspire A1 2024-01-01 @46cc5293
+  [FAIL] (4/171) dotnet/aspire A1 2024-01-01 @46cc5293: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (5/171) starting dotnet/aspire A1 2024-02-01 @5200ffcc
+  [FAIL] (5/171) dotnet/aspire A1 2024-02-01 @5200ffcc: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (6/171) starting dotnet/aspire A1 2024-03-01 @4cd89285
+  [FAIL] (6/171) dotnet/aspire A1 2024-03-01 @4cd89285: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (7/171) starting dotnet/aspire A1 2024-04-01 @9c4533e9
+  [FAIL] (7/171) dotnet/aspire A1 2024-04-01 @9c4533e9: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (8/171) starting dotnet/aspire A1 2024-05-01 @e25cb52c
+  [FAIL] (8/171) dotnet/aspire A1 2024-05-01 @e25cb52c: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (9/171) starting dotnet/aspire A1 2024-06-01 @67a1a760
+  [FAIL] (9/171) dotnet/aspire A1 2024-06-01 @67a1a760: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (10/171) starting dotnet/aspire A1 2024-07-01 @c9adccfe
+  [FAIL] (10/171) dotnet/aspire A1 2024-07-01 @c9adccfe: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (11/171) starting dotnet/aspire A1 2024-08-01 @232e434c
+  [FAIL] (11/171) dotnet/aspire A1 2024-08-01 @232e434c: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (12/171) starting dotnet/aspire A1 2024-09-01 @84bd9f75
+  [FAIL] (12/171) dotnet/aspire A1 2024-09-01 @84bd9f75: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (13/171) starting dotnet/aspire A1 2024-10-01 @31a2511b
+  [FAIL] (13/171) dotnet/aspire A1 2024-10-01 @31a2511b: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (14/171) starting dotnet/aspire A1 2024-11-01 @8acffaf3
+  [FAIL] (14/171) dotnet/aspire A1 2024-11-01 @8acffaf3: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (15/171) starting dotnet/aspire A1 2024-12-01 @d9a98262
+  [FAIL] (15/171) dotnet/aspire A1 2024-12-01 @d9a98262: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (16/171) starting dotnet/aspire A1 2025-01-01 @89e329c9
+  [FAIL] (16/171) dotnet/aspire A1 2025-01-01 @89e329c9: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (17/171) starting dotnet/aspire A1 2025-02-01 @855ebcba
+  [FAIL] (17/171) dotnet/aspire A1 2025-02-01 @855ebcba: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (18/171) starting dotnet/aspire A1 2025-03-01 @862b817d
+  [FAIL] (18/171) dotnet/aspire A1 2025-03-01 @862b817d: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (19/171) starting dotnet/aspire A1 2025-04-01 @1c65ede9
+  [FAIL] (19/171) dotnet/aspire A1 2025-04-01 @1c65ede9: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (20/171) starting dotnet/aspire A1 2025-05-01 @935f06b1
+  [FAIL] (20/171) dotnet/aspire A1 2025-05-01 @935f06b1: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (21/171) starting dotnet/aspire A1 2025-06-01 @faec2ac4
+  [FAIL] (21/171) dotnet/aspire A1 2025-06-01 @faec2ac4: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (22/171) starting dotnet/aspire A1 2025-07-01 @98b3f12a
+  [FAIL] (22/171) dotnet/aspire A1 2025-07-01 @98b3f12a: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (23/171) starting dotnet/aspire A1 2025-08-01 @8c9ad9df
+  [FAIL] (23/171) dotnet/aspire A1 2025-08-01 @8c9ad9df: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (24/171) starting dotnet/aspire A1 2025-09-01 @7ef1702e
+  [FAIL] (24/171) dotnet/aspire A1 2025-09-01 @7ef1702e: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (25/171) starting dotnet/aspire A1 2025-10-01 @17b63994
+  [FAIL] (25/171) dotnet/aspire A1 2025-10-01 @17b63994: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (26/171) starting dotnet/aspire A1 2025-11-01 @11b8fe34
+  [FAIL] (26/171) dotnet/aspire A1 2025-11-01 @11b8fe34: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (27/171) starting dotnet/aspire A1 2025-12-01 @44db7cb0
+  [FAIL] (27/171) dotnet/aspire A1 2025-12-01 @44db7cb0: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (28/171) starting dotnet/aspire A1 2026-01-01 @28f53025
+  [FAIL] (28/171) dotnet/aspire A1 2026-01-01 @28f53025: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (29/171) starting dotnet/aspire A1 2026-02-01 @af0e27eb
+  [FAIL] (29/171) dotnet/aspire A1 2026-02-01 @af0e27eb: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (30/171) starting dotnet/aspire A1 2026-03-01 @ca3b88ed
+  [FAIL] (30/171) dotnet/aspire A1 2026-03-01 @ca3b88ed: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (31/171) starting dotnet/aspire A2 2024-05-19 @90cd4b58
+  [FAIL] (31/171) dotnet/aspire A2 2024-05-19 @90cd4b58: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (32/171) starting dotnet/aspire A2 2024-06-19 @faf26a87
+  [FAIL] (32/171) dotnet/aspire A2 2024-06-19 @faf26a87: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (33/171) starting dotnet/aspire A2 2024-07-19 @ffb5d9d7
+  [FAIL] (33/171) dotnet/aspire A2 2024-07-19 @ffb5d9d7: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (34/171) starting dotnet/aspire A2 2024-08-19 @734e8eec
+  [FAIL] (34/171) dotnet/aspire A2 2024-08-19 @734e8eec: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (35/171) starting dotnet/aspire A2 2024-09-19 @3bcf24fe
+  [FAIL] (35/171) dotnet/aspire A2 2024-09-19 @3bcf24fe: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (36/171) starting dotnet/aspire A2 2024-10-19 @5b04e349
+  [FAIL] (36/171) dotnet/aspire A2 2024-10-19 @5b04e349: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (37/171) starting dotnet/aspire A2 2024-11-19 @18e1f594
+  [FAIL] (37/171) dotnet/aspire A2 2024-11-19 @18e1f594: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (38/171) starting dotnet/aspire A2 2024-12-19 @bdf98dd7
+  [FAIL] (38/171) dotnet/aspire A2 2024-12-19 @bdf98dd7: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (39/171) starting dotnet/aspire A2 2025-01-19 @adc401b1
+  [FAIL] (39/171) dotnet/aspire A2 2025-01-19 @adc401b1: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (40/171) starting dotnet/aspire A2 2025-02-17 @acdf5012
+  [FAIL] (40/171) dotnet/aspire A2 2025-02-17 @acdf5012: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (41/171) starting dotnet/aspire A2 2025-02-24 @f053112f
+  [FAIL] (41/171) dotnet/aspire A2 2025-02-24 @f053112f: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (42/171) starting dotnet/aspire A2 2025-03-03 @c4062c95
+  [FAIL] (42/171) dotnet/aspire A2 2025-03-03 @c4062c95: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (43/171) starting dotnet/aspire A2 2025-03-10 @c6903d21
+  [FAIL] (43/171) dotnet/aspire A2 2025-03-10 @c6903d21: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (44/171) starting dotnet/aspire A2 2025-03-17 @1215759b
+  [FAIL] (44/171) dotnet/aspire A2 2025-03-17 @1215759b: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (45/171) starting dotnet/aspire A2 2025-03-24 @4fdfdbf5
+  [FAIL] (45/171) dotnet/aspire A2 2025-03-24 @4fdfdbf5: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (46/171) starting dotnet/aspire A2 2025-03-31 @a1dbbb66
+  [FAIL] (46/171) dotnet/aspire A2 2025-03-31 @a1dbbb66: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (47/171) starting dotnet/aspire A2 2025-04-07 @4a9578ac
+  [FAIL] (47/171) dotnet/aspire A2 2025-04-07 @4a9578ac: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (48/171) starting dotnet/aspire A2 2025-04-14 @dbd00265
+  [FAIL] (48/171) dotnet/aspire A2 2025-04-14 @dbd00265: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (49/171) starting dotnet/aspire A2 2025-04-21 @1994993c
+  [FAIL] (49/171) dotnet/aspire A2 2025-04-21 @1994993c: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (50/171) starting dotnet/aspire A2 2025-04-28 @4c8aaefc
+  [FAIL] (50/171) dotnet/aspire A2 2025-04-28 @4c8aaefc: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (51/171) starting dotnet/aspire A2 2025-05-05 @3f8fcc1d
+  [FAIL] (51/171) dotnet/aspire A2 2025-05-05 @3f8fcc1d: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (52/171) starting dotnet/aspire A2 2025-05-12 @1a5db901
+  [FAIL] (52/171) dotnet/aspire A2 2025-05-12 @1a5db901: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (53/171) starting dotnet/aspire A2 2025-05-19 @6152b18c
+  [FAIL] (53/171) dotnet/aspire A2 2025-05-19 @6152b18c: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (54/171) starting dotnet/aspire A2 2025-05-26 @d634e1fc
+  [FAIL] (54/171) dotnet/aspire A2 2025-05-26 @d634e1fc: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (55/171) starting dotnet/aspire A2 2025-06-02 @35c7abbf
+  [FAIL] (55/171) dotnet/aspire A2 2025-06-02 @35c7abbf: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (56/171) starting dotnet/aspire A2 2025-06-09 @d78b7a25
+  [FAIL] (56/171) dotnet/aspire A2 2025-06-09 @d78b7a25: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (57/171) starting dotnet/aspire A2 2025-06-16 @a830b4ce
+  [FAIL] (57/171) dotnet/aspire A2 2025-06-16 @a830b4ce: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (58/171) starting dotnet/aspire A2 2025-06-23 @71abddb8
+  [FAIL] (58/171) dotnet/aspire A2 2025-06-23 @71abddb8: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (59/171) starting dotnet/aspire A2 2025-06-30 @cb9d231f
+  [FAIL] (59/171) dotnet/aspire A2 2025-06-30 @cb9d231f: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (60/171) starting dotnet/aspire A2 2025-07-07 @853c9189
+  [FAIL] (60/171) dotnet/aspire A2 2025-07-07 @853c9189: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (61/171) starting dotnet/aspire A2 2025-07-14 @67834701
+  [FAIL] (61/171) dotnet/aspire A2 2025-07-14 @67834701: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (62/171) starting dotnet/aspire A2 2025-07-21 @2b59cc62
+  [FAIL] (62/171) dotnet/aspire A2 2025-07-21 @2b59cc62: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (63/171) starting dotnet/aspire A2 2025-07-28 @979bc9df
+  [FAIL] (63/171) dotnet/aspire A2 2025-07-28 @979bc9df: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (64/171) starting dotnet/aspire A2 2025-08-04 @dcb8b671
+  [FAIL] (64/171) dotnet/aspire A2 2025-08-04 @dcb8b671: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (65/171) starting dotnet/aspire A2 2025-08-11 @831a7334
+  [FAIL] (65/171) dotnet/aspire A2 2025-08-11 @831a7334: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (66/171) starting dotnet/aspire A2 2025-08-18 @97a4778e
+  [FAIL] (66/171) dotnet/aspire A2 2025-08-18 @97a4778e: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (67/171) starting dotnet/aspire A2 2025-09-19 @9ab41623
+  [FAIL] (67/171) dotnet/aspire A2 2025-09-19 @9ab41623: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (68/171) starting dotnet/aspire A2 2025-10-19 @fff89470
+  [FAIL] (68/171) dotnet/aspire A2 2025-10-19 @fff89470: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (69/171) starting dotnet/aspire A2 2025-11-19 @91481d9b
+  [FAIL] (69/171) dotnet/aspire A2 2025-11-19 @91481d9b: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (70/171) starting dotnet/aspire A2 2025-12-19 @4ae515ef
+  [FAIL] (70/171) dotnet/aspire A2 2025-12-19 @4ae515ef: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (71/171) starting dotnet/aspire A2 2026-01-19 @aa8389c5
+  [FAIL] (71/171) dotnet/aspire A2 2026-01-19 @aa8389c5: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (72/171) starting dotnet/aspire A2 2026-02-19 @dcddebab
+  [FAIL] (72/171) dotnet/aspire A2 2026-02-19 @dcddebab: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (73/171) starting dotnet/aspire A2 2026-03-19 @2a24bf95
+  [FAIL] (73/171) dotnet/aspire A2 2026-03-19 @2a24bf95: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (74/171) starting dotnet/aspire A2 2026-04-19 @80eca9ec
+  [FAIL] (74/171) dotnet/aspire A2 2026-04-19 @80eca9ec: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (75/171) starting dotnet/aspire A2 2026-05-19 @afbba708
+  [FAIL] (75/171) dotnet/aspire A2 2026-05-19 @afbba708: DESIGNITE_EXECUTABLE not set - install Designite and set the env var to its executable path before running without --dry-run.
+  [row] (76/171) starting mlflow/mlflow A1 2022-01-01 @c0e0571d
+    [dpy] 81 chunk(s) planned, 127172 total LOC
+    [dpy] chunk 1/81 (893 LOC) done in 3.1s - ~4.1min left in this row
+    [dpy] chunk 2/81 (484 LOC) done in 3.2s - ~4.2min left in this row
+    [dpy] chunk 3/81 (6205 LOC) done in 3.7s - ~4.4min left in this row
+    [dpy] chunk 4/81 (152 LOC) done in 3.5s - ~4.4min left in this row
+    [dpy] chunk 5/81 (795 LOC) done in 3.2s - ~4.3min left in this row
+    [dpy] chunk 6/81 (732 LOC) done in 2.9s - ~4.1min left in this row
+    [dpy] chunk 7/81 (1277 LOC) done in 3.0s - ~4.0min left in this row
+    [dpy] chunk 8/81 (725 LOC) done in 3.4s - ~4.0min left in this row
+    [dpy] chunk 9/81 (436 LOC) done in 5.2s - ~4.2min left in this row
+    [dpy] chunk 10/81 (1912 LOC) done in 2.9s - ~4.1min left in this row
+    [dpy] chunk 11/81 (687 LOC) done in 3.2s - ~4.0min left in this row
+    [dpy] chunk 12/81 (2236 LOC) done in 3.1s - ~3.9min left in this row
+    [dpy] chunk 13/81 (6885 LOC) done in 3.6s - ~3.8min left in this row
+    [dpy] chunk 14/81 (2290 LOC) done in 3.6s - ~3.8min left in this row
+    [dpy] chunk 15/81 (1018 LOC) done in 4.2s - ~3.8min left in this row
+    [dpy] chunk 16/81 (1385 LOC) done in 3.2s - ~3.7min left in this row
+    [dpy] chunk 17/81 (129 LOC) done in 2.9s - ~3.6min left in this row
+    [dpy] chunk 18/81 (2428 LOC) done in 3.1s - ~3.6min left in this row
+    [dpy] chunk 19/81 (1252 LOC) done in 3.2s - ~3.5min left in this row
+    [dpy] chunk 20/81 (2611 LOC) done in 3.1s - ~3.4min left in this row
+    [dpy] chunk 21/81 (3006 LOC) done in 3.3s - ~3.4min left in this row
+    [dpy] chunk 22/81 (201 LOC) done in 3.1s - ~3.3min left in this row
+    [dpy] chunk 23/81 (837 LOC) done in 3.1s - ~3.2min left in this row
+    [dpy] chunk 24/81 (18 LOC) done in 3.6s - ~3.2min left in this row
+    [dpy] chunk 25/81 (1652 LOC) done in 3.1s - ~3.1min left in this row
+    [dpy] chunk 26/81 (3293 LOC) done in 3.0s - ~3.1min left in this row
+    [dpy] chunk 27/81 (9 LOC) done in 3.0s - ~3.0min left in this row
+    [dpy] chunk 28/81 (1071 LOC) done in 3.5s - ~2.9min left in this row
+    [dpy] chunk 29/81 (6453 LOC) done in 3.5s - ~2.9min left in this row
+    [dpy] chunk 30/81 (711 LOC) done in 3.5s - ~2.8min left in this row
+    [dpy] chunk 31/81 (2453 LOC) done in 4.3s - ~2.8min left in this row
+    [dpy] chunk 32/81 (350 LOC) done in 2.9s - ~2.7min left in this row
+    [dpy] chunk 33/81 (5745 LOC) done in 4.3s - ~2.7min left in this row
+    [dpy] chunk 34/81 (748 LOC) done in 3.5s - ~2.6min left in this row
+    [dpy] chunk 35/81 (6714 LOC) done in 4.2s - ~2.6min left in this row
+    [dpy] chunk 36/81 (43 LOC) done in 4.3s - ~2.6min left in this row
+    [dpy] chunk 37/81 (3687 LOC) done in 4.7s - ~2.5min left in this row
+    [dpy] chunk 38/81 (1236 LOC) done in 4.8s - ~2.5min left in this row
+    [dpy] chunk 39/81 (420 LOC) done in 4.5s - ~2.5min left in this row
+    [dpy] chunk 40/81 (56 LOC) done in 4.6s - ~2.4min left in this row
+    [dpy] chunk 41/81 (27 LOC) done in 4.5s - ~2.4min left in this row
+    [dpy] chunk 42/81 (225 LOC) done in 4.8s - ~2.3min left in this row
+    [dpy] chunk 43/81 (303 LOC) done in 4.3s - ~2.3min left in this row
+    [dpy] chunk 44/81 (830 LOC) done in 4.6s - ~2.2min left in this row
+    [dpy] chunk 45/81 (191 LOC) done in 4.6s - ~2.2min left in this row
+    [dpy] chunk 46/81 (824 LOC) done in 4.7s - ~2.2min left in this row
+    [dpy] chunk 47/81 (546 LOC) done in 5.1s - ~2.1min left in this row
+    [dpy] chunk 48/81 (331 LOC) done in 5.0s - ~2.1min left in this row
+    [dpy] chunk 49/81 (38 LOC) done in 4.0s - ~2.0min left in this row
+    [dpy] chunk 50/81 (1219 LOC) done in 4.2s - ~1.9min left in this row
+    [dpy] chunk 51/81 (1091 LOC) done in 3.6s - ~1.9min left in this row
+    [dpy] chunk 52/81 (191 LOC) done in 3.7s - ~1.8min left in this row
+    [dpy] chunk 53/81 (1527 LOC) done in 6.2s - ~1.8min left in this row
+    [dpy] chunk 54/81 (639 LOC) done in 3.5s - ~1.7min left in this row
+    [dpy] chunk 55/81 (652 LOC) done in 3.7s - ~1.6min left in this row
+    [dpy] chunk 56/81 (2617 LOC) done in 4.9s - ~1.6min left in this row
+    [dpy] chunk 57/81 (410 LOC) done in 3.6s - ~1.5min left in this row
+    [dpy] chunk 58/81 (548 LOC) done in 4.2s - ~1.5min left in this row
+    [dpy] chunk 59/81 (2807 LOC) done in 5.7s - ~1.4min left in this row
+    [dpy] chunk 60/81 (109 LOC) done in 4.0s - ~1.3min left in this row
+    [dpy] chunk 61/81 (1650 LOC) done in 3.8s - ~1.3min left in this row
+    [dpy] chunk 62/81 (675 LOC) done in 5.5s - ~1.2min left in this row
+    [dpy] chunk 63/81 (3122 LOC) done in 4.1s - ~1.2min left in this row
+    [dpy] chunk 64/81 (741 LOC) done in 2.8s - ~1.1min left in this row
+    [dpy] chunk 65/81 (583 LOC) done in 3.7s - ~1.0min left in this row
+    [dpy] chunk 66/81 (2552 LOC) done in 3.9s - ~1.0min left in this row
+    [dpy] chunk 67/81 (453 LOC) done in 2.6s - ~0.9min left in this row
+    [dpy] chunk 68/81 (2291 LOC) done in 3.9s - ~0.8min left in this row
+    [dpy] chunk 69/81 (849 LOC) done in 2.9s - ~0.8min left in this row
+    [dpy] chunk 70/81 (4928 LOC) done in 4.3s - ~0.7min left in this row
+    [dpy] chunk 71/81 (80 LOC) done in 3.4s - ~0.6min left in this row
+    [dpy] chunk 72/81 (1654 LOC) done in 3.6s - ~0.6min left in this row
+    [dpy] chunk 73/81 (3963 LOC) done in 4.0s - ~0.5min left in this row
+    [dpy] chunk 74/81 (48 LOC) done in 3.3s - ~0.4min left in this row
+    [dpy] chunk 75/81 (1868 LOC) done in 3.9s - ~0.4min left in this row
+    [dpy] chunk 76/81 (6154 LOC) done in 6.5s - ~0.3min left in this row
+    [dpy] chunk 77/81 (491 LOC) done in 3.7s - ~0.3min left in this row
+    [dpy] chunk 78/81 (3987 LOC) done in 4.9s - ~0.2min left in this row
+    [dpy] chunk 79/81 (1128 LOC) done in 3.9s - ~0.1min left in this row

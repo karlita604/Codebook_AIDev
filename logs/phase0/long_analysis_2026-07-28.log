@@ -1,0 +1,6 @@
+manifest: C:\Users\kvrlv\Projects\Codebook_AIDev\results\snapshots\07-21-repo-snapshot-manifest-480.csv (480 rows)
+437 eligible row(s) (have a resolved commit)
+continuing existing run: C:\Users\kvrlv\Projects\Codebook_AIDev\results\analysis\07-27-smell-metrics-437.csv
+resuming: 48 row(s) already done in C:\Users\kvrlv\Projects\Codebook_AIDev\results\analysis\07-27-smell-metrics-437.csv, skipping
+    [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_5pb9hkan\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose1']
+  [ok] (49/437) airbytehq/airbyte A1 2026-01-01 @f06ebb88

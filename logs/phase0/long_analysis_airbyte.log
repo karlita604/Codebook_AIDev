@@ -1,0 +1,60 @@
+manifest: C:\Users\kvrlv\Projects\Codebook_AIDev\results\snapshots\07-21-repo-snapshot-manifest-480.csv (480 rows)
+192 eligible row(s) (have a resolved commit)
+resuming: 50 row(s) already done in C:\Users\kvrlv\Projects\Codebook_AIDev\results\analysis\07-28-smell-metrics-airbyteDock-192.csv, skipping
+  [row] (51/192) starting airbytehq/airbyte A1 2026-03-01 @c27d1755
+    [dpy] WARNING: 1 chunk(s) still over 8000 LOC and can't be split further (no subdirectories) - DPy will skip CSV export for these: ['C:\\Users\\kvrlv\\AppData\\Local\\Temp\\dpy_chunks_z3xtzyln\\loose__root__airbyte-integrations__connectors__source-github__source_github__loose1']
+    [dpy] 390 chunk(s) planned, 342271 total LOC
+    [dpy] chunk 1/390 (389 LOC) done in 3.1s - ~20.2min left in this row
+    [dpy] chunk 2/390 (867 LOC) done in 3.9s - ~22.8min left in this row
+    [dpy] chunk 3/390 (811 LOC) done in 3.3s - ~22.3min left in this row
+    [dpy] chunk 4/390 (1045 LOC) done in 3.5s - ~22.3min left in this row
+    [dpy] chunk 5/390 (698 LOC) done in 3.4s - ~22.2min left in this row
+    [dpy] chunk 6/390 (6691 LOC) done in 4.3s - ~23.0min left in this row
+    [dpy] chunk 7/390 (6599 LOC) done in 4.3s - ~23.6min left in this row
+    [dpy] chunk 8/390 (3234 LOC) done in 3.9s - ~23.7min left in this row
+    [dpy] chunk 9/390 (692 LOC) done in 3.2s - ~23.2min left in this row
+    [dpy] chunk 10/390 (205 LOC) done in 3.5s - ~23.1min left in this row
+    [dpy] chunk 11/390 (227 LOC) done in 4.4s - ~23.4min left in this row
+    [dpy] chunk 12/390 (59 LOC) done in 3.7s - ~23.4min left in this row
+    [dpy] chunk 13/390 (473 LOC) done in 5.0s - ~23.9min left in this row
+    [dpy] chunk 14/390 (2528 LOC) done in 4.8s - ~24.3min left in this row
+    [dpy] chunk 15/390 (1198 LOC) done in 5.7s - ~25.0min left in this row
+    [dpy] chunk 16/390 (193 LOC) done in 4.5s - ~25.1min left in this row
+    [dpy] chunk 17/390 (1959 LOC) done in 4.7s - ~25.3min left in this row
+    [dpy] chunk 18/390 (237 LOC) done in 4.7s - ~25.5min left in this row
+    [dpy] chunk 19/390 (456 LOC) done in 4.5s - ~25.5min left in this row
+    [dpy] chunk 20/390 (914 LOC) done in 4.5s - ~25.6min left in this row
+    [dpy] chunk 21/390 (179 LOC) done in 4.2s - ~25.5min left in this row
+    [dpy] chunk 22/390 (156 LOC) done in 4.7s - ~25.6min left in this row
+    [dpy] chunk 23/390 (1108 LOC) done in 5.3s - ~25.9min left in this row
+    [dpy] chunk 24/390 (543 LOC) done in 4.3s - ~25.8min left in this row
+    [dpy] chunk 25/390 (27 LOC) done in 5.0s - ~25.9min left in this row
+    [dpy] chunk 26/390 (3 LOC) done in 3.9s - ~25.8min left in this row
+    [dpy] chunk 27/390 (1004 LOC) done in 3.7s - ~25.6min left in this row
+    [dpy] chunk 28/390 (1482 LOC) done in 3.3s - ~25.3min left in this row
+    [dpy] chunk 29/390 (190 LOC) done in 4.9s - ~25.4min left in this row
+    [dpy] chunk 30/390 (1955 LOC) done in 5.3s - ~25.5min left in this row
+    [dpy] chunk 31/390 (1488 LOC) done in 4.2s - ~25.5min left in this row
+    [dpy] chunk 32/390 (276 LOC) done in 3.4s - ~25.2min left in this row
+    [dpy] chunk 33/390 (6 LOC) done in 4.6s - ~25.2min left in this row
+    [dpy] chunk 34/390 (3817 LOC) done in 8.0s - ~25.8min left in this row
+    [dpy] chunk 35/390 (2018 LOC) done in 4.4s - ~25.7min left in this row
+    [dpy] chunk 36/390 (6507 LOC) done in 6.1s - ~26.0min left in this row
+    [dpy] chunk 37/390 (1137 LOC) done in 4.7s - ~25.9min left in this row
+    [dpy] chunk 38/390 (70 LOC) done in 3.2s - ~25.7min left in this row
+    [dpy] chunk 39/390 (4941 LOC) done in 5.6s - ~25.8min left in this row
+    [dpy] chunk 40/390 (7948 LOC) done in 4.6s - ~25.7min left in this row
+    [dpy] chunk 41/390 (618 LOC) done in 3.6s - ~25.5min left in this row
+    [dpy] chunk 42/390 (470 LOC) done in 2.9s - ~25.3min left in this row
+    [dpy] chunk 43/390 (698 LOC) done in 3.4s - ~25.1min left in this row
+    [dpy] chunk 44/390 (2062 LOC) done in 3.1s - ~24.8min left in this row
+    [dpy] chunk 45/390 (634 LOC) done in 3.9s - ~24.7min left in this row
+    [dpy] chunk 46/390 (462 LOC) done in 3.9s - ~24.6min left in this row
+    [dpy] chunk 47/390 (731 LOC) done in 3.7s - ~24.4min left in this row
+    [dpy] chunk 48/390 (2271 LOC) done in 3.9s - ~24.3min left in this row
+    [dpy] chunk 49/390 (638 LOC) done in 4.4s - ~24.3min left in this row
+    [dpy] chunk 50/390 (957 LOC) done in 4.4s - ~24.2min left in this row
+    [dpy] chunk 51/390 (635 LOC) done in 3.1s - ~24.0min left in this row
+    [dpy] chunk 52/390 (962 LOC) done in 3.6s - ~23.9min left in this row
+    [dpy] chunk 53/390 (262 LOC) done in 3.1s - ~23.7min left in this row
+    [dpy] chunk 54/390 (320 LOC) done in 6.4s - ~23.9min left in this row

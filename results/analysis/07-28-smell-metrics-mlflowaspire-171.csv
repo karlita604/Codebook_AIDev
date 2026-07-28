@@ -1,0 +1,2 @@
+repo_id,full_name,language,track,target_date,commit_sha,total_loc,n_chunks,n_classes,n_methods,class_loc_p50,class_loc_p90,method_loc_p50,method_loc_p90,cyclomatic_complexity_p50,cyclomatic_complexity_p90,design_smell_count,design_smell_density_per_kloc,implementation_smell_count,implementation_smell_density_per_kloc,arch_smell_count_chunk_scoped,status
+136202695.0,mlflow/mlflow,Python,A1,2022-01-01T00:00:00+00:00,c0e0571d280ff19c7de8893e5953adb79a376705,70274,81,318,5160,23.0,113.20000000000005,9.0,27.0,1.0,3.0,1339,19.0539886729089,6465,91.99704015709935,25,ok

@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-07-28T14:08:41.048184+00:00",
+  "updated_at": "2026-07-28T14:20:09.309976+00:00",
+  "total": 265,
+  "done": 265,
+  "ok": 212,
+  "failed": 53,
+  "elapsed_seconds": 688.3,
+  "eta_seconds": 0.0,
+  "current": "dotnet/aspire B2 after"
+}

@@ -219,34 +219,82 @@ run needs this regardless of background/foreground):
   files. Each row's raw output is now deleted once pooled into the result
   (`--keep-tool-output` to disable, for debugging a specific row).
 
-### 🔴 RUN IN PROGRESS — started 2026-07-27
+### 🔴 RUN IN PROGRESS — started 2026-07-27, now running as 3 parallel workers
 
-Launched as a detached background process (survives independent of any
-particular chat session) — **not** tied to this conversation:
+**History (chronological):**
+1. **Silent death + a date-rollover resume bug (2026-07-28 AM).** Original
+   process (PID 32412) died after 48/437 rows with no exception logged
+   (most likely killed externally — sleep/reboot/logout). Restarting it
+   exposed a real bug: `main()` stamped the output filename with
+   `date.today()`, so restarting on a new calendar day couldn't find
+   yesterday's file and was about to silently redo all 48 rows. Caught
+   before any rows were reprocessed; fixed by having `main()` find its
+   output file by scope (tag + total/repo) regardless of date prefix.
+2. **Verbosity added.** A row is 100-390+ DPy chunks at ~2-3s each — could
+   run 15-20+ min with zero output. Added `--verbose`: per-chunk
+   index/total/LOC/timing/ETA, a `[row] starting ...` marker, and DPy
+   subprocess failures now surface their real stdout/stderr instead of a
+   generic "exited 1".
+3. **Parallelized across 3 workers, then a Smart App Control incident.**
+   32 logical cores, ~9% utilization — an obvious candidate to speed up.
+   Made resume/dedup **global** (`_load_done_keys` now scans *every*
+   `results/analysis/*-smell-metrics-*.csv`, not just the current process's
+   own file) and gave each `--repo`-scoped process its own output filename,
+   so concurrent workers can never race on the same file or redo each
+   other's work. Verified with a real concurrent test (two scoped dry-runs
+   launched at the same instant) before trusting it. Partitioned the 437
+   rows 3 ways with zero overlap (verified against the manifest):
+   `--repo "airbyte|Dock"` (192), `--repo crewAI` (74),
+   `--repo "mlflow|aspire"` (171). **First launch failed almost
+   immediately** — every row errored with `[WinError 4551] An Application
+   Control policy has blocked this file`. Root cause (confirmed via
+   `Microsoft-Windows-CodeIntegrity/Operational` event log, IDs
+   3118/3077/3033): **Windows Smart App Control**, not a code bug — 3
+   concurrent launches of an unsigned executable (`DPy.exe`) in rapid
+   succession read as malicious to its reputation heuristics, and it
+   escalated from occasionally flagging the file (2 sporadic failures
+   during the sequential run) to blocking it outright, confirmed by a
+   direct manual invocation returning `Permission denied` completely
+   outside my script. Reducing back to a single process didn't help — the
+   block was on the file, not on concurrency. Stopped everything rather
+   than keep guessing; user turned Smart App Control off directly (an
+   OS-level setting I did not and would not touch myself — per Microsoft,
+   once it's on it's only reversible by resetting/reinstalling Windows).
+4. **Resumed, with error-cleanup added.** `DPy.exe version` confirmed
+   working again post-fix. Added `_clear_stale_errors()`: when a row
+   succeeds, it now removes any matching stale error record from *every*
+   errors CSV for that tag (not just the current process's own), so a
+   resolved failure (like the ~194 `WinError 4551` rows from the SAC
+   incident) doesn't linger looking unresolved once retried successfully.
+   Verified in isolation before trusting it on real data, then confirmed on
+   the real retry: the crewAI errors file dropped from 60 → 51 entries as
+   retried rows succeeded, while the 2 permanent crewAI filename-gap errors
+   (§8, won't ever succeed) correctly stayed put.
 
-```
-DPY_EXECUTABLE=C:\Users\kvrlv\Downloads\DPy\DPy.exe
-python long_analysis.py   # full manifest, all 437 eligible rows (both languages -
-                           # C# rows fail fast via run_designite()'s NotImplementedError,
-                           # logged to the errors CSV, cost is negligible)
-```
+**Currently running**, 3 parallel processes, `--verbose` on, `DPY_EXECUTABLE`
+set to `DPy.exe`:
 
-- **PID:** written to `logs/phase0/long_analysis.pid` (was 32412 at launch —
-  check the file, a restart after a crash gets a new PID).
-- **Live log:** `logs/phase0/long_analysis_2026-07-27.log` (stdout, one
-  `[ok]`/`[FAIL] (i/total) ...` line per row) and
-  `long_analysis_2026-07-27.err.log` (stderr, should stay empty).
-- **Progress:** `results/analysis/07-27-smell-metrics-437-progress.json` —
-  `done`/`ok`/`failed`/`elapsed_seconds`/`eta_seconds`, updated after every row.
-- **Output so far:** `results/analysis/07-27-smell-metrics-437.csv` (pooled
-  metrics, grows one row at a time) and `...-errors.csv`.
-- **If it crashes:** check the log/err-log for what happened, then just rerun
-  `python long_analysis.py` (same command, no extra flags needed) — it
-  resumes from the existing output CSV automatically.
-- **Cost estimate:** ~29hrs for `mlflow` alone was the measured baseline: real
-  total across all 3 Python repos (crewAI, airbyte, mlflow) is multi-day.
-  This update will be replaced with actual results once the run finishes or
-  is checked in on.
+- `--repo "airbyte|Dock"` → `results/analysis/07-28-smell-metrics-airbyteDock-192*`
+- `--repo crewAI` → `results/analysis/07-28-smell-metrics-crewAI-74*`
+- `--repo "mlflow|aspire"` → `results/analysis/07-28-smell-metrics-mlflowaspire-171*`
+
+Plus the original unscoped file (`07-27-smell-metrics-437*`, 52/437 done)
+which is no longer being added to but still counts toward the global
+done-set.
+
+- **PIDs:** `logs/phase0/long_analysis.pid` (comma-separated, one per
+  worker).
+- **Live logs:** `logs/phase0/long_analysis_{airbyte,crewai,mlflow}.log`
+  (+ matching `.err.log`, should stay empty) — one per worker, each showing
+  its own per-chunk verbose progress.
+- **Progress:** each output's own `*-progress.json`.
+- **If a worker crashes:** rerun that exact same command (e.g.
+  `python long_analysis.py --verbose --repo crewAI`) — resumes automatically,
+  same as the single-process case.
+- **Known non-blocking errors:** ~75 `dotnet/aspire` rows fail fast with
+  `DESIGNITE_EXECUTABLE not set` (expected — Designite work is deliberately
+  deferred to the `designite-sln-support` branch) and 2 `crewAI` rows will
+  never succeed (permanent Windows filename incompatibility, §8).
 
 ## Visualization
 

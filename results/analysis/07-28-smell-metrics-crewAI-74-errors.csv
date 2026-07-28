@@ -1,0 +1,45 @@
+repo_id,full_name,language,track,target_date,commit_sha,error
+710601088.0,crewAIInc/crewAI,Python,A1,2025-03-01T00:00:00+00:00,86825e176900cbc68e00060adc525f0b8d5920e5,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-04-01T00:00:00+00:00,3c2435030606da5c1c199bfa19d158ab669ffb2d,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-05-01T00:00:00+00:00,378dcc79bb341614290f9df4d4a2aa3632f7995a,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-06-01T00:00:00+00:00,1da2fd2a5c773456eb3fe346d5951b10e2aa6791,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-07-01T00:00:00+00:00,af9c01f5d3385ff3dfec5463c2a4bca9bec20f44,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-08-01T00:00:00+00:00,88ed91561ff0602309a5f875f0ee59069491fb5d,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-09-01T00:00:00+00:00,1b1a8fdbf425b5a7bc820d91629c8cca786b3f39,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-10-01T00:00:00+00:00,b77074e48e09caefa982a0ff39d5ef13411dfe8e,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-11-01T00:00:00+00:00,2e9eb8c32dc7c0616bda60ce4185b0220afbdd60,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2025-12-01T00:00:00+00:00,2355ec0733101f4ce4228a26c5820d7ebe2cd3a9,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2026-01-01T00:00:00+00:00,f3c17a249b5a2da3a917784d9762421591c1cde5,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2026-02-01T00:00:00+00:00,63a508f601e5934f7993b0083e59fe90da56bb4f,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A1,2026-03-01T00:00:00+00:00,c00a348837aab2b96c27080e2c9d682b66c88d90,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2023-12-27T20:52:41+00:00,6adfa6fe0700e5ff81b3efac2f31fab3cda7f51c,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-01-27T20:52:41+00:00,9e1be4ecd26d018a9dd4b0ae1399d6397257ffa0,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-02-27T20:52:41+00:00,cd9f7931c96b32d4f79a7ff9bb8395467927b4d7,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-03-27T20:52:41+00:00,128ce919514bcac76062f36fe14b49eb283eb7dc,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-04-27T20:52:41+00:00,3d5257592b440fca8c46b77471e1c34c901ee57f,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-05-27T20:52:41+00:00,bf40956491e9c9026bf0f7e1211823bec9da5625,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-06-27T20:52:41+00:00,851dd0f84fe54755f8713908ea180c995b3dbade,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-07-27T20:52:41+00:00,99d023c5f33636be1ff9eb473aa761eb8a4a36c9,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-08-27T20:52:41+00:00,172758020cfdd4625585213113a0a513760cc0bf,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-09-27T20:52:41+00:00,bc31019b673704a355a3292c6127120c0a5ce95e,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-10-04T20:52:41+00:00,0dfe3bcb0aa605bee4192a3d3f9ea5f289cf40c4,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-10-11T20:52:41+00:00,6534a909d67e5d8c9da169f244db514d20013b97,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-10-18T20:52:41+00:00,84f48c465d602a2b121a82d464fe701f84160e9f,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-10-25T20:52:41+00:00,f29f4abdd7ea4d3b4afeb8e1b403360ad7309ace,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-11-01T20:52:41+00:00,3878daffd68d14ee0379d11c19bef63c4dc02edc,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-11-08T20:52:41+00:00,9f2acfe91f3dafab2aef1c465810b7ef8780eee7,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-11-15T20:52:41+00:00,3dc02310b62c473c0764f10f08aef678291e9aaf,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-11-22T20:52:41+00:00,93c0467bba29ac301923afe2f028e4831971563b,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-11-29T20:52:41+00:00,588ad3c4a437096d42b390679064da21af4c8b85,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-12-06T20:52:41+00:00,6930b6848460dc7d9b1ca7d5629286fc559123cd,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-12-13T20:52:41+00:00,6d7c1b0743a6df5cf8dd0709b0d12de8441339b8,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-12-20T20:52:41+00:00,9ee6824ccd85e6c6231f35db07bb6fe6f90959c7,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2024-12-27T20:52:41+00:00,4cf8913d31e061e7bdfea7831773a3e63a04ef44,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-01-03T20:52:41+00:00,30bd79390a380066ad977b133ed022285c3b7ee4,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-01-10T20:52:41+00:00,be8e33daf61052b37a0c047ca5407a69a84767a1,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-01-17T20:52:41+00:00,30d027158a04e633b42b21f246478a9af61a9ce1,crewAIInc/crewAI@30d02715 not materialized at C:\Users\kvrlv\Projects\Codebook_AIDev\data\snapshots\crewAIInc__crewAI\30d027158a04e633b42b21f246478a9af61a9ce1 - run materialize_snapshots.py (Phase 1e) first (or this commit is a known gap - see Longitudinal.md S8)
+710601088.0,crewAIInc/crewAI,Python,A2,2025-01-24T20:52:41+00:00,8c76bad50f5bb72b061500910dfb14c4defe7185,crewAIInc/crewAI@8c76bad5 not materialized at C:\Users\kvrlv\Projects\Codebook_AIDev\data\snapshots\crewAIInc__crewAI\8c76bad50f5bb72b061500910dfb14c4defe7185 - run materialize_snapshots.py (Phase 1e) first (or this commit is a known gap - see Longitudinal.md S8)
+710601088.0,crewAIInc/crewAI,Python,A2,2025-01-31T20:52:41+00:00,23b9e1032308d81aa16072932ea7884d44bc4da1,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-02-07T20:52:41+00:00,a7f5d574dc6e521dec51453d9d842cf1cee908c9,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-02-14T20:52:41+00:00,1b488b6da77dc0dc1d96d45e9ef6213b3f8eceeb,[WinError 4551] An Application Control policy has blocked this file
+710601088.0,crewAIInc/crewAI,Python,A2,2025-02-21T20:52:41+00:00,b50772a38b8f352888dfdfdac7eba58999bdfcf5,[WinError 4551] An Application Control policy has blocked this file

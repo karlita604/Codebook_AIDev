@@ -1,0 +1,11 @@
+{
+  "started_at": "2026-07-28T14:28:24.228936+00:00",
+  "updated_at": "2026-07-28T14:37:22.146139+00:00",
+  "total": 74,
+  "done": 66,
+  "ok": 66,
+  "failed": 0,
+  "elapsed_seconds": 537.9,
+  "eta_seconds": 65.2,
+  "current": "crewAIInc/crewAI A1 2025-02-01 @23b9e103"
+}
