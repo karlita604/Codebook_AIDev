@@ -1,11 +1,11 @@
 {
-  "started_at": "2026-07-28T14:13:33.299667+00:00",
-  "updated_at": "2026-07-28T14:15:34.438516+00:00",
+  "started_at": "2026-07-28T14:28:24.229017+00:00",
+  "updated_at": "2026-07-28T14:50:46.796748+00:00",
   "total": 192,
-  "done": 71,
-  "ok": 50,
-  "failed": 21,
-  "elapsed_seconds": 121.1,
-  "eta_seconds": 206.4,
-  "current": "airbytehq/airbyte A2 2024-12-31 @fefbb72e"
+  "done": 51,
+  "ok": 51,
+  "failed": 0,
+  "elapsed_seconds": 1342.6,
+  "eta_seconds": 3711.8,
+  "current": "airbytehq/airbyte A1 2026-03-01 @c27d1755"
 }

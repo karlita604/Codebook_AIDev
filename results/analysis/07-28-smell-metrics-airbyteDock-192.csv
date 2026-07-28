@@ -1,0 +1,2 @@
+repo_id,full_name,language,track,target_date,commit_sha,total_loc,n_chunks,n_classes,n_methods,class_loc_p50,class_loc_p90,method_loc_p50,method_loc_p90,cyclomatic_complexity_p50,cyclomatic_complexity_p90,design_smell_count,design_smell_density_per_kloc,implementation_smell_count,implementation_smell_density_per_kloc,arch_smell_count_chunk_scoped,status
+283046497.0,airbytehq/airbyte,Python,A1,2026-03-01T00:00:00+00:00,c27d1755433b7c04254829df0c6d154a6d8c4145,161069,390,2555,13567,19.0,107.0,7.0,25.0,1.0,3.0,2253,13.987794050996778,18071,112.19415281649479,111,ok
