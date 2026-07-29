@@ -307,6 +307,72 @@ real work). `airbyte|Dock` at 51/192. `mlflow|aspire` at 131/171 (56 ok, 75
 failed — exactly the expected `dotnet/aspire` Designite-not-configured rows
 draining as designed, per the known non-blocking errors above).
 
+**Update 2026-07-29 — DPy run finished.** All 3 workers completed
+overnight: 264 unique ok rows across crewAI (72/74, the 2 permanent NTFS
+gaps from §8 are the only misses), airbyte (96/96), and mlflow (96/96, the
+last ~2 rows closed out without any manual intervention — resumability held
+under an unattended multi-day run same as designed). Designite/Dock rows
+(96 of them) still fail fast with `DESIGNITE_EXECUTABLE not set` in this
+checkout — that's expected, Designite work happened on a separate branch,
+see immediately below.
+
+**Update 2026-07-29 — Designite unblocked on `designite-sln-support`,
+Dock has real data.** In parallel, on the `designite-sln-support` worktree
+(`C:\Users\kvrlv\Projects\Codebook_AIDev-designite`), `run_designite()` /
+`parse_tool_output()` went from stub to working end-to-end against real
+`wieslawsoltes/Dock` commits. Full details, decisions, and the open-items
+list are in that branch's `DESIGNITE_TASK.md` — condensed version:
+- **.NET SDK 8.0.423 installed** (this machine had runtimes only before);
+  Phase 1e's C# pathspec extended from `*.cs`-only to also pull
+  `*.sln`/`*.slnx`/`*.csproj`/`*.props`/`*.targets`/`packages.config`, so
+  Designite's Roslyn `MSBuildWorkspace` has an actual project graph to open.
+- **Designite's Trial cap confirmed at <50,000 LOC/invocation** (stated
+  directly in the tool's own output, unlike DPy's cap which had to be
+  bisected empirically) — same chunking approach as DPy, bin-packing whole
+  `.sln` projects (not splitting a project's files) into sub-cap groups.
+- **Full batch run across Dock's 96 manifest rows: 87 ok, 9 failed** — the 9
+  failures are all Dock commits dated 2025-12-25 or later, when
+  `Dock.sln` → `Dock.slnx` (the installed Designite build, 5.3.0.0, doesn't
+  support the newer `.slnx` format at all). Output:
+  `results/analysis/07-28-smell-metrics-96.csv` (that branch's own results
+  dir, not this checkout's).
+- **`dotnet/aspire` dropped from the C# arm entirely**, not just Track B —
+  two different, unrelated blockers depending on era (early commits: Arcade
+  bootstrap needs its own restore flow, every project reports 0 source
+  files; recent commits: `.slnx` + a preview SDK not installed) and no clean
+  middle band was found. This pilot's C# side is now Dock-only across
+  *both* Track A and Track B, not just Track B as reported 2026-07-28.
+- **Two generalizable bugs found and fixed** in `archive_commit()` while
+  extending the pathspec: `git archive` hard-fails if any pathspec pattern
+  matches zero files in that commit (unlike `ls-tree`) — fixed by
+  pre-filtering to patterns that actually match something; and that filter
+  itself first checked basenames when git's own literal-pathspec matching is
+  full-relative-path, caught on aspire's `eng/common/sdl/packages.config`.
+- Designite's schema was pooled onto the **same canonical column names**
+  DPy already uses (`design_smell_density_per_kloc`, `cyclomatic_complexity_p90`,
+  etc.) — turns out no cross-language adapter step was needed after all
+  (this corrects the "Assumption 1" concern raised in `Results.md`'s
+  2026-07-28 planning section).
+- Known unresolved gaps on that branch: multi-targeted C# projects aren't
+  deduplicated (each target framework variant currently double-counts), and
+  `total_loc` undercounts Designite's own reported LOC by ~18-21% (same
+  category of imprecision as DPy's own LOC proxy, not investigated further).
+
+**Update 2026-07-29 — first real analysis run.** With DPy complete and
+Designite's Dock output in hand, ran the analysis pre-registered in
+`Longitudinal.md` §9 for the first time — segmented (interrupted-time-series)
+regression per repo per primary metric, smell-composition shift, and
+Track B process metrics (Mann-Whitney U + Cliff's δ), plus a first look at
+cross-language generalization and dosage. Full writeup, tables, and an
+interactive visualization dashboard: see the new "First real analysis —
+pilot results (2026-07-29)" section in `Results.md`. Headline: no consistent
+cross-repo direction — design-smell density shows a significant post-
+intervention slope change in all 4 repos (p<.05), but it's worse in 2 and
+better in 2, and that split doesn't track language (Dock lands with mlflow
+on the "improving" side). N=4 repos — descriptive of these repos, not yet a
+general claim. Consolidated data and every intermediate table are in
+`results/analysis/07-29-*.csv`.
+
 ## Phase 1b — Track B1/B2 PR sampling (built, run)
 
 `src/phase0/pr_sampling_pipeline.py`: the GitHub-API counterpart to Phase
@@ -400,21 +466,42 @@ https://claude.ai/code/artifact/e0731c42-8ff8-4b57-b797-21fdda5fd013
 
 ## Open items / blocked
 
-- **Phase 1b** — `GITHUB_TOKEN` obtained and the run is done (212/265 units
-  ok), but `dotnet/aspire` is fully excluded from Track B1/B2 (fine-grained
-  PAT blocked by Microsoft's org policy — see Phase 1b above). Needs a
-  methodology call: classic PAT, a different C# pilot repo, or accept
-  Dock-only for C# and disclose the imbalance.
-- **Phase 1d** — DPy is running for real now (Trial license's <10K-LOC cap
-  worked around via per-snapshot chunking, see above), 3 parallel workers
-  in progress across the pilot. Designite is still fully blocked: needs an
-  actual `.sln` and Phase 1e's C# snapshots only contain `*.cs` files
-  (needs a design decision — see Phase 1d above).
+**Updated 2026-07-29** — both structural-metric tracks (DPy for Python,
+Designite for Dock) are now complete and a first analysis has run; see
+`Results.md`'s "First real analysis" section and the dashboard linked there.
+What's still actually open:
+
+- **`dotnet/aspire` is now dropped from the pilot entirely**, not just
+  Track B — Designite work (`designite-sln-support` branch,
+  `DESIGNITE_TASK.md`) found two separate blockers across its history (early
+  Arcade-bootstrap commits, recent `.slnx`+preview-SDK commits) with no
+  clean middle band, so the C# arm is Dock-only on *both* Track A and Track
+  B now. This pilot is 3 Python + 1 C#, not 3+2 — needs a methodology call
+  before it's called final: accept Dock-only and disclose, or find/onboard
+  a second C# pilot repo that doesn't hit either of aspire's blockers.
+- **Dock's post-intervention structural data is thin** — Designite can't
+  read `.slnx` (Dock migrated 2025-12-25, 6 months after its own
+  intervention date), so only 6 of Dock's ~19 possible post-intervention A1
+  points have real data. A newer Designite build with `.slnx` support, or a
+  `.slnx`→`.sln` conversion step, would recover the rest.
+- **Designite's `designite-sln-support` branch hasn't been merged to
+  `main`** — its output currently lives in a separate worktree
+  (`Codebook_AIDev-designite`) and had to be read cross-checkout for the
+  2026-07-29 analysis. Worth merging so Dock's data lives alongside the
+  Python output in one place going forward.
+- **Track B's deeper PR stats** (diff size, review-activity detail beyond
+  comment count) still aren't built — flagged as a gap since 2026-07-21,
+  still true.
+- **No matched non-adopting comparison arm** — everything run so far is
+  ITS, not difference-in-differences (`Longitudinal.md` §9).
 - 2 crewAI commits (Phase 1e) will likely never materialize on Windows
   (NTFS-illegal filename in a test fixture) — accept the gap or find a
   Linux/WSL environment to fill it in.
 - Open modeling decisions logged in `Longitudinal.md`: A2's weekly/monthly
   windowing and B2's ±10-PR window are defaults, not confirmed; no minimum-
   snapshot-count rule yet for excluding a repo from the regression; whether
-  informal (pre-AIDev) agent adoption needs a separate robustness check.
+  informal (pre-AIDev) agent adoption needs a separate robustness check;
+  the 2026-07-29 analysis ran 12 unadjusted significance tests for RQ1
+  alone — needs a multiple-comparison correction before anything here is
+  paper-ready.
 

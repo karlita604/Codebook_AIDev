@@ -1,11 +1,11 @@
 {
   "started_at": "2026-07-28T14:28:24.229017+00:00",
-  "updated_at": "2026-07-28T19:09:50.617849+00:00",
+  "updated_at": "2026-07-28T23:31:59.129306+00:00",
   "total": 192,
-  "done": 70,
-  "ok": 70,
-  "failed": 0,
-  "elapsed_seconds": 16886.4,
-  "eta_seconds": 29430.6,
-  "current": "airbytehq/airbyte A2 2024-12-24 @671d4de8"
+  "done": 192,
+  "ok": 96,
+  "failed": 96,
+  "elapsed_seconds": 32614.9,
+  "eta_seconds": 0.0,
+  "current": "wieslawsoltes/Dock A2 2026-06-25 @30b8ec0a"
 }
