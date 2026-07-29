@@ -1,0 +1,18 @@
+2026-07-27 4:05:25 PM - Designite Console (Version 5.3.0.0)
+2026-07-27 4:05:25 PM - (c) 2026 Designite. All rights reserved.
+2026-07-27 4:05:25 PM - .NET Framework version: 4.8.1
+2026-07-27 4:05:25 PM - Installed .NET SDKs:
+8.0.423 [C:\Program Files\dotnet\sdk]
+
+Installed .NET Runtimes:
+Microsoft.AspNetCore.App 8.0.29 [C:\Program Files\dotnet\shared\Microsoft.AspNetCore.App]
+Microsoft.NETCore.App 6.0.32 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.NETCore.App 8.0.29 [C:\Program Files\dotnet\shared\Microsoft.NETCore.App]
+Microsoft.WindowsDesktop.App 6.0.32 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 8.0.22 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+Microsoft.WindowsDesktop.App 8.0.29 [C:\Program Files\dotnet\shared\Microsoft.WindowsDesktop.App]
+
+
+2026-07-27 4:05:25 PM - Parsing passed parameters ...
+2026-07-27 4:05:25 PM - Exception occurred - Invalid arguments; check the parameter list and try again.

@@ -33,6 +33,7 @@ run's time budget - rerun with the same --repo and it picks up where it left off
 """
 
 import argparse
+import fnmatch
 import shutil
 import subprocess
 import time
@@ -45,7 +46,32 @@ CLONE_CACHE_DIR = ROOT / "data" / "repo_cache"
 SNAPSHOT_DIR = ROOT / "data" / "snapshots"
 MANIFEST_DIR = ROOT / "results" / "snapshots"
 
-LANGUAGE_PATHSPEC = {"Python": "*.py", "C#": "*.cs"}
+LANGUAGE_PATHSPEC = {
+    "Python": ["*.py"],
+    # Designite (Roslyn MSBuildWorkspace) needs an actual .sln/.csproj graph,
+    # not just source - see DESIGNITE_TASK.md. Historical solutions may also
+    # reference .props/.targets imports or a legacy packages.config; pull
+    # those too since MSBuildWorkspace may need them to resolve projects.
+    # .slnx (newer XML solution format) is also needed - e.g. Dock migrated
+    # Dock.sln -> Dock.slnx on 2025-12-25 (b8fb130d), so post-migration
+    # commits have no .sln at all.
+    "C#": [
+        "*.cs", "*.sln", "*.slnx", "*.csproj", "*.props", "*.targets",
+        "packages.config",
+    ],
+}
+
+# Repos temporarily out of scope for materialization/analysis, keyed by
+# full_name. Not a manifest edit - the manifest reflects real repo selection
+# history and shouldn't be silently changed; this is a pipeline-level scope
+# decision. dotnet/aspire (2026-07-28): MSBuildWorkspace can't evaluate its
+# projects without Arcade's own restore bootstrap (pinned prerelease SDKs,
+# private feeds) in its early history, and needs an uninstalled preview SDK
+# plus .slnx support this Designite build lacks in its recent history - see
+# Writing/Longitudinal.md "Open decisions". Revisit once that's resolved;
+# until then the C# arm is Dock only. Meant to be reusable for any future
+# repo found to need similar exclusion, not aspire-specific machinery.
+EXCLUDED_REPOS = {"dotnet/aspire"}
 GIT_HTTP_OVERRIDE = ["-c", "http.version=HTTP/1.1"]
 ARCHIVE_TIMEOUT_SECONDS = 120
 BACKFILL_TIMEOUT_SECONDS = 570  # leave headroom under a 600s call budget
@@ -64,7 +90,7 @@ def latest_manifest():
 
 def unique_commits():
     df = pd.read_csv(latest_manifest())
-    resolved = df[df["commit_sha"].notna()]
+    resolved = df[df["commit_sha"].notna() & ~df["full_name"].isin(EXCLUDED_REPOS)]
     return (
         resolved[["repo_id", "full_name", "language", "commit_sha"]]
         .drop_duplicates()
@@ -78,7 +104,7 @@ def backfill_repo(full_name, pathspec):
         ["git", "sparse-checkout", "init", "--no-cone"],
         cwd=repo_dir, check=True, capture_output=True, text=True,
     )
-    (repo_dir / ".git" / "info" / "sparse-checkout").write_text(pathspec + "\n")
+    (repo_dir / ".git" / "info" / "sparse-checkout").write_text("\n".join(pathspec) + "\n")
     print(f"  [backfill] {full_name}: fetching {pathspec} blobs for all history...")
     try:
         subprocess.run(
@@ -105,17 +131,44 @@ def _is_materialized(dest):
     return dest.exists() and any(dest.iterdir())
 
 
+def _present_patterns(repo_dir, commit_sha, patterns):
+    """`git archive` (unlike ls-tree/checkout) hard-fails with exit 128 if ANY
+    given pathspec matches zero files in the tree - there's no --ignore-unmatch
+    for archive. A fixed multi-extension C# pathspec WILL hit this per-commit
+    (e.g. Dock has no *.sln at all after its 2025-12-25 .sln -> .slnx
+    migration, and no *.slnx before it) so filter down to only the patterns
+    that actually match something at this commit before archiving.
+
+    Match against the full relative path, not the basename: git's own
+    pathspec matching treats a literal (non-wildcard) pattern like
+    `packages.config` as an exact top-level path, NOT a basename match at any
+    depth - a repo with only `eng/common/sdl/packages.config` (no top-level
+    one) makes git archive itself reject that pathspec as unmatched, so
+    checking basenames here would wrongly keep a pattern archive then fails
+    on."""
+    result = subprocess.run(
+        ["git", "-C", str(repo_dir), "ls-tree", "-r", "--name-only", commit_sha],
+        check=True, capture_output=True, text=True,
+    )
+    paths = result.stdout.splitlines()
+    return [pat for pat in patterns if any(fnmatch.fnmatch(p, pat) for p in paths)]
+
+
 def archive_commit(full_name, commit_sha, pathspec, dest):
     """Extracts into a temp dir and only renames to `dest` on success, so a
     failed/killed attempt never leaves behind a directory that looks done."""
     repo_dir = CLONE_CACHE_DIR / _safe_dirname(full_name)
+    present = _present_patterns(repo_dir, commit_sha, pathspec)
+    if not present:
+        return False
+
     tmp_dest = dest.parent / (dest.name + ".tmp")
     if tmp_dest.exists():
         shutil.rmtree(tmp_dest)
     tmp_dest.mkdir(parents=True)
 
     archive = subprocess.Popen(
-        ["git", *GIT_HTTP_OVERRIDE, "-C", str(repo_dir), "archive", commit_sha, "--", pathspec],
+        ["git", *GIT_HTTP_OVERRIDE, "-C", str(repo_dir), "archive", commit_sha, "--", *present],
         stdout=subprocess.PIPE,
     )
     tar = subprocess.Popen(["tar", "-x", "-C", str(tmp_dest)], stdin=archive.stdout)
@@ -179,7 +232,7 @@ def main():
         backfill_repo(full_name, pathspec)
 
         done = failed = 0
-        for sha in todo:
+        for i, sha in enumerate(todo, start=1):
             try:
                 ok = archive_commit(full_name, sha, pathspec, repo_dest_root / sha)
             except OSError as e:
@@ -187,9 +240,10 @@ def main():
                 ok = False
             if ok:
                 done += 1
+                print(f"  [archive] ({i}/{len(todo)}) {full_name}@{sha[:7]}: ok", flush=True)
             else:
                 failed += 1
-                print(f"  [archive] {full_name}@{sha[:7]}: failed or timed out")
+                print(f"  [archive] ({i}/{len(todo)}) {full_name}@{sha[:7]}: failed or timed out", flush=True)
         print(f"  materialized {done}/{len(todo)} ({failed} failed - rerun to retry, backfill/archives are idempotent)")
 
 
