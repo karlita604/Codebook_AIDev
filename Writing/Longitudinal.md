@@ -412,6 +412,75 @@ output yet:
   a Designite input mode that accepts loose files (undocumented "batch file"
   mode, meaning unconfirmed).
 
+**Update 2026-07-28 — Designite confirmed working for Dock; aspire dropped
+from the C# arm.** Done in a separate worktree/branch
+(`Codebook_AIDev-designite`) to avoid touching the DPy job running on `main`.
+- .NET SDK 8.0.423 installed (was runtimes-only before). `materialize_snapshots.py`'s
+  C# pathspec extended from `*.cs`-only to also pull `*.sln`, `*.slnx`,
+  `*.csproj`, `*.props`, `*.targets`, `packages.config`.
+- Found and fixed a real bug this surfaced: `git archive` (unlike
+  `ls-tree`/checkout) hard-fails (exit 128) if *any* given pathspec pattern
+  matches zero files in that commit's tree - no `--ignore-unmatch` exists for
+  `archive`. A fixed multi-extension pathspec was guaranteed to hit this
+  per-commit (e.g. Dock has no `.sln` at all after its 2025-12-25 migration to
+  `.slnx`, commit `b8fb130d`). Fixed via `_present_patterns()`, which filters
+  the pathspec down to patterns that actually match something in that
+  specific commit before archiving - matching against full relative paths,
+  not basenames, since git's own literal (non-wildcard) pathspec matching
+  (e.g. `packages.config`) is a top-level-path match, not a basename match at
+  any depth (caught on aspire's `eng/common/sdl/packages.config`, which a
+  basename-based filter would have wrongly kept, only for `git archive`
+  itself to then reject it).
+- **Dock**: `DesigniteConsole.exe` opens and analyzes a real historical
+  `.sln` cleanly (confirmed on both a 2022 and a 2026 commit) - the original
+  blocker is resolved. Two caveats found:
+  - Trial license caps CSV export at **<50,000 LOC per invocation** (a
+    different, higher threshold than DPy's 10K) - a 58K-LOC Dock commit ran
+    the full analysis and printed a summary to stdout but wrote zero CSVs; a
+    13K-LOC commit exported fully. Same shape of problem as DPy's cap, likely
+    needs an analogous workaround eventually.
+  - This DesigniteConsole build (5.3.0.0) does not support `.slnx` at all
+    ("could not find any project to analyze") - so Dock commits after its
+    2025-12-25 `.sln` → `.slnx` migration are currently unanalyzable too,
+    until either a newer Designite build is installed or `.slnx` is
+    converted back to `.sln` before analysis.
+  - Output shape confirmed: one set of 8 CSVs *per project in the solution*
+    (`ClassMetrics`, `MethodMetrics`, `NamespaceMetrics`, `DesignSmells`,
+    `ImpSmells`, `ArchSmells`, `TestabilitySmells`, `TestSmells`) plus one
+    `Designite_AnalysisSummary.csv` - a different shape than DPy's
+    single-set-per-run output. Some projects appear multiple times under
+    different config/TFM-suffixed names (multi-targeting) - pooling logic
+    will need to de-dup/handle this deliberately, not just concatenate.
+- **aspire: dropped from the C# arm for now** (decision made 2026-07-28).
+  Investigated both ends of its history and found two *different* blockers,
+  not one:
+  - Early commit (2023-10, pre-1.0): `.sln` opens without crashing, but every
+    project reports "no source files found" (0 LOC). Confirmed via `dotnet
+    restore`: `NuGet.targets error: Invalid framework identifier ''` - aspire
+    bootstraps via Arcade (`global.json` pins a prerelease SDK version +
+    `Microsoft.DotNet.Arcade.Sdk`), needing its own `restore.cmd`/private
+    feed setup, not a plain `dotnet restore`/MSBuildWorkspace open.
+  - Recent commit (2026-05): uses `.slnx` (same unsupported-format problem as
+    Dock's recent history) **and** pins .NET SDK 10.0.201 (preview, not
+    installed, fetched by the repo's own local-install script).
+  - No confirmed "clean middle band" of aspire history was found (not
+    exhaustively searched - just the two ends). Full support would mean
+    replicating aspire's own CI bootstrap per historical commit (multiple
+    pinned prerelease SDKs, private feeds) - out of scope for the current
+    pilot phase. `EXCLUDED_REPOS` in `materialize_snapshots.py` (imported by
+    `long_analysis.py`) is the actual exclusion mechanism, applied generically
+    (not aspire-specific) so any future repo needing similar exclusion has
+    somewhere to go, and so this is trivially reversible once revisited.
+    Aspire's exploration artifacts (materialized snapshots, test Designite
+    output) were moved to `data/archive/dotnet__aspire_2026-07-28/` rather
+    than deleted.
+  - C# arm is Dock-only until this is revisited.
+- `run_designite()`/`parse_tool_output()` are still stubs - next step is
+  wiring them up for real against Dock (schema above), including a design
+  for the Trial LOC cap (Designite operates at the *solution* level, not a
+  raw source directory, so a naive port of DPy's directory-chunking approach
+  won't work as-is).
+
 ### Not yet built
 
 - **Phase 1b** — Tracks B1/B2 (§5). Blocked on `GITHUB_TOKEN`.
@@ -500,14 +569,39 @@ age at snapshot — enter the regression models, not just the descriptives.
   Phase 1d (§8) "Update 2026-07-27" for detail. Not resolved yet — both need
   a decision (buy DPy Professional; decide how to get Designite a usable
   project file) before Phase 1d can produce real data.
+- **2026-07-28** — Designite's `.sln` blocker resolved for Dock (SDK
+  installed, pathspec extended, real `git archive` pathspec-matching bugs
+  found and fixed along the way). aspire investigated and dropped from the
+  C# analysis arm instead of forced to work — its build depends on Arcade's
+  own CI bootstrap (pinned prerelease SDKs, private feeds) in its early
+  history and an uninstalled preview SDK + unsupported `.slnx` format in its
+  recent history, neither of which is a `materialize_snapshots.py`/Designite
+  problem to solve generically. C# arm is Dock-only for this pilot phase; see
+  Phase 1d (§8) "Update 2026-07-28" for detail and `EXCLUDED_REPOS`.
 
 ## Open decisions
 
-- **Designite input**: re-materialize C# snapshots with `.sln`/`.csproj`
-  included (and install the .NET SDK), or find a Designite input mode that
-  accepts loose source files (an undocumented "batch file" mode was
-  mentioned in `--help` but its format is unconfirmed) — needed before
-  `run_designite()` can be implemented for real.
+- **Designite input for Dock**: resolved 2026-07-28 (SDK installed, pathspec
+  extended to include `.sln`/`.csproj`/etc). Two remaining Dock-specific
+  gaps: this Designite build (5.3.0.0) doesn't support `.slnx` (blocks Dock
+  commits after 2025-12-25), and Trial license caps CSV export at <50K LOC
+  (blocks Dock commits over that size) — same shape of problem as DPy's cap,
+  not yet solved.
+- **aspire scope**: dropped from the C# arm for this pilot phase rather than
+  replicating its Arcade-based CI bootstrap per historical commit. Revisit
+  only if the study later needs a second C# repo — options considered were:
+  fully replicate aspire's own restore process (high effort, may not reach
+  100% history coverage even then), look for a clean middle band of aspire
+  history that needs neither Arcade nor `.slnx` (unconfirmed whether one
+  exists), or swap in a different C# pilot repo (methodologically risky this
+  late). See Phase 1d (§8) "Update 2026-07-28".
+- **Designite generalization**: the current exclusion mechanism
+  (`EXCLUDED_REPOS`) and pathspec-presence filtering are written to be
+  repo-agnostic already, but `run_designite()`/`parse_tool_output()` and the
+  Trial LOC-cap workaround are still being built against Dock specifically.
+  Revisiting "run Designite against any specified C# repo" for real (per-repo
+  SDK version detection, handling repos that need their own restore step,
+  etc.) is explicitly deferred until after this small pilot set is done.
 - **DPy licensing**: Trial caps CSV export at <10K LOC, which every pilot
   snapshot exceeds — needs a Professional license before Phase 1d produces
   real DPy output.

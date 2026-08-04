@@ -4,17 +4,25 @@ materialized snapshot from Phase 1e (materialize_snapshots.py), and
 consolidate their smell/metric output into one table keyed by
 (repo_id, track, target_date, commit_sha).
 
-STATUS (2026-07-27, see Writing/ProjectUpdate.md for the full history):
+STATUS (2026-07-28, see Writing/Longitudinal.md S8 for the full history):
 - DPy is installed and wired in for real (run_dpy_chunked / parse_tool_output
   below). Its Trial license caps CSV export at <10,000 LOC per invocation -
   every pilot Python snapshot is far over that - so large snapshots are
   split into sub-10K-LOC chunks along real package boundaries and DPy is run
   once per chunk (see run_dpy_chunked's docstring for what that does and
   does NOT make safe to pool across chunks).
-- Designite is installed but blocked on a design decision: it requires an
-  actual .sln (Roslyn MSBuildWorkspace), and materialized C# snapshots only
-  contain *.cs files. run_designite() raises a clear NotImplementedError
-  rather than guessing.
+- Designite is installed and wired in for real (run_designite_chunked /
+  parse_tool_output below), confirmed against wieslawsoltes/Dock only -
+  dotnet/aspire is excluded from this pilot phase (see materialize_snapshots.py
+  EXCLUDED_REPOS). Its Trial license caps CSV export at <50,000 LOC per
+  invocation (a solution-wide total, not per-project) - over-cap solutions are
+  split into sub-cap sub-solutions along whole-project boundaries (Designite
+  analyzes at the project/solution level, not a raw source directory, so
+  chunks can't split a single project's files like run_dpy_chunked does - see
+  run_designite_chunked's docstring for what that does and does NOT make safe
+  to pool across chunks). Dock commits after 2025-12-25 use `.slnx`
+  (unsupported by the installed DesigniteConsole 5.3.0.0 build) and are a
+  known, logged gap, not silently skipped.
 
 Pipeline, per eligible manifest row (has a resolved AND materialized commit):
 1. Look up the already-materialized source tree at
@@ -55,7 +63,9 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from materialize_snapshots import SNAPSHOT_DIR, _is_materialized, _safe_dirname  # noqa: E402
+from materialize_snapshots import (  # noqa: E402
+    EXCLUDED_REPOS, SNAPSHOT_DIR, _is_materialized, _safe_dirname,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 TOOL_OUTPUT_DIR = ROOT / "data" / "tool_output"
@@ -68,6 +78,15 @@ TOOL_TIMEOUT_SECONDS = 900
 # below that with headroom, since our line count (naive readlines()) won't
 # exactly match whatever DPy counts internally (blank lines, encoding, etc).
 DPY_LOC_CAP = 8000
+
+# Designite Trial rejects CSV export at >=50,000 LOC per invocation - exact
+# threshold confirmed directly in its own message text ("lesser than 50000
+# lines of code"), unlike DPy's cap which had to be bisected empirically. Cap
+# chunks below that with headroom, since our LOC proxy (raw *.cs line count
+# per project directory) won't exactly match Designite's own count (confirmed
+# close but not exact: a project measured at 7934 by `wc -l` was reported as
+# 7884 by Designite).
+DESIGNITE_LOC_CAP = 45000
 
 # Set these once DPy / Designite are installed - see module docstring.
 DPY_EXECUTABLE = os.environ.get("DPY_EXECUTABLE")
@@ -269,41 +288,177 @@ def run_dpy_chunked(snapshot_dir, out_dir, verbose=False):
     return out_dir
 
 
+# Solution-folder pseudo-entries (e.g. Dock.sln's "build"/"docs"/"src" groupings)
+# use the same `Project(...)` syntax as real projects but point at a directory
+# or loose file, not a .csproj - filtered out below by path suffix rather than
+# by hardcoding the handful of type GUIDs involved (SDK-style
+# {9A19103F-16F7-4668-BE54-9A1E7A4F7556}, legacy {FAE04EC0-301F-11D3-BF4B-...},
+# solution folder {2150E333-8FDC-42A3-9474-1A3956D46DE8} - Dock.sln uses all
+# three), since "does this line point at a real project file" is the thing we
+# actually care about, not which GUID a given repo happens to use.
+_SLN_PROJECT_RE = re.compile(
+    r'^Project\("\{[0-9A-Fa-f-]+\}"\)\s*=\s*"[^"]+",\s*"([^"]+)",\s*"\{[0-9A-Fa-f-]+\}"',
+    re.MULTILINE,
+)
+
+
+def _parse_sln_projects(sln_path):
+    """Real C# projects listed in a .sln, as absolute .csproj paths, in the
+    order they appear in the file (kept for deterministic, reproducible chunk
+    planning - same reasoning as plan_dpy_chunks() recursing in a fixed
+    order)."""
+    text = sln_path.read_text(encoding="utf-8-sig", errors="ignore")
+    projects = []
+    for rel_path in _SLN_PROJECT_RE.findall(text):
+        if rel_path.lower().endswith(".csproj"):
+            projects.append((sln_path.parent / rel_path.replace("\\", "/")).resolve())
+    return projects
+
+
+def _project_line_count(csproj_path):
+    """Naive proxy for a project's own LOC (its *.cs files only, not counting
+    anything it references via ProjectReference) - same spirit as DPy's
+    _py_line_count. Confirmed empirically (see Writing/Longitudinal.md S8,
+    2026-07-28): a sub-solution listing only one project reports ~this many
+    LOC to Designite, NOT inflated by projects it references but that aren't
+    listed - MSBuildWorkspace only loads what's explicitly in the .sln."""
+    return sum(
+        _file_line_count(p) for p in csproj_path.parent.rglob("*.cs")
+        if "bin" not in p.parts and "obj" not in p.parts
+    )
+
+
+def plan_designite_chunks(sln_path, cap=DESIGNITE_LOC_CAP):
+    """Bin-pack a solution's real projects (whole projects only - unlike
+    DPy's chunker, this can't split a single project's files, since Designite
+    analyzes at project/solution granularity) into groups each under `cap`
+    total LOC, greedily in .sln file order. A single project bigger than cap
+    alone still comes back as its own oversized chunk (nothing left to split
+    it further by) - the caller (run_designite_chunked) logs this rather than
+    silently losing data, same as DPy's plan_dpy_chunks().
+
+    Deliberately does NOT try to keep a project's ProjectReference closure
+    together in one chunk: confirmed empirically that splitting connected
+    projects across chunks doesn't crash or inflate LOC, it just leaves
+    cross-chunk references unresolved - meaning Fan-In/Fan-Out and any smell
+    that depends on an excluded project's types are NOT valid for that chunk.
+    Same shape of tradeoff as DPy's chunk-scoped architecture smells (see
+    run_dpy_chunked's docstring) - parse_tool_output() keeps this chunk-scoped
+    rather than pooling it as repo-wide."""
+    sized = [(p, _project_line_count(p)) for p in _parse_sln_projects(sln_path)]
+    chunks, current, current_loc = [], [], 0
+    for path, loc in sized:
+        if current and current_loc + loc > cap:
+            chunks.append(current)
+            current, current_loc = [], 0
+        current.append(path)
+        current_loc += loc
+    if current:
+        chunks.append(current)
+    return chunks
+
+
+def _write_sub_solution(csproj_paths, dest_dir):
+    """Generate a real, valid .sln listing exactly `csproj_paths`, via
+    `dotnet sln` rather than hand-rolling the .sln text format (avoids having
+    to reproduce VS's per-project-type GUID conventions correctly ourselves -
+    `dotnet sln add` picks the right one from each .csproj automatically,
+    confirmed against Dock's mix of SDK-style and legacy projects)."""
+    dest_dir.mkdir(parents=True, exist_ok=True)
+    sln_path = dest_dir / "chunk.sln"
+    subprocess.run(
+        ["dotnet", "new", "sln", "-n", "chunk", "-o", str(dest_dir)],
+        check=True, capture_output=True, text=True, timeout=60,
+    )
+    subprocess.run(
+        ["dotnet", "sln", str(sln_path), "add", *[str(p) for p in csproj_paths]],
+        check=True, capture_output=True, text=True, timeout=60,
+    )
+    return sln_path
+
+
+def _run_designite_once(sln_path, out_dir):
+    """One DesigniteConsole invocation. NOTE: DesigniteConsole exits 0
+    unconditionally, even when the Trial LOC cap silently blocks CSV export
+    (confirmed empirically - `check=True` alone would NOT catch a cap-hit) -
+    the caller must verify out_dir actually has CSVs in it afterward."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    subprocess.run(
+        [DESIGNITE_EXECUTABLE, "-i", str(sln_path), "-o", str(out_dir), "-c"],
+        check=True, capture_output=True, text=True,
+        timeout=TOOL_TIMEOUT_SECONDS,
+    )
+    if not any(out_dir.glob("*.csv")):
+        raise RuntimeError(
+            f"DesigniteConsole exited 0 but wrote no CSVs for {sln_path} - "
+            f"most likely this chunk is still over the Trial LOC cap despite "
+            f"our under-{DESIGNITE_LOC_CAP} plan (our LOC proxy underestimated "
+            f"vs Designite's own count), rather than a real crash."
+        )
+    return out_dir
+
+
 def run_designite(snapshot_dir, out_dir):
     """
-    KNOWN BLOCKER, confirmed 2026-07-27: DesigniteConsole's `-i`/`--input`
-    requires an actual .sln - it's Roslyn MSBuildWorkspace-based (confirmed
-    via its BuildHost-net472/netcore DLLs and decompiled strings:
-    InterpretBatchFile/GetAllSolutionPaths/IsSolutionFile/OpenSolutionAsync
-    all route through solution-level loading), not a plain source-file
-    scanner like DPy. Its "batch file" input mode (mentioned in --help) is
-    NOT an alternative to needing a .sln - it's just a text file listing
-    multiple .sln paths to analyze in one run, confirmed by decompiling
-    DesigniteConsole.dll. Tested directly against a materialized snapshot
-    dir (just *.cs files, no .sln) and it fails immediately: "Argument
-    error!! The specified file doesn't exists: <dir>". Also:
-    `DesigniteConsole.exe` (no args) reports no .NET SDK installed, only
-    runtimes - even with a .sln, MSBuildWorkspace may need the SDK to
-    resolve projects.
+    Resolved 2026-07-27/28 (see Writing/Longitudinal.md S8): DesigniteConsole
+    needs a real .sln (Roslyn MSBuildWorkspace) - materialize_snapshots.py's
+    C# pathspec now includes .sln/.slnx/.csproj/.props/.targets/packages.config
+    (was *.cs-only). Confirmed working end-to-end against wieslawsoltes/Dock.
 
-    Needs a design decision before this can be implemented for real:
-    re-materialize C# snapshots with .sln/.csproj included (git archive
-    pathspec currently only pulls *.cs - see materialize_snapshots.py
-    LANGUAGE_PATHSPEC) and get the .NET SDK installed. Deferred per the
-    2026-07-27 decision to focus on DPy/Python first (see
-    Writing/Longitudinal.md Open decisions). Raising instead of guessing at
-    an invocation known to fail.
+    Two known gaps, deliberately not papered over:
+    - `.slnx`-only snapshots (Dock commits after 2025-12-25) raise
+      NotImplementedError - this installed DesigniteConsole build (5.3.0.0)
+      confirmed unable to open `.slnx` ("could not find any project to
+      analyze"). Not the same as a missing/corrupt snapshot, so distinguished
+      from the FileNotFoundError below.
+    - Trial license caps CSV export at <50,000 LOC per invocation (a
+      solution-wide total, not per-project) - handled by
+      plan_designite_chunks()/_write_sub_solution() below, splitting the
+      solution into sub-cap groups of whole projects. See
+      plan_designite_chunks()'s docstring for what that does and does NOT
+      make safe to pool across chunks (Fan-In/Fan-Out and cross-project
+      smells are chunk-scoped only, same shape of caveat as DPy's
+      run_dpy_chunked()).
     """
     if not DESIGNITE_EXECUTABLE:
         raise RuntimeError(
             "DESIGNITE_EXECUTABLE not set - install Designite and set the "
             "env var to its executable path before running without --dry-run."
         )
-    raise NotImplementedError(
-        "run_designite() is blocked on a design decision, not just a missing "
-        "executable - see this function's docstring: DesigniteConsole needs "
-        "a .sln, and materialized C# snapshots only contain .cs files."
-    )
+    snapshot_dir = Path(snapshot_dir)
+    sln_candidates = list(snapshot_dir.glob("*.sln"))
+    if not sln_candidates:
+        if list(snapshot_dir.glob("*.slnx")):
+            raise NotImplementedError(
+                f"{snapshot_dir} only has a .slnx solution - unsupported by "
+                "the installed DesigniteConsole build (5.3.0.0), confirmed "
+                "via direct test (\"could not find any project to analyze\"). "
+                "See Writing/Longitudinal.md Open decisions."
+            )
+        raise FileNotFoundError(f"no .sln found in {snapshot_dir}")
+    sln_path = sln_candidates[0]
+
+    chunks = plan_designite_chunks(sln_path)
+    if len(chunks) == 1:
+        # Whole solution already fits under the cap - analyze the real .sln
+        # directly rather than regenerating an equivalent one via dotnet sln.
+        return _run_designite_once(sln_path, out_dir / "chunk_000")
+
+    oversized = [c for c in chunks if sum(_project_line_count(p) for p in c) > DESIGNITE_LOC_CAP]
+    if oversized:
+        print(f"    [designite] WARNING: {len(oversized)} chunk(s) still over "
+              f"{DESIGNITE_LOC_CAP} LOC and can't be split further (a single "
+              f"project alone exceeds the cap) - Designite will refuse CSV "
+              f"export for these: {[[p.stem for p in c] for c in oversized]}")
+
+    stage_root = Path(tempfile.mkdtemp(prefix="designite_chunks_"))
+    try:
+        for i, chunk_projects in enumerate(chunks):
+            chunk_sln = _write_sub_solution(chunk_projects, stage_root / f"chunk_{i:03d}")
+            _run_designite_once(chunk_sln, out_dir / f"chunk_{i:03d}")
+    finally:
+        shutil.rmtree(stage_root, ignore_errors=True)
+    return out_dir
 
 
 def _read_chunked_csv(out_dir, suffix):
@@ -363,9 +518,79 @@ def _parse_dpy_output(out_dir):
     }
 
 
+def _parse_designite_output(out_dir):
+    class_metrics = _read_chunked_csv(out_dir, "ClassMetrics.csv")
+    method_metrics = _read_chunked_csv(out_dir, "MethodMetrics.csv")
+    design_smells = _read_chunked_csv(out_dir, "DesignSmells.csv")
+    impl_smells = _read_chunked_csv(out_dir, "ImpSmells.csv")
+    testability_smells = _read_chunked_csv(out_dir, "TestabilitySmells.csv")
+    test_smells = _read_chunked_csv(out_dir, "TestSmells.csv")
+    # Chunk-scoped only - see plan_designite_chunks()'s docstring: a project
+    # split into a different chunk from projects it references loses valid
+    # Fan-In/Fan-Out and any smell depending on an excluded project's types.
+    # Collected for traceability, deliberately NOT folded into the pooled
+    # metrics below.
+    arch_smells = _read_chunked_csv(out_dir, "ArchSmells.csv")
+
+    total_loc = int(class_metrics["LOC"].sum()) if not class_metrics.empty else 0
+
+    def _pctl(df, col, q):
+        return None if df.empty else float(df[col].quantile(q))
+
+    return {
+        "total_loc": total_loc,
+        "n_chunks": len(list(Path(out_dir).glob("chunk_*"))),
+        "n_classes": len(class_metrics),
+        "n_methods": len(method_metrics),
+        "class_loc_p50": _pctl(class_metrics, "LOC", 0.5),
+        "class_loc_p90": _pctl(class_metrics, "LOC", 0.9),
+        "method_loc_p50": _pctl(method_metrics, "LOC", 0.5),
+        "method_loc_p90": _pctl(method_metrics, "LOC", 0.9),
+        "cyclomatic_complexity_p50": _pctl(method_metrics, "CC", 0.5),
+        "cyclomatic_complexity_p90": _pctl(method_metrics, "CC", 0.9),
+        "design_smell_count": len(design_smells),
+        "design_smell_density_per_kloc": (len(design_smells) / total_loc * 1000) if total_loc else None,
+        "implementation_smell_count": len(impl_smells),
+        "implementation_smell_density_per_kloc": (len(impl_smells) / total_loc * 1000) if total_loc else None,
+        # Designite-only categories, no DPy equivalent - kept as their own
+        # columns rather than folded into design/implementation counts.
+        "testability_smell_count": len(testability_smells),
+        "test_smell_count": len(test_smells),
+        # Explicitly chunk-scoped, NOT a repo-level measurement - see
+        # plan_designite_chunks()'s docstring before using this for anything.
+        "arch_smell_count_chunk_scoped": len(arch_smells),
+    }
+
+
 def parse_tool_output(out_dir, language):
     """
-    Designite: still fully unconfirmed - see run_designite()'s blocker.
+    Designite: schema confirmed 2026-07-28 against real DesigniteConsole
+    output (wieslawsoltes/Dock, both under- and over-Trial-cap commits). With
+    -c it writes <out_dir>/Designite_<project(+TFM)>_<Suffix>.csv - one full
+    set of files per project in the solution (or sub-solution, when chunked):
+      - ClassMetrics.csv - Project,Namespace,Class,NOF,NOM,NOP,NOPF,NOPM,LOC,
+        WMC,NC,DIT,LCOM,Fan-Out,Fan-In,Fan-Out types,Fan-In types,File. One
+        row per class.
+      - MethodMetrics.csv - Project,Namespace,Class,Method,LOC,CC,PC (CC =
+        cyclomatic complexity, PC = param count). One row per method.
+      - NamespaceMetrics.csv - Project,Namespace,Ca types,Ce types
+        (afferent/efferent coupling at namespace level) - collected but not
+        currently pooled into parse_tool_output()'s output.
+      - DesignSmells.csv / TestabilitySmells.csv / TestSmells.csv - Smell,
+        Project,Namespace,Class,File,Description.
+      - ImpSmells.csv - Smell,Project,Namespace,Class,File,Method,Description.
+      - ArchSmells.csv - Smell,Project,Namespace,Description,Responsible
+        classes,Participating classes. Chunk-scoped only when run via
+        run_designite() with more than one chunk - see
+        plan_designite_chunks()'s docstring.
+    Multi-targeted projects (e.g. a project built for both net8.0 and
+    net472) get a separate full set of files per target framework, with the
+    TFM suffixed onto the project name (confirmed: "AvaloniaDemo.Debug" /
+    "AvaloniaDemo.Perspectives" / "AvaloniaDemo.Xaml" / "AvaloniaDemo" all
+    appeared for one project in one test run) - NOT deduplicated here, so a
+    multi-targeted project's classes/methods currently get counted once per
+    target framework. Needs a decision before this is used for anything where
+    that would skew results (see DESIGNITE_TASK.md).
 
     DPy: schema confirmed 2026-07-27 against real DPy.exe output (a tiny
     synthetic file under the Trial cap, and a real ~3K-LOC mlflow
@@ -385,10 +610,7 @@ def parse_tool_output(out_dir, language):
     test project had one.
     """
     if language == "C#":
-        raise NotImplementedError(
-            "parse_tool_output() for Designite is a stub - blocked on "
-            "run_designite() itself (see its docstring)."
-        )
+        return _parse_designite_output(out_dir)
     return _parse_dpy_output(out_dir)
 
 
@@ -542,6 +764,7 @@ def main():
 
     eligible = manifest[
         (~manifest["no_prior_commit"]) & manifest["commit_sha"].notna()
+        & ~manifest["full_name"].isin(EXCLUDED_REPOS)
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
