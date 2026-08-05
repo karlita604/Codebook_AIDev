@@ -222,6 +222,18 @@ produces any real output at all, not guessed at now.
 
 ## First real analysis — pilot results (2026-07-29)
 
+> **Status as of 2026-08-04: preliminary, N=4, not re-run since.** Everything
+> below is real data run through the pre-registered tests, not a smoke test —
+> but it's still a 4-repo pilot (3 Python + 1 C#), and the project has since
+> moved into Phase 2 (expanding to a 20-repo minimum, see `ProjectStatus.md`
+> and `ProjectUpdate.md`'s 2026-08-04 entry). The new repos being collected
+> for Phase 2 are **not** included in anything below, and won't be until an
+> in-house metrics tool (`Writing/InHouseTooling.md`) exists to analyze them
+> without DPy/Designite's trial-license LOC caps. Every number and caveat
+> below stays as originally recorded — including the "no consistent
+> cross-repo direction" headline — because it's real methodology and a real
+> (if inconclusive) first result, not because it's the study's final answer.
+
 Everything above this line was planning, written before real data existed.
 DPy's run finished for all 3 Python repos (crewAI, airbyte, mlflow) and,
 separately, Designite was unblocked on a parallel branch

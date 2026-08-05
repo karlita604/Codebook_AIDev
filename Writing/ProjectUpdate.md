@@ -1,5 +1,15 @@
 # Project Update — 2026-07-21
 
+> **Start with `ProjectStatus.md` and `Results.md`
+> instead.** This file is the raw, append-only, chronological build log —
+> every methodology decision, bug, and blocker below is real and kept
+> verbatim even where it turned out to be a dead end, because it's part of
+> the thesis's methodology record. But the concrete *numbers* in the
+> "First real analysis" sections below are an **N=4 pilot**, explicitly
+> preliminary and superseded once Phase 2's larger sample lands — see the
+> 2026-08-04 entry at the end of this file, and `Results.md`'s banner, for
+> current status.
+
 ## Where things stand
 
 The goal: measure repository structural health before vs. after AI coding
@@ -504,4 +514,67 @@ What's still actually open:
   the 2026-07-29 analysis ran 12 unadjusted significance tests for RQ1
   alone — needs a multiple-comparison correction before anything here is
   paper-ready.
+
+## 2026-08-04 — Designite branch merged; Phase 2 (20-repo) kickoff, DPy/Designite analysis deferred for new repos
+
+**Merge.** `designite-sln-support` (the worktree at
+`C:\Users\kvrlv\Projects\Codebook_AIDev-designite`, used to build the
+Designite/`.sln` support in parallel without touching the concurrent
+multi-day DPy background job on `main`) is merged into `main`. That job
+finished 2026-07-29, so the reason for the separate worktree no longer
+applies. The merge itself was cleaner than expected — `long_analysis.py`
+auto-merged with no conflicts despite both branches editing it heavily
+(DPy's chunking/resumability/parallel-worker logic on `main`, Designite's
+`run_designite()`/`parse_tool_output()` on the branch); the only real
+conflict was `.gitignore`. Brought over: `DESIGNITE_TASK.md` (full decision
+log), `Writing/DockDesigniteReport.md` + its figures/chart data (committed
+to the branch as part of this merge — they were sitting untracked),
+`src/phase0/analyze_dock_designite.py`, `EXCLUDED_REPOS` (drops
+`dotnet/aspire`), the extended C# `LANGUAGE_PATHSPEC`
+(`*.cs`/`*.sln`/`*.slnx`/`*.csproj`/`*.props`/`*.targets`/`packages.config`),
+and Dock's real Designite output
+(`results/analysis/07-28-smell-metrics-96*.csv`, 87/96 rows ok). Verified
+post-merge: both `long_analysis.py` and `materialize_snapshots.py` import
+cleanly, `EXCLUDED_REPOS`/`LANGUAGE_PATHSPEC` resolved correctly, and a
+`--dry-run --limit 5` against the existing 480-row manifest still resolves
+snapshots correctly.
+
+**Repo hygiene, done alongside the merge, not separately requested but
+flagged here rather than done silently:** stopped tracking `__pycache__/*.pyc`
+(6 compiled files) and the raw multi-day DPy run logs under `logs/`
+(~50K+ lines across the airbyte/crewai/mlflow logs) — both categories
+stay on disk, just untracked going forward; `.gitignore` gained
+`data/archive/`, `__pycache__/`, and `logs/`.
+
+**Push blocked.** `git push origin main` failed —
+`Authentication failed for 'https://github.com/karlita604/Codebook_AIDev.git/'`
+(stored credential rejected, not a code issue). Merge commit exists locally
+(3 commits ahead of `origin/main` at merge time); needs a re-auth
+(`gh auth login` or refreshed credential manager) before it reaches GitHub.
+
+**Phase 2 kickoff — scope decision.** The pilot's 4 repos are well short of
+the thesis's minimum-20-repo target. Given DPy/Designite's Trial-license LOC
+caps made even the 4-repo pilot expensive (mlflow alone: ~29 hours of DPy
+runtime from LOC-cap chunking into hundreds of small invocations, per the
+2026-07-27 entry above), running that same tool pipeline against ~16 more
+repos at pilot density was estimated at 2-4+ weeks of background compute —
+and the project is moving toward building an in-house metrics tool
+specifically to remove that LOC cap (see the new `Writing/InHouseTooling.md`,
+added today). Decision: for Phase 2, collect PR samples (Track B) and raw
+materialized source-tree snapshots (Track A) for the new repos using the
+existing, already-parameterized (`--pilot-size`) Phase 1a/1b/1c/1e pipeline —
+but **do not run Phase 1d (DPy/Designite) against them yet**. This is a
+deliberate deferral, not a gap: the new repos' snapshots sit ready in
+`data/snapshots/` for the in-house tool once it exists, without ever having
+been forced through the trial LOC-cap chunking machinery built for
+DPy/Designite specifically.
+
+Also added `Writing/RQ3_CodeTracking.md` today — a research brainstorm for
+RQ3 (tracking a specific code entity's lifetime/aging across a repo's
+history), independent of the Phase 2 work above but requested alongside it.
+
+Real Phase 2 collection outcomes (which repos were selected, actual
+row/commit counts, any new blockers hit) are logged in the entry below once
+that run completes — per this file's own convention, only real results get
+recorded here, not planned ones.
 

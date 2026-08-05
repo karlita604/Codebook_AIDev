@@ -1,10 +1,11 @@
-# Project Status — 2026-07-29 (updated: first analysis complete)
+# Project Status — 2026-08-04 (updated: Designite merged, Phase 2 underway)
 
 *Companion to `ProjectUpdate.md` (the raw chronological build log — kept
 append-only, dated entries). This doc is a clean, current snapshot,
 structured for talking through out loud. Full methodology: `Longitudinal.md`.
 Full findings with tables and figures: `Results.md`'s "First real analysis"
-section and the interactive dashboard linked there.*
+section and the interactive dashboard linked there — read that section's
+banner first, the numbers are an N=4 pilot, not final.*
 
 ## The one-paragraph version
 
@@ -12,15 +13,22 @@ We're measuring whether repo structural health (design/implementation
 smells, OO metrics) and PR-level process changes when AI coding agents
 start contributing — using an interrupted time series, not a naive
 before/after, so ordinary codebase drift doesn't get mistaken for an agent
-effect. **Data collection is done and a first analysis has run**: 4 pilot
-repos (3 Python via DPy, 1 C# via Designite), segmented regression on the
-pre-registered primary metrics, composition-shift and process-metric tests.
-Headline: **no consistent cross-repo direction** — real, statistically
-significant changes show up almost everywhere, but they point different
-ways in different repos, and the split doesn't track language. This is
-still N=4 — descriptive of these repos, not a general claim about "AI
-agents." `dotnet/aspire` is now dropped from the pilot entirely (both
-tracks), leaving 3 Python + 1 C#, not the original 3+2.
+effect. **A first analysis ran on a 4-repo pilot** (3 Python via DPy, 1 C#
+via Designite): segmented regression on the pre-registered primary metrics,
+composition-shift and process-metric tests. Headline: **no consistent
+cross-repo direction** — real, statistically significant changes show up
+almost everywhere, but they point different ways in different repos, and
+the split doesn't track language. This is N=4 — descriptive of these
+repos, not a general claim about "AI agents," and explicitly preliminary.
+`dotnet/aspire` is dropped from the pilot entirely (both tracks), leaving
+3 Python + 1 C#, not the original 3+2. **The project has since moved into
+Phase 2**: expanding to a 20-repo minimum. The Designite branch
+(`designite-sln-support`) is now merged into `main` — its output no longer
+needs to be read cross-checkout. Phase 2's new repos are being collected
+raw (snapshots + PR samples) without running them through DPy/Designite,
+pending an in-house metrics tool (see `Writing/InHouseTooling.md`) that
+won't hit the trial-license LOC caps that made the pilot's tool runtime
+expensive.
 
 ## Where each piece stands
 
@@ -30,9 +38,11 @@ tracks), leaving 3 Python + 1 C#, not the original 3+2.
 | Phase 1a — pilot selection & intervention dates | Done |
 | Phase 1c — snapshot manifest (which commit per grid point) | Done — 480 rows |
 | Phase 1e — snapshot materialization (source on disk) | Done — 399/401 unique commits |
-| Phase 1d — structural metrics (DPy + Designite) | **Done** — 351 pooled rows, 4 repos |
-| Phase 1b — PR-level process metrics | **Done, with one exclusion** |
-| First analysis (segmented regression, composition, process) | **Done — see `Results.md`** |
+| Phase 1d — structural metrics (DPy + Designite) | **Done for the 4-repo pilot** — 351 pooled rows. Deferred for Phase 2's new repos (in-house tool planned) |
+| Phase 1b — PR-level process metrics | **Done for the pilot, with one exclusion.** Running now for Phase 2's new repos |
+| First analysis (segmented regression, composition, process) | **Done for the pilot — see `Results.md`.** Preliminary, N=4, not re-run since |
+| Designite branch → `main` merge | **Done 2026-08-04** — Dock's Designite output now lives in this checkout, no cross-checkout reads needed |
+| Phase 2 — expand to 20-repo minimum | **In progress** — raw snapshot + PR sample collection for ~16 new repos, structural-metric analysis deferred |
 
 ## 1. The pilot (now 4 repos, not 5)
 
@@ -67,9 +77,9 @@ resolved (§ Open decisions).
 consolidated in `results/analysis/07-29-pooled-structural-metrics.csv`. DPy
 ran in the main checkout; Designite was built and run on a separate branch
 (`designite-sln-support`, worktree `Codebook_AIDev-designite`) to avoid
-touching the multi-day DPy background job — **not yet merged to `main`**,
-so Dock's data currently has to be read cross-checkout (done for the
-2026-07-29 analysis; worth merging so it lives in one place).
+touching the multi-day DPy background job — **merged into `main` on
+2026-08-04**, so Dock's data now lives alongside the Python output in one
+checkout (no more cross-checkout reads).
 
 **Dock's post-intervention data is thin** — only 6 of a possible ~19 A1
 points, because the `.slnx` gap above starts just 6 months after Dock's own
@@ -129,17 +139,35 @@ legitimate finding on its own, not a failure to find one — but it's N=4,
 unadjusted for the 12 significance tests RQ1 alone ran, with no matched
 non-adopting comparison arm yet. Not paper-ready; a real first look.
 
-## 5. What's still open
+## 5. Phase 2 — expanding to 20 repos (in progress, 2026-08-04)
+
+The pilot's 4 usable repos are well short of the thesis's 20-repo minimum.
+Rather than re-running the pilot's DPy/Designite pipeline at ~4-5x the
+scale (the pilot's trial-license LOC caps already made mlflow alone cost
+~29 hours of chunked tool runtime — see `ProjectUpdate.md`'s 2026-07-27 and
+2026-08-04 entries), Phase 2 collects raw data for ~16 new repos using the
+same already-parameterized (`--pilot-size`) Phase 1a/1b/1c/1e pipeline —
+repo/PR selection, PR sampling, snapshot manifest, materialized source
+trees — but **defers Phase 1d (DPy/Designite execution) entirely**. The new
+repos' raw materialized snapshots sit ready for an in-house metrics tool
+(see `Writing/InHouseTooling.md`) instead of being forced through the same
+LOC-cap chunking that made the pilot expensive. Real repo list and
+collection outcomes: `ProjectUpdate.md`'s 2026-08-04 entry (and later
+entries as collection proceeds).
+
+## 6. What's still open
 
 Ranked by what would change the analysis most:
 
-1. **`dotnet/aspire`'s exclusion / the 3+1 language imbalance** — needs a
+1. **`dotnet/aspire`'s exclusion / the language imbalance** — needs a
    methodology call: accept and disclose, or bring in a second C# repo that
-   doesn't hit either of aspire's blockers.
+   doesn't hit either of aspire's blockers. Now also relevant to Phase 2
+   repo selection, not just the original pilot.
 2. **Dock's `.slnx` gap** — recovering its censored post-period needs a
    Designite build update or a conversion step.
-3. **Merging `designite-sln-support` to `main`** — housekeeping, but blocks
-   a clean single-checkout re-run of the analysis.
+3. **The in-house metrics tool** (`Writing/InHouseTooling.md`) — needs to
+   exist and be validated against the pilot's real DPy/Designite output
+   before Phase 2's raw-collected repos can be analyzed at all.
 4. **Track B's deeper PR stats** (diff size, review detail) — needed to
    extend RQ3 beyond timestamps/comments.
 5. **Multiple-comparison correction + a matched non-adopting comparison
@@ -150,10 +178,13 @@ Ranked by what would change the analysis most:
 
 - Methodology & full rationale: `writing/Longitudinal.md`
 - **Findings, tables, and the dashboard link: `writing/Results.md`**
-  ("First real analysis — pilot results" section)
+  ("First real analysis — pilot results" section — preliminary, read its
+  banner first)
 - Raw chronological build log: `writing/ProjectUpdate.md`
-- Designite build/decision log: `DESIGNITE_TASK.md` (on `designite-sln-support`)
-- Pooled structural data: `results/analysis/07-29-pooled-structural-metrics.csv`
+- Designite decision log: `DESIGNITE_TASK.md` (now on `main`)
+- In-house tooling plan: `Writing/InHouseTooling.md`
+- RQ3 code-tracking brainstorm: `Writing/RQ3_CodeTracking.md`
+- Pooled structural data (pilot only): `results/analysis/07-29-pooled-structural-metrics.csv`
 - Regression / composition / process output: `results/analysis/07-29-{segmented-regression-A1,rq2-composition,rq3-process}.csv`
-- PR samples: `results/pr_samples/07-28-pr-sample-265.csv`
+- PR samples (pilot): `results/pr_samples/07-28-pr-sample-265.csv`
 - Snapshot manifest / materialized source: `results/snapshots/`, `data/snapshots/`
