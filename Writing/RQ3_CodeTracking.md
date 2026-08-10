@@ -140,3 +140,67 @@ before scaling" pattern already used for the DPy chunker and Designite's
   individually); classes are coarser but more stable as a unit — likely
   worth prototyping at method granularity first since it's the more
   common case in the smell/metric data RQ1 already tracks.
+
+## Design decisions (2026-08-05, build kickoff)
+
+Status upgrade: moving from brainstorm to implementation. Decisions below,
+against the open questions above.
+
+**Approach: 2 (custom AST entity-matcher), built directly** — no separate
+evaluation phase for CodeShovel/PyDriller/git-of-theseus first. Shares its
+AST-parsing layer with `InHouseTooling.md`'s OO-metrics engine (Python `ast`,
+C# `CSharpSyntaxTree.ParseText` — see that doc's design-decisions section for
+why `ParseText` over `MSBuildWorkspace`) rather than building a second,
+separate parser — "worth building any shared AST-handling infrastructure
+once, not twice" (this doc, "Approach 2," above) is exactly what happens
+here: one entity inventory pass over a parsed file produces both the
+OO-metrics rows and the entity-tracking rows.
+
+**Granularity: both method and class, from the start** — two separate
+matching passes (methods within their enclosing class don't block class-level
+matching, and vice versa), not a phased method-first rollout.
+
+**Window: both** — full repo history (a per-entity survival/aging view, no
+intervention framing) and an intervention-windowed cut (mirrors RQ1's A2
+event-window track, for the agent-adjacent question). Both are cuts over the
+*same* underlying entity-touch timeline, not two separate collection passes —
+the windowed view is just a filter on `commit_date` relative to each repo's
+`intervention_date`.
+
+**Commit source: `git log --follow -- <path>` per file, not a full-history
+snapshot grid.** The existing `data/snapshots/` grid only materializes
+monthly checkpoints (RQ1's cadence) — too coarse to catch "how many times was
+this method edited," which needs every commit that touched the file. Walking
+`git log --follow` per file against the already-cloned `data/repo_cache/`
+gives exactly the touching commits without needing a full materialized tree
+at every one of them — only those specific blobs get pulled per commit
+(same `git show <sha>:<path>` extraction model `materialize_snapshots.py`
+already uses for archiving, just per-commit-per-file instead of
+per-commit-whole-tree).
+
+**Matching heuristic**: exact qualified-name + signature match first: falls
+back to fuzzy match (token-overlap similarity over the body) for
+renames/signature changes when no exact match exists in the same file's
+prior/next inventory; below a similarity threshold (to be tuned empirically
+against a real pilot repo, not guessed up front) counts as "no match" —
+genuine deletion or a rewrite total enough it isn't reasonably the same
+entity. The rename-vs-delete+create boundary noted in "Open questions" above
+is exactly this threshold — expect to revisit it once real pilot output
+exists to eyeball.
+
+**A real scope gap surfaced by this build, not yet resolved**: "edited N
+times" and "went through multiple rounds of review" are two different
+claims, resting on different data:
+- **Edit count** is answerable now, purely from the entity-touch timeline
+  above (commits that changed this method/class) — no new data collection
+  needed.
+- **Review rounds** (requested-changes cycles, re-review counts) needs
+  PR-level review-thread detail, which `ProjectStatus.md` §6 item 4 already
+  flags as *not yet built* — Track B currently has PR identity, timestamps,
+  and comment counts only, not the deeper per-PR diff/review stats that
+  would let an entity's touches be joined to *which PR* touched it and *how
+  many review rounds that PR went through*. This build ships the entity-touch
+  timeline and edit-count first; entity-to-PR-review linkage stays blocked on
+  that separate, not-yet-started Track B gap, same dependency
+  `InHouseTooling.md`'s "Linking entity lifetimes to PR/process data" section
+  already named.

@@ -150,3 +150,72 @@ an in-house tool on repos with no reference answer:
   narrowly (OO metrics only, Python first since `ast`/`radon` need no
   project-file setup at all) rather than trying to match Designite's full
   8-CSV-per-project output on day one.
+
+## Design decisions (2026-08-05, build kickoff)
+
+Status upgrade: this section documents the decisions made when moving from
+brainstorm to implementation. Answers to the open questions above, plus the
+concrete architecture the code will follow.
+
+**Scope: OO metrics only, both languages built in parallel** — not smells
+yet (smells stay in the "hard, separate phase" bucket above; nothing below
+changes that reasoning). Python and C# analyzers are both in scope for this
+build, not sequenced as two separate phases — but Python ships first in
+practice (no toolchain/project-load setup needed, and the pilot's DPy output
+is the fastest ground truth to validate against per the "Validation plan"
+above), with the C# analyzer following the same schema once Python is
+validated.
+
+**C# approach: syntax-only Roslyn, not `MSBuildWorkspace`.** This is the
+single biggest architectural fork and worth being explicit about *why*:
+Designite's `dotnet/aspire` blocker (`DESIGNITE_TASK.md` §5,
+`materialize_snapshots.py`'s `EXCLUDED_REPOS`) is entirely a consequence of
+`MSBuildWorkspace` needing a real, restorable `.sln`/`.csproj` graph —
+Arcade bootstrap, pinned preview SDKs, private feeds. `Microsoft.CodeAnalysis`
+also exposes `CSharpSyntaxTree.ParseText`, which parses a single `.cs` file
+into a full AST with **no project load at all**. Using that instead means:
+- File/class/method-local metrics (LOC, WMC, NOM, NOPM, NOF, NOPF, CC, PC,
+  LCOM) are all computable per-file, no `.sln` required — this is the
+  `lizard`-style tradeoff the original doc flagged above, chosen deliberately.
+- **Fan-In/Fan-Out/DIT need real cross-file type resolution**, which
+  `ParseText` alone doesn't give (that's exactly what `MSBuildWorkspace`
+  buys Designite). Building these ourselves means a lightweight, in-house
+  symbol table: walk every parsed file's class/interface declarations once
+  to build a name → declaring-file index, then resolve base-class/interface
+  names and field/parameter/return types against that index. This is
+  necessarily an approximation (no generic instantiation, no NuGet-package
+  type resolution, no partial-class merging across files unless we handle
+  `partial` explicitly) — good enough for DIT and same-repo Fan-In/Fan-Out,
+  not a full semantic compile.
+- **This is expected to unblock `dotnet/aspire`** for the in-house tool even
+  though it stays excluded from Designite's own output — worth flagging
+  explicitly when Phase 2 analysis runs, since it changes the "3 Python + 1
+  C#" language imbalance noted in `ProjectStatus.md` §6 item 1.
+- Output schema mirrors DPy/Designite's confirmed columns (see
+  `long_analysis.py`'s `parse_tool_output()` docstring) so pooling continues
+  to work the way `07-29-pooled-structural-metrics.csv` already does —
+  no adapter step, same as the DPy/Designite pooling turned out not to need
+  one.
+
+**Correlation matrix: pre vs. post, using the existing `post`/
+`intervention_date` convention.** Reuses the same pre/post split
+`07-29-pooled-structural-metrics.csv` and `07-29-rq3-process.csv` already
+encode (rows before vs. at-or-after each repo's intervention date) rather
+than inventing a new split. Two metric-by-metric matrices per unit of
+analysis (pre and post), **Spearman** not Pearson — consistent with the
+existing process-metrics test choice (`07-29-rq3-process.csv` uses
+Mann-Whitney/Cliff's delta, nonparametric throughout) and because smell
+counts/LOC aren't expected to be normally distributed. Computed **both**
+per-repo (small-N, descriptive) and pooled across the full sample (once
+Phase 2 gives enough rows for pooled correlation to mean something) — matches
+the existing per-repo-table + pooled-CSV pattern already used elsewhere in
+`results/analysis/`.
+
+**Time-series graphs**: one figure per metric, `target_date` on the x-axis,
+one line per repo (or faceted small-multiples once the repo count grows past
+what's readable on one plot) — built with the `dataviz` skill, reading
+directly from the same pooled CSV shape the correlation matrices use, no
+separate data prep.
+
+**Entity/snippet tracking (RQ3)**: superseded by decisions logged in
+`RQ3_CodeTracking.md`'s own "Design decisions" section, not duplicated here.
