@@ -1,3 +1,8 @@
+> **Superseded / archived.** This early framing paragraph is now covered by
+> `Writing/ProjectStatus.md`'s "The one-paragraph version" section (current,
+> maintained) and `Writing/Longitudinal.md`'s methodology introduction. Kept
+> for historical reference only; not maintained.
+
 
 
 ### Motivation 

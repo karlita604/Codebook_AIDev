@@ -1,3 +1,20 @@
+> **Read this banner first.** This file is an append-only running log —
+> each session's results get added below the last, in chronological order,
+> mixing early planning with final numbers. Use the table of contents below
+> to jump straight to what you need rather than scrolling top to bottom.
+> Current project state / gaps: `ProjectStatus.md`. Dated build history:
+> `ProjectUpdate.md`. Naming crosswalk (this file uses "Phase A"/"Phase B"
+> for the in-house tool, elsewhere renamed to Tool-Py/Tool-CS): `PHASES.md`.
+>
+> **Table of contents**
+> - [Phase 1d — DPy longitudinal results: planned visualizations (2026-07-27)](#phase-1d--dpy-longitudinal-results-planned-visualizations-2026-07-27) — early eyeball read on crewAI only, not a result
+> - [Full results layout plan (2026-07-28)](#full-results-layout-plan-2026-07-28--python--c-assuming-clean-data) — figure/table inventory, paper-shaped outline
+> - **[First real analysis — pilot results (2026-07-29)](#first-real-analysis--pilot-results-2026-07-29)** — the headline finding: RQ1-RQ5 on the N=4 pilot (segmented regression, composition shift, process metrics, cross-language, dosage). Read this section's own caveats before citing any number from it.
+> - [In-house tool validation — Phase A vs. DPy (2026-08-10)](#in-house-tool-validation--phase-a-python-oo-metrics-vs-dpy-2026-08-10) — Tool-Py agreement numbers, plus the airbyte/DPy undercount finding
+> - [In-house tool validation — Phase B vs. Designite (2026-08-11)](#in-house-tool-validation--phase-b-c-via-roslyn-vs-designite-2026-08-11) — Tool-CS agreement numbers, plus the `dotnet/aspire`/Dock `.slnx` wins
+
+---
+
 We record the distribution of ... for the collected .. PRs. To determine whether the ... were significantly different, we perform a Mann-Whitney U Test [30] at a significance level of \alpha = 0.05. We also compute Cliff's delta d [29]
 
 

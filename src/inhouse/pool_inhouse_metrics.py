@@ -1,6 +1,6 @@
 """
 In-house replacement for Phase 1d's DPy/Designite leg: run py_metrics.py
-(Phase A, Python) or csharp_metrics.py (Phase B, C# via Roslyn) against
+(Tool-Py, Python) or csharp_metrics.py (Tool-CS, C# via Roslyn) against
 every materialized snapshot (Phase 1e, materialize_snapshots.py) and pool
 the results into one table keyed the same way long_analysis.py's
 DPy/Designite output already is - (repo_id, track, target_date,
@@ -170,7 +170,7 @@ def main():
     # Deliberately NOT filtering out materialize_snapshots.py's
     # EXCLUDED_REPOS ({"dotnet/aspire"}) here - that exclusion is specific
     # to MSBuildWorkspace not being able to evaluate aspire's project graph
-    # (Designite's blocker), which doesn't apply to us: Phase B never loads
+    # (Designite's blocker), which doesn't apply to us: Tool-CS never loads
     # a .sln/.csproj at all (syntax-only Roslyn - see
     # Writing/InHouseTooling.md's design-decisions section). Inheriting that
     # exclusion here would silently reproduce a limitation this tool exists
@@ -191,9 +191,9 @@ def main():
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    # Not "-python" anymore - covers both languages now that Phase B (C#)
+    # Not "-python" anymore - covers both languages now that Tool-CS (C#)
     # exists. "inhouse-metrics" is still a glob-prefix match against the
-    # older Python-only "inhouse-metrics-python-*.csv" files from Phase A's
+    # older Python-only "inhouse-metrics-python-*.csv" files from Tool-Py's
     # validation runs, so _load_done_keys() still sees those rows as done
     # and won't reprocess them under the new tag.
     tag = "dryrun-inhouse" if args.dry_run else "inhouse-metrics"

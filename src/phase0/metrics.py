@@ -6,10 +6,13 @@ Given a csv where each row is a PR, calculate metrics for each PR and return a d
 Dataframe is returned as a csv file metrics_[inputfilename].csv in the same directory as the input csv.
 
 
-Our default input csv: results\phase0\07-21-500-pycsharp-1387.csv
+Our default input csv: results/phase0/07-21-500-pycsharp-1387.csv
 
 
-Phase 1 (phase1.py) Construct the dataframe with the following columns, where each row is a PR:
+This file's own two internal steps (not to be confused with the project's
+Phase 0-2 pipeline naming - see Writing/PHASES.md):
+
+Step 1 (phase1.py) Construct the dataframe with the following columns, where each row is a PR:
 # id 
 # title
 # body
@@ -23,7 +26,7 @@ Phase 1 (phase1.py) Construct the dataframe with the following columns, where ea
 # html_url
 
 
-Phase 2: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
+Step 2: Calculate metrics for each PR and add them as new columns to the dataframe. The metrics are:
 - rejected: Boolean metric indicating whether the PR was rejected or not.
 - num_commits: Number of commits in the PR.
 - num_issues: Number of issues associated with the PR.
@@ -54,7 +57,7 @@ all_user_df = pd.read_parquet("hf://datasets/hao-li/AIDev/all_user.parquet")
 # ------------------------------------------------------------------------------- # 
 # Description: 
 # Boolean metric indicating whether the PR was rejected or not. 
-# Columns used: closed_at, merged_at (already present after phase 1)
+# Columns used: closed_at, merged_at (already present after step 1)
 # Formula: If closed_at is not null and merged_at is null, then rejected is True, else False.
 # ------------------------------------------------------------------------------- # 
 

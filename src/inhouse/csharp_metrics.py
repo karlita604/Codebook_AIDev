@@ -1,5 +1,5 @@
 """
-Python glue for Phase B's C# analyzer - shells out to the compiled Roslyn
+Python glue for Tool-CS's C# analyzer - shells out to the compiled Roslyn
 console tool (src/inhouse/roslyn_tool/) the same way long_analysis.py's
 run_designite() shells out to DesigniteConsole, just calling our own
 syntax-only tool instead of a licensed one. See

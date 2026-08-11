@@ -18,8 +18,9 @@ dataframe with one row per input PR id and the following columns:
 # html_url (html_url)
 
 The result is written to phase1_[inputfilename].csv in the same directory
-as the input csv. (Phase 1.5, in metrics.py, adds the actual metric columns
-on top of this metadata and stores the result under data/.)
+as the input csv. (metrics.py's "Step 2" adds the actual metric columns on
+top of this metadata and stores the result under data/ - not to be confused
+with the project's Phase 0-2 pipeline naming, see Writing/PHASES.md.)
 
 Our default input csv: results/phase0/07-21-500-pycsharp-1387.csv
 
