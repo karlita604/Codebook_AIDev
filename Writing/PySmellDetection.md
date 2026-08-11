@@ -109,17 +109,18 @@ Statistically-derived thresholds (computed per-run, not imported):
 ## Detection strategies implemented (v1: four, class- and method-level)
 
 **God Class / Blob** (class-level) — the one strategy with a **primary-source
-equation**, used essentially verbatim (Marinescu 2004, Eq. 1):
+equation** as its starting point (Marinescu 2004, Eq. 1):
 
 ```
-GodClass(C) = WMC(C) ∈ TopValues(25%)  ∧  TCC(C) ∈ BottomValues(25%)  ∧  ATFD(C) > 1
+GodClass(C) = WMC(C) ∈ TopValues(10%)  ∧  TCC(C) ∈ BottomValues(10%)  ∧  ATFD(C) > 1
 ```
 
-`TopValues(25%)`/`BottomValues(25%)` are the same operationalization as
-`HIGH`/`VERY_HIGH` above but at the 75th percentile boundary directly (the
-paper's own worked parameterization, not the book's later WMC≥47 refinement
-— using the primary source's own numbers where we have them, rather than a
-secondhand paraphrase). `ATFD(C) > 1` is Marinescu's own stated threshold
+`TopValues`/`BottomValues` at **10%**, not the paper's own worked-example
+25% — revised 2026-08-11 after the first full batch run measured an
+implausibly high flag rate; see "Decisions" → "God Class threshold
+revision" below for the full empirical case (WMC/TCC's real-world
+anti-correlation, measured directly, not assumed) and why 10% and not some
+other number. `ATFD(C) > 1` is unchanged, Marinescu's own stated threshold
 verbatim (his text says "no direct access ... should be permitted," then
 parameterizes the filter as `HigherThan(1)` — reproduced as written, that
 looseness is the source's, not introduced here).
@@ -415,3 +416,97 @@ Raw output: `results/analysis/08-11-inhouse-smells-python-926.csv`
 (+ matching `-errors.csv`/`-progress.json`); validation reports:
 `results/analysis/08-11-inhouse-smell-validation-correlation.csv` and
 `08-11-inhouse-smell-validation-direction.csv`.
+
+### God Class threshold revision (2026-08-11)
+
+Follow-up investigation into the flag-rate finding above, done properly -
+measured against real data before changing anything, not patched on a
+hunch.
+
+**Investigation.** Pulled per-class `WMC`/`TCC`/`ATFD` via
+`py_smells.smell_detail_rows()` on three already-materialized snapshots
+spanning the corpus's size range (`crewAI`, 7 classes; `levanter`, 418;
+`mlflow`, 1,428) and checked the actual relationship between the two
+metrics God Class ANDs together:
+
+| Snapshot | n classes | WMC↔TCC Spearman *r* | current (25%/25%) flag rate | 10%/10% flag rate |
+|---|---|---|---|---|
+| crewAI (small) | 7 | −0.824 | 14.29% (1 class) | 14.29% (1 class) |
+| levanter (medium) | 418 | −0.652 | 3.35% (14 classes) | 0.96% (4 classes) |
+| mlflow (large) | 1,428 | −0.532 | 7.35% (105 classes) | 0.70% (10 classes) |
+
+(The 14.29%/28.6%-ish numbers reported in the "batch run log" entry above
+came from the pooled 495-row run, not this 3-snapshot sample - consistent
+ballpark, not the same figure; also worth noting: an early version of
+this investigation's own throwaway analysis script had a threshold-
+direction bug of its own (`quantile(1 - q)` instead of `quantile(q)`,
+silently inflating its "current config" numbers ~2x) - caught by
+cross-checking against `py_smells.py`'s actual production code, which
+does **not** have this bug (`_percentile(..., 0.25)` computes the
+threshold directly, correctly). Flagging this explicitly: the mistake was
+in a scratch script, not the shipped detector, but it's exactly the kind
+of thing that's cheap to state plainly once confirmed and expensive to
+leave ambiguous.)
+
+**Root cause, confirmed not assumed**: `WMC` and `TCC` are strongly
+**anti-correlated** in real code (Spearman *r* between −0.53 and −0.82
+across all three snapshots, all p ≪ 0.001) — larger, more complex classes
+really do tend toward lower cohesion. God Class ANDs `WMC ∈ TopValues(P)`
+with `TCC ∈ BottomValues(P)`; when the two inputs move together this
+strongly, the intersection lands far above the naive
+independence estimate of P² (e.g. 6.25% at P=25%) — it's closer to
+whichever single filter is more restrictive, because a class already
+correlates toward passing the second condition once it passes the first.
+
+**A tempting alternative, tested and rejected**: swap `TCC`'s
+percentile filter for the book's fixed constant (`TCC < ONE_THIRD`,
+0.33) instead of tightening the percentile — TCC, unlike WMC, is
+already a bounded 0–1 ratio, so a fixed constant for it doesn't carry
+the same cross-corpus scale-instability risk as `WMC ≥ 47` would (this
+doc's own "Deliberate implementation choice" principle, stated before
+this run, already draws exactly this distinction between dimensionless
+ratios and unbounded counts). Tested it anyway rather than assuming it
+would help: on `mlflow`, `TCC < 0.33` is actually **looser** than the
+25th percentile (0.33 sits above `mlflow`'s own P25 of 0.136), so this
+swap made the flag rate *worse* (12.18% vs. 7.35%), not better -
+whether a fixed constant helps or hurts depends entirely on where it
+happens to fall in a given corpus's real distribution, which is
+exactly the instability this doc already chose percentile filters to
+avoid for `WMC`. Rejected on the evidence, not the principle.
+
+**Decision**: tighten both `God Class` filters from `TopValues(25%)`/
+`BottomValues(25%)` to `TopValues(10%)`/`BottomValues(10%)`, keeping the
+percentile-relative (self-calibrating, no cross-corpus absolute-constant
+risk) mechanism this doc already committed to — not reverting to it.
+Justified two ways: (1) empirically, it brings `mlflow`/`levanter` down
+into `Data Class`/`Feature Envy`/`Brain Method`'s typical low-single-digit
+range; (2) textually, Marinescu's own paper (§4.1) calls 25% "a
+simplistic approach... for now," not a validated constant - tightening it
+is squarely inside his own stated methodology (§3.4, "Issue of Threshold
+Values"), not a deviation from it. `ATFD > 1` and `Data Class`/
+`Feature Envy`/`Brain Method` are unchanged - `Data Class` still uses the
+original `wmc_p75`/`wmc_p90` for its own `HIGH`/`VERY_HIGH` tiers (a
+structurally different use of the same percentile machinery that wasn't
+producing an inflated rate, so left alone). Implemented in
+`py_smells.py`'s `detect_smells()`; `wmc_p90` is reused as-is (already
+computed for `Data Class`) rather than adding a redundant threshold.
+
+**Confirmed surgical**: re-ran `analyze_snapshot()` on the same `mlflow`
+snapshot before/after - `n_god_class` 105→10, every other count
+(`n_data_class` 10, `n_feature_envy` 126, `n_brain_method` 178)
+unchanged.
+
+**Not yet done**: the full 926-row batch (`results/analysis/
+08-11-inhouse-smells-python-926.csv`) and the validation report both
+still reflect the **old** 25%/25% thresholds - they were not
+regenerated as part of this investigation. `design_smell_count`/
+`design_smell_density_per_kloc` in that CSV should be read as
+pre-revision until a re-run happens.
+
+**Residual, accepted limitation**: even at 10%/10%, `crewAI`'s tiny
+sample (7 classes) still shows 14.29% - unchanged before/after, because
+tightening the percentile can't fix a single-digit denominator's
+inherent noise (1 flagged class out of 7 is 14.3% no matter where the
+cutoff sits within that range). Not a formula problem to solve further;
+a small-N caveat to carry forward alongside the count wherever a
+sparse snapshot's `design_smell_density_per_kloc` gets used on its own.

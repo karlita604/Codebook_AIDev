@@ -159,15 +159,26 @@ def detect_smells(class_rows, method_rows):
     wmc_values = [r["wmc"] for r in class_rows]
     wmc_p75 = _percentile(wmc_values, 0.75)
     wmc_p90 = _percentile(wmc_values, 0.90)
-    tcc_p25 = _percentile([r["tcc"] for r in class_rows], 0.25)
+    tcc_p10 = _percentile([r["tcc"] for r in class_rows], 0.10)
 
     for r in class_rows:
-        # God Class/Blob (Marinescu 2004, Eq. 1): WMC in TopValues(25%) AND
-        # TCC in BottomValues(25%) AND ATFD > 1 (his own stated threshold,
-        # reproduced as published).
+        # God Class/Blob: WMC in TopValues(10%) AND TCC in
+        # BottomValues(10%) AND ATFD > 1. Marinescu's own worked example
+        # (2004, Eq. 1) used TopValues(25%)/BottomValues(25%) - his own
+        # text calls that "a simplistic approach ... for now", not a
+        # validated constant. Tightened to 10%/10% here (2026-08-11,
+        # decision logged in Writing/PySmellDetection.md) after the first
+        # full batch run measured an 11.7% pooled flag rate - confirmed
+        # empirically as WMC/TCC being strongly anti-correlated in real
+        # code (Spearman r -0.53 to -0.82 across 3 sampled snapshots), not
+        # a bug: two independent ~25% filters intersect far above the
+        # naive 6.25% independence estimate when the two metrics move
+        # together. Reuses wmc_p90 (already computed below for Data
+        # Class's VERY_HIGH tier) rather than a separate WMC threshold -
+        # same numeric value, no new computation needed.
         r["is_god_class"] = bool(
-            wmc_p75 is not None and r["wmc"] >= wmc_p75
-            and tcc_p25 is not None and r["tcc"] <= tcc_p25
+            wmc_p90 is not None and r["wmc"] >= wmc_p90
+            and tcc_p10 is not None and r["tcc"] <= tcc_p10
             and r["atfd"] > 1
         )
         # Data Class (Lanza & Marinescu 2006): WOC < ONE_THIRD AND
