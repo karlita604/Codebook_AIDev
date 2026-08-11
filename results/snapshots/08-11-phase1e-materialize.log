@@ -191,3 +191,146 @@
   [archive] (73/73) marin-community/levanter@c6d1200: ok
   materialized 73/73 (0 failed - rerun to retry, backfill/archives are idempotent)
 ===== marimo-team/marimo =====
+
+=== marimo-team/marimo (Python) - 75 unique commits, 75 not yet materialized ===
+  [backfill] marimo-team/marimo: fetching ['*.py'] blobs for all history...
+  [backfill] marimo-team/marimo: done
+  [archive] (1/75) marimo-team/marimo@3558f3d: ok
+  [archive] (2/75) marimo-team/marimo@a74444e: ok
+  [archive] (3/75) marimo-team/marimo@d218d3a: ok
+  [archive] (4/75) marimo-team/marimo@81cda96: ok
+  [archive] (5/75) marimo-team/marimo@b57c5f2: ok
+  [archive] (6/75) marimo-team/marimo@36d3d24: ok
+  [archive] (7/75) marimo-team/marimo@07275d0: ok
+  [archive] (8/75) marimo-team/marimo@e74532a: ok
+  [archive] (9/75) marimo-team/marimo@df634e7: ok
+  [archive] (10/75) marimo-team/marimo@6862012: ok
+  [archive] (11/75) marimo-team/marimo@c6051be: ok
+  [archive] (12/75) marimo-team/marimo@57f94ff: ok
+  [archive] (13/75) marimo-team/marimo@7f3023f: ok
+  [archive] (14/75) marimo-team/marimo@9eb1072: ok
+  [archive] (15/75) marimo-team/marimo@c90743d: ok
+  [archive] (16/75) marimo-team/marimo@064e07e: ok
+  [archive] (17/75) marimo-team/marimo@3bf9807: ok
+  [archive] (18/75) marimo-team/marimo@14bf70b: ok
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\bc7ae2e6a5a0d3495655bce0b273b4c313df3775.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (19/75) marimo-team/marimo@bc7ae2e: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\07f43e0f8c2d388116edf6a9021086b56b815cb9.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (20/75) marimo-team/marimo@07f43e0: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\2beb9c724ccb17eaa2dd041b79fdba8c3f3d2299.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (21/75) marimo-team/marimo@2beb9c7: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\85c575e14bf72f23397892a6d830c2e48ccc358c.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (22/75) marimo-team/marimo@85c575e: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\145a96dddd98e1bf1b6f47ac02c503dbe956df5a.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (23/75) marimo-team/marimo@145a96d: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\ed9f0af7701e107e18e690c5abd1f7c1c683f624.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (24/75) marimo-team/marimo@ed9f0af: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\53801bc330aecc4cb9ca8740cc6126731bfc25e1.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (25/75) marimo-team/marimo@53801bc: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\29db9c012fbf264862abf0c58a26c75ce17c8fed.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (26/75) marimo-team/marimo@29db9c0: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\c262318f0015c08d1a1dbe900c02f8b1dd852cac.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (27/75) marimo-team/marimo@c262318: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\f82b9e55bf5a6ab247cf0b362c9038b0b6745d07.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (28/75) marimo-team/marimo@f82b9e5: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\b70293a7f077ac30e981401fa99328777b76d48f.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (29/75) marimo-team/marimo@b70293a: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\d4f8e5ab52a2885a52398562326f8044c454edfb.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (30/75) marimo-team/marimo@d4f8e5a: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\543bea433c4f203952ff8075dd62eba7e241116d.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (31/75) marimo-team/marimo@543bea4: failed or timed out
+  [archive] (32/75) marimo-team/marimo@9a6d1d8: ok
+  [archive] (33/75) marimo-team/marimo@a3adf8f: ok
+  [archive] (34/75) marimo-team/marimo@2eb2adf: ok
+  [archive] (35/75) marimo-team/marimo@aec409d: ok
+  [archive] (36/75) marimo-team/marimo@d2592d8: ok
+  [archive] (37/75) marimo-team/marimo@f5dcfef: ok
+  [archive] (38/75) marimo-team/marimo@36a2319: ok
+  [archive] (39/75) marimo-team/marimo@7b63904: ok
+  [archive] (40/75) marimo-team/marimo@3685448: ok
+  [archive] (41/75) marimo-team/marimo@a181691: ok
+  [archive] (42/75) marimo-team/marimo@218870c: ok
+  [archive] (43/75) marimo-team/marimo@87f8ac9: ok
+  [archive] (44/75) marimo-team/marimo@536a0a5: ok
+  [archive] (45/75) marimo-team/marimo@0a1d28e: ok
+  [archive] (46/75) marimo-team/marimo@3c9d84c: ok
+  [archive] (47/75) marimo-team/marimo@4c20bbc: ok
+  [archive] (48/75) marimo-team/marimo@6cab387: ok
+  [archive] (49/75) marimo-team/marimo@32f29d5: ok
+  [archive] (50/75) marimo-team/marimo@700e0aa: ok
+  [archive] (51/75) marimo-team/marimo@e07943d: ok
+  [archive] (52/75) marimo-team/marimo@ed67b01: ok
+  [archive] (53/75) marimo-team/marimo@951c689: ok
+  [archive] (54/75) marimo-team/marimo@d1a5394: ok
+  [archive] (55/75) marimo-team/marimo@79717db: ok
+  [archive] (56/75) marimo-team/marimo@f231ff5: ok
+  [archive] (57/75) marimo-team/marimo@4d8cfcc: ok
+  [archive] (58/75) marimo-team/marimo@755a855: ok
+  [archive] (59/75) marimo-team/marimo@33dcefb: ok
+  [archive] (60/75) marimo-team/marimo@34e3d00: ok
+  [archive] (61/75) marimo-team/marimo@dd03b87: ok
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\451981485d4c0fa72ebfca081342e16405909f7d.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (62/75) marimo-team/marimo@4519814: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\48e57bdb48cad22fce17fb099ab3e8e66ce375cc.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (63/75) marimo-team/marimo@48e57bd: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\b845f5d3e33b43a2d9850eb81d63dbebed5f26b1.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (64/75) marimo-team/marimo@b845f5d: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\f98326c6b03e2df598c3c42a810458896a58ebd8.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (65/75) marimo-team/marimo@f98326c: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\c85747ccb679e790ad48beae5e11833ee56cc675.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (66/75) marimo-team/marimo@c85747c: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\f32ebf855b19551f2bfa44114aa024f4a38c00fd.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (67/75) marimo-team/marimo@f32ebf8: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\8a65a4a43fa0108e90dedf665aa7184db8d9eefd.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (68/75) marimo-team/marimo@8a65a4a: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\80a17194c84711eeca2bd9264ad6c09d07b44675.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (69/75) marimo-team/marimo@80a1719: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\364905967ae630dcc531ce20a393f0d9f950e8fe.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (70/75) marimo-team/marimo@3649059: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\33ee2fcb493a89abb761bc752c663e3be9252ab3.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (71/75) marimo-team/marimo@33ee2fc: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\4c77d6bc5242124f778cb099a804c72ea80c47e1.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (72/75) marimo-team/marimo@4c77d6b: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\2789f84ecf5560e87789b39b2acc38ecb20cf83e.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (73/75) marimo-team/marimo@2789f84: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\3bc4d8dd68bd478f7646cd5d40733853414070a7.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (74/75) marimo-team/marimo@3bc4d8d: failed or timed out
+tests/_ast/codegen_data/test_generate_filecontents_toplevel_pytest.py: Can't create '\\\\?\\C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\marimo-team__marimo\\c192611e6760e7b169ec5104a5c514bb6939c908.tmp\\tests\\_ast\\codegen_data\\test_generate_filecontents_toplevel_pytest.py': Invalid argument
+tar: Error exit delayed from previous errors.
+  [archive] (75/75) marimo-team/marimo@c192611: failed or timed out
+  materialized 48/75 (27 failed - rerun to retry, backfill/archives are idempotent)
+===== Azure/azure-sdk-for-python =====
+
+=== Azure/azure-sdk-for-python (Python) - 96 unique commits, 61 not yet materialized ===
+  [backfill] Azure/azure-sdk-for-python: fetching ['*.py'] blobs for all history...
+  [backfill] Azure/azure-sdk-for-python: done
+  [archive] (1/61) Azure/azure-sdk-for-python@6427bf8: ok
+  [archive] (2/61) Azure/azure-sdk-for-python@f3ca8ac: ok
+  [archive] (3/61) Azure/azure-sdk-for-python@9379d2e: failed or timed out
+  [archive] (4/61) Azure/azure-sdk-for-python@4d9bf58: failed or timed out
