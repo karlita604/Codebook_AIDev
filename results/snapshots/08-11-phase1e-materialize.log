@@ -1,0 +1,193 @@
+===== ikamensh/flynt =====
+
+=== ikamensh/flynt (Python) - 22 unique commits, 22 not yet materialized ===
+  [backfill] ikamensh/flynt: fetching ['*.py'] blobs for all history...
+  [backfill] ikamensh/flynt: done
+  [archive] (1/22) ikamensh/flynt@5864a09: ok
+  [archive] (2/22) ikamensh/flynt@dac96e1: ok
+  [archive] (3/22) ikamensh/flynt@90cc1ee: ok
+  [archive] (4/22) ikamensh/flynt@3288859: ok
+  [archive] (5/22) ikamensh/flynt@1b42461: ok
+  [archive] (6/22) ikamensh/flynt@90c66b4: ok
+  [archive] (7/22) ikamensh/flynt@2fdb9a8: ok
+  [archive] (8/22) ikamensh/flynt@b247c6b: ok
+  [archive] (9/22) ikamensh/flynt@22f17df: ok
+  [archive] (10/22) ikamensh/flynt@798e104: ok
+  [archive] (11/22) ikamensh/flynt@c573f8b: ok
+  [archive] (12/22) ikamensh/flynt@651c822: ok
+  [archive] (13/22) ikamensh/flynt@27b7988: ok
+  [archive] (14/22) ikamensh/flynt@7ff03ad: ok
+  [archive] (15/22) ikamensh/flynt@f763e2d: ok
+  [archive] (16/22) ikamensh/flynt@c16efb8: ok
+  [archive] (17/22) ikamensh/flynt@90dec31: ok
+  [archive] (18/22) ikamensh/flynt@2eb0297: ok
+  [archive] (19/22) ikamensh/flynt@56fd34c: ok
+  [archive] (20/22) ikamensh/flynt@84470a1: ok
+  [archive] (21/22) ikamensh/flynt@b66f970: ok
+  [archive] (22/22) ikamensh/flynt@9a74f6f: ok
+  materialized 22/22 (0 failed - rerun to retry, backfill/archives are idempotent)
+===== Significant-Gravitas/AutoGPT =====
+
+=== Significant-Gravitas/AutoGPT (Python) - 79 unique commits, 79 not yet materialized ===
+  [backfill] Significant-Gravitas/AutoGPT: fetching ['*.py'] blobs for all history...
+  [backfill] Significant-Gravitas/AutoGPT: done
+  [archive] (1/79) Significant-Gravitas/AutoGPT@39b5169: ok
+  [archive] (2/79) Significant-Gravitas/AutoGPT@c317cf0: ok
+  [archive] (3/79) Significant-Gravitas/AutoGPT@63b79a8: ok
+  [archive] (4/79) Significant-Gravitas/AutoGPT@0f33416: ok
+  [archive] (5/79) Significant-Gravitas/AutoGPT@a14ddcd: ok
+  [archive] (6/79) Significant-Gravitas/AutoGPT@ecb9580: failed or timed out
+  [archive] (7/79) Significant-Gravitas/AutoGPT@a0fba5d: ok
+  [archive] (8/79) Significant-Gravitas/AutoGPT@688ba62: ok
+  [archive] (9/79) Significant-Gravitas/AutoGPT@207201d: ok
+  [archive] (10/79) Significant-Gravitas/AutoGPT@45c8476: ok
+  [archive] (11/79) Significant-Gravitas/AutoGPT@66e0c87: ok
+  [archive] (12/79) Significant-Gravitas/AutoGPT@51f5808: ok
+  [archive] (13/79) Significant-Gravitas/AutoGPT@fb8ed0b: ok
+  [archive] (14/79) Significant-Gravitas/AutoGPT@a7c7a5e: ok
+  [archive] (15/79) Significant-Gravitas/AutoGPT@cb9ad6f: ok
+  [archive] (16/79) Significant-Gravitas/AutoGPT@d5ab83a: ok
+  [archive] (17/79) Significant-Gravitas/AutoGPT@ca71824: ok
+  [archive] (18/79) Significant-Gravitas/AutoGPT@370b2da: ok
+  [archive] (19/79) Significant-Gravitas/AutoGPT@a80b0de: ok
+  [archive] (20/79) Significant-Gravitas/AutoGPT@151fad5: ok
+  [archive] (21/79) Significant-Gravitas/AutoGPT@7d48eeb: ok
+  [archive] (22/79) Significant-Gravitas/AutoGPT@1ce1918: ok
+  [archive] (23/79) Significant-Gravitas/AutoGPT@8e33af6: ok
+  [archive] (24/79) Significant-Gravitas/AutoGPT@7747ad8: ok
+  [archive] (25/79) Significant-Gravitas/AutoGPT@c6089bb: ok
+  [archive] (26/79) Significant-Gravitas/AutoGPT@602f887: ok
+  [archive] (27/79) Significant-Gravitas/AutoGPT@768c6b1: ok
+  [archive] (28/79) Significant-Gravitas/AutoGPT@198b3d9: ok
+  [archive] (29/79) Significant-Gravitas/AutoGPT@d323dc2: ok
+  [archive] (30/79) Significant-Gravitas/AutoGPT@7544028: ok
+  [archive] (31/79) Significant-Gravitas/AutoGPT@e68b873: ok
+  [archive] (32/79) Significant-Gravitas/AutoGPT@42b9fac: ok
+  [archive] (33/79) Significant-Gravitas/AutoGPT@a37b527: ok
+  [archive] (34/79) Significant-Gravitas/AutoGPT@290d0d9: ok
+  [archive] (35/79) Significant-Gravitas/AutoGPT@7e37de8: ok
+  [archive] (36/79) Significant-Gravitas/AutoGPT@6f4f808: ok
+  [archive] (37/79) Significant-Gravitas/AutoGPT@e8d7dfa: ok
+  [archive] (38/79) Significant-Gravitas/AutoGPT@227cf41: ok
+  [archive] (39/79) Significant-Gravitas/AutoGPT@78b8428: ok
+  [archive] (40/79) Significant-Gravitas/AutoGPT@5263642: ok
+  [archive] (41/79) Significant-Gravitas/AutoGPT@80161de: ok
+  [archive] (42/79) Significant-Gravitas/AutoGPT@615a974: ok
+  [archive] (43/79) Significant-Gravitas/AutoGPT@e30dac5: ok
+  [archive] (44/79) Significant-Gravitas/AutoGPT@41be88f: ok
+  [archive] (45/79) Significant-Gravitas/AutoGPT@3c30783: ok
+  [archive] (46/79) Significant-Gravitas/AutoGPT@e550846: ok
+  [archive] (47/79) Significant-Gravitas/AutoGPT@bfcc0c9: ok
+  [archive] (48/79) Significant-Gravitas/AutoGPT@aa6f910: ok
+  [archive] (49/79) Significant-Gravitas/AutoGPT@6127727: ok
+  [archive] (50/79) Significant-Gravitas/AutoGPT@f01b318: ok
+  [archive] (51/79) Significant-Gravitas/AutoGPT@1f2af18: ok
+  [archive] (52/79) Significant-Gravitas/AutoGPT@73d4331: ok
+  [archive] (53/79) Significant-Gravitas/AutoGPT@d791cde: ok
+  [archive] (54/79) Significant-Gravitas/AutoGPT@2a92970: ok
+  [archive] (55/79) Significant-Gravitas/AutoGPT@96a173a: ok
+  [archive] (56/79) Significant-Gravitas/AutoGPT@afb66f7: ok
+  [archive] (57/79) Significant-Gravitas/AutoGPT@c594692: ok
+  [archive] (58/79) Significant-Gravitas/AutoGPT@bd42533: ok
+  [archive] (59/79) Significant-Gravitas/AutoGPT@dc981b5: ok
+  [archive] (60/79) Significant-Gravitas/AutoGPT@a3d082a: ok
+  [archive] (61/79) Significant-Gravitas/AutoGPT@fb18ddf: ok
+  [archive] (62/79) Significant-Gravitas/AutoGPT@e701f41: ok
+  [archive] (63/79) Significant-Gravitas/AutoGPT@2dd3661: ok
+  [archive] (64/79) Significant-Gravitas/AutoGPT@171deea: ok
+  [archive] (65/79) Significant-Gravitas/AutoGPT@36f5f24: ok
+  [archive] (66/79) Significant-Gravitas/AutoGPT@e9b682c: ok
+  [archive] (67/79) Significant-Gravitas/AutoGPT@3c62ca2: ok
+  [archive] (68/79) Significant-Gravitas/AutoGPT@69d873d: ok
+  [archive] (69/79) Significant-Gravitas/AutoGPT@d4b5508: ok
+  [archive] (70/79) Significant-Gravitas/AutoGPT@6fce3a0: ok
+  [archive] (71/79) Significant-Gravitas/AutoGPT@634f826: ok
+  [archive] (72/79) Significant-Gravitas/AutoGPT@73c0b68: ok
+  [archive] (73/79) Significant-Gravitas/AutoGPT@9c3f679: ok
+  [archive] (74/79) Significant-Gravitas/AutoGPT@cc91791: ok
+  [archive] (75/79) Significant-Gravitas/AutoGPT@f31c160: ok
+  [archive] (76/79) Significant-Gravitas/AutoGPT@05aaf7a: ok
+  [archive] (77/79) Significant-Gravitas/AutoGPT@c6b729b: ok
+  [archive] (78/79) Significant-Gravitas/AutoGPT@334ec18: ok
+  [archive] (79/79) Significant-Gravitas/AutoGPT@94ebce7: ok
+  materialized 78/79 (1 failed - rerun to retry, backfill/archives are idempotent)
+===== marin-community/levanter =====
+
+=== marin-community/levanter (Python) - 74 unique commits, 73 not yet materialized ===
+  [backfill] marin-community/levanter: fetching ['*.py'] blobs for all history...
+  [backfill] marin-community/levanter: done
+  [archive] (1/73) marin-community/levanter@55a059c: ok
+  [archive] (2/73) marin-community/levanter@e12f437: ok
+  [archive] (3/73) marin-community/levanter@3331b4c: ok
+  [archive] (4/73) marin-community/levanter@9d10461: ok
+  [archive] (5/73) marin-community/levanter@5ecd74b: ok
+  [archive] (6/73) marin-community/levanter@5bc29ed: ok
+  [archive] (7/73) marin-community/levanter@2bf5167: ok
+  [archive] (8/73) marin-community/levanter@e4da333: ok
+  [archive] (9/73) marin-community/levanter@b53fecb: ok
+  [archive] (10/73) marin-community/levanter@3c80c6b: ok
+  [archive] (11/73) marin-community/levanter@5f71dd1: ok
+  [archive] (12/73) marin-community/levanter@5c85d10: ok
+  [archive] (13/73) marin-community/levanter@51a51b6: ok
+  [archive] (14/73) marin-community/levanter@dbdc87a: ok
+  [archive] (15/73) marin-community/levanter@94b32c1: ok
+  [archive] (16/73) marin-community/levanter@ac12e79: ok
+  [archive] (17/73) marin-community/levanter@4ec6fab: ok
+  [archive] (18/73) marin-community/levanter@e6c1ae3: ok
+  [archive] (19/73) marin-community/levanter@1d4a840: ok
+  [archive] (20/73) marin-community/levanter@7d30449: ok
+  [archive] (21/73) marin-community/levanter@4cdf5af: ok
+  [archive] (22/73) marin-community/levanter@26ccca1: ok
+  [archive] (23/73) marin-community/levanter@4c60d69: ok
+  [archive] (24/73) marin-community/levanter@2516d06: ok
+  [archive] (25/73) marin-community/levanter@dae12f6: ok
+  [archive] (26/73) marin-community/levanter@880de33: ok
+  [archive] (27/73) marin-community/levanter@ac0882d: ok
+  [archive] (28/73) marin-community/levanter@ffa8e28: ok
+  [archive] (29/73) marin-community/levanter@45d41d8: ok
+  [archive] (30/73) marin-community/levanter@ba682ca: ok
+  [archive] (31/73) marin-community/levanter@9804b34: ok
+  [archive] (32/73) marin-community/levanter@736d9ea: ok
+  [archive] (33/73) marin-community/levanter@04a81ca: ok
+  [archive] (34/73) marin-community/levanter@6866fb0: ok
+  [archive] (35/73) marin-community/levanter@0fc5ac8: ok
+  [archive] (36/73) marin-community/levanter@0fa750d: ok
+  [archive] (37/73) marin-community/levanter@6e2d938: ok
+  [archive] (38/73) marin-community/levanter@dae9ea2: ok
+  [archive] (39/73) marin-community/levanter@ea77bc8: ok
+  [archive] (40/73) marin-community/levanter@c4b3769: ok
+  [archive] (41/73) marin-community/levanter@27a0992: ok
+  [archive] (42/73) marin-community/levanter@77aa591: ok
+  [archive] (43/73) marin-community/levanter@b16db86: ok
+  [archive] (44/73) marin-community/levanter@427874a: ok
+  [archive] (45/73) marin-community/levanter@ef6349c: ok
+  [archive] (46/73) marin-community/levanter@79fa64c: ok
+  [archive] (47/73) marin-community/levanter@667a5a3: ok
+  [archive] (48/73) marin-community/levanter@3d5677e: ok
+  [archive] (49/73) marin-community/levanter@5d04609: ok
+  [archive] (50/73) marin-community/levanter@5581062: ok
+  [archive] (51/73) marin-community/levanter@7b91583: ok
+  [archive] (52/73) marin-community/levanter@f534b27: ok
+  [archive] (53/73) marin-community/levanter@2c6ab63: ok
+  [archive] (54/73) marin-community/levanter@7bdbfa3: ok
+  [archive] (55/73) marin-community/levanter@82f4dfc: ok
+  [archive] (56/73) marin-community/levanter@007f32b: ok
+  [archive] (57/73) marin-community/levanter@333b327: ok
+  [archive] (58/73) marin-community/levanter@1aaee1b: ok
+  [archive] (59/73) marin-community/levanter@080ee17: ok
+  [archive] (60/73) marin-community/levanter@97da5ea: ok
+  [archive] (61/73) marin-community/levanter@93fe339: ok
+  [archive] (62/73) marin-community/levanter@ea8f4c8: ok
+  [archive] (63/73) marin-community/levanter@51c551b: ok
+  [archive] (64/73) marin-community/levanter@63adf6a: ok
+  [archive] (65/73) marin-community/levanter@dc485b1: ok
+  [archive] (66/73) marin-community/levanter@a355212: ok
+  [archive] (67/73) marin-community/levanter@b01e8b1: ok
+  [archive] (68/73) marin-community/levanter@93f80da: ok
+  [archive] (69/73) marin-community/levanter@1cb20ce: ok
+  [archive] (70/73) marin-community/levanter@ec65438: ok
+  [archive] (71/73) marin-community/levanter@5eab085: ok
+  [archive] (72/73) marin-community/levanter@e9b2607: ok
+  [archive] (73/73) marin-community/levanter@c6d1200: ok
+  materialized 73/73 (0 failed - rerun to retry, backfill/archives are idempotent)
+===== marimo-team/marimo =====
