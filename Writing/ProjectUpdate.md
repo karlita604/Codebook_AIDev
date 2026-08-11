@@ -811,3 +811,65 @@ the other 8 Phase 2 C# repos (`dotnet/maui`, `dotnet/aspnetcore`,
 `wieslawsoltes/Svg.Skia`, `microsoft/testfx`, `elsa-workflows/elsa-core`) -
 the tool is ready for them, just not pointed at them yet.
 
+## 2026-08-11 (later) — Phase B rolled out to all 7 C# repos; Dock's leftover bad-manifest rows cleaned up
+
+Follow-up to the same day's Phase B entry above: asked to run Phase B
+"on everything" for the most accurate results possible, with Python-side
+smell detection explicitly called out as being worked on separately (a
+different branch) - so this entry is C#-only by design, not an oversight.
+
+**Materialization gap found first.** Of the 5 remaining Phase 2 C# repos
+(`dotnet/maui`, `dotnet/aspnetcore`, `elsa-workflows/elsa-core`,
+`microsoft/testfx`, `wieslawsoltes/Svg.Skia`), only `dotnet/aspnetcore`
+had any materialized snapshots at all (65/96), and three had zero. Their
+`git` clones existed in `data/repo_cache/` already, just never archived
+(Phase 1e). Ran `materialize_snapshots.py --repo <name>` for all 5 in
+parallel background jobs. One transient Windows failure
+(`dotnet/aspnetcore@9642bab`: "directory is not empty" on a leftover
+`.tmp` extraction folder from an earlier interrupted attempt) - cleared
+the stale `.tmp` dir manually and reran; `materialize_snapshots.py`'s own
+idempotent design meant this was a one-line fix, not a real problem.
+Final: `dotnet/maui` 94/94, `elsa-workflows/elsa-core` 93/93,
+`microsoft/testfx` 93/93, `wieslawsoltes/Svg.Skia` 53/53,
+`dotnet/aspnetcore` 96/96 (95 + the 1 retried).
+
+**Checked each new repo for the Dock manifest bug before trusting it** -
+same method as when the bug was first found: compare unique-commit count
+against the 96 grid rows, and check the local clone's most recent commit
+date. All four (`aspnetcore` 95, `maui` 94, `elsa-core` 93, `testfx` 93 -
+`Svg.Skia` was already checked in the earlier entry, 54 unique) showed
+healthy diversity and clones current as of late July/early August 2026.
+Confirms, again, that the collapse-to-2-commits bug is specific to
+`wieslawsoltes/Dock`'s clone, not a property of the manifest-generation
+code itself.
+
+**Ran Phase B against all 5**, each as its own background job:
+`wieslawsoltes/Svg.Skia` 96/96 ok, `elsa-workflows/elsa-core` 96/96 ok,
+`microsoft/testfx` 96/96 ok, `dotnet/maui` 96/96 ok, `dotnet/aspnetcore`
+96/96 ok. Combined with the earlier Dock (96) and `dotnet/aspire` (75)
+runs: **all 7 C# repos in the manifest now have full in-house structural
+data, 651 rows total, 100% `ok`, zero failures.**
+
+**Found and fixed a real data-hygiene issue while consolidating.** Pooling
+all in-house output files together to summarize, Dock showed 190 rows
+instead of 96 - the 94 leftover rows from the *broken*-manifest run
+(logged in the earlier entry) were still sitting in
+`08-11-inhouse-metrics-Dock-{5,96}.csv` alongside the 96 correct ones,
+un-deduplicated because they carry a different `commit_sha` for the same
+`target_date` (so the resumability logic's key-based dedup never saw them
+as redundant - they're genuinely different rows, just wrong ones). Filtered
+both files down to exactly the 96 rows matching the verified-correct old
+manifest's `(track, target_date, commit_sha)` triples before calling this
+done - confirmed after: 96 rows, 64 unique commits, 0 duplicate
+`(track, target_date)` pairs. Re-ran `validate_against_pilot.py` after the
+cleanup to confirm the join numbers didn't change (they didn't - 87/87,
+same figures as the first Dock validation) - the bad rows were extras, not
+substitutions, so they weren't silently corrupting the validated numbers,
+just cluttering the output file.
+
+**Not done this entry**: anything on the Python side (by design - see
+above), fixing Dock's actual stale `repo_cache` clone (still just papered
+over via the `--manifest` override, not fixed at the source), and
+re-running the pilot's RQ1-RQ5 analysis on any of this newly-available
+data (Phase C territory, not asked for here).
+
