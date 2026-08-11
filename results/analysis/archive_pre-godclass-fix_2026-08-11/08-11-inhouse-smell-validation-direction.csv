@@ -1,17 +1,17 @@
 repo,metric,source,n_pre,n_post,pre_mean,post_mean,direction
-airbytehq/airbyte,design_smell_density_per_kloc,inhouse,59,37,0.5312,0.341,down
+airbytehq/airbyte,design_smell_density_per_kloc,inhouse,59,37,2.2819,1.7567,down
 airbytehq/airbyte,design_smell_density_per_kloc,dpy,59,37,20.3187,14.5654,down
 airbytehq/airbyte,implementation_smell_density_per_kloc,inhouse,59,37,1.3489,1.1392,down
 airbytehq/airbyte,implementation_smell_density_per_kloc,dpy,59,37,95.8663,103.2944,up
-crewAIInc/crewAI,design_smell_density_per_kloc,inhouse,36,36,0.1495,0.1755,up
+crewAIInc/crewAI,design_smell_density_per_kloc,inhouse,36,36,0.4491,0.4639,up
 crewAIInc/crewAI,design_smell_density_per_kloc,dpy,36,36,7.719,9.3611,up
 crewAIInc/crewAI,implementation_smell_density_per_kloc,inhouse,36,36,1.1734,1.2085,up
 crewAIInc/crewAI,implementation_smell_density_per_kloc,dpy,36,36,76.7981,78.6838,up
-mlflow/mlflow,design_smell_density_per_kloc,inhouse,63,33,0.0375,0.0442,up
+mlflow/mlflow,design_smell_density_per_kloc,inhouse,63,33,0.1835,0.2505,up
 mlflow/mlflow,design_smell_density_per_kloc,dpy,63,33,21.9947,21.0055,down
 mlflow/mlflow,implementation_smell_density_per_kloc,inhouse,63,33,0.5057,0.6242,up
 mlflow/mlflow,implementation_smell_density_per_kloc,dpy,63,33,97.6768,99.1961,up
-ALL (pooled),design_smell_density_per_kloc,inhouse,158,106,0.2474,0.1924,down
+ALL (pooled),design_smell_density_per_kloc,inhouse,158,106,1.0276,0.8487,down
 ALL (pooled),design_smell_density_per_kloc,dpy,158,106,18.1161,14.8028,down
 ALL (pooled),implementation_smell_density_per_kloc,inhouse,158,106,0.9727,1.0024,up
 ALL (pooled),implementation_smell_density_per_kloc,dpy,158,106,92.2435,93.6602,up

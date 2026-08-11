@@ -496,13 +496,6 @@ snapshot before/after - `n_god_class` 105→10, every other count
 (`n_data_class` 10, `n_feature_envy` 126, `n_brain_method` 178)
 unchanged.
 
-**Not yet done**: the full 926-row batch (`results/analysis/
-08-11-inhouse-smells-python-926.csv`) and the validation report both
-still reflect the **old** 25%/25% thresholds - they were not
-regenerated as part of this investigation. `design_smell_count`/
-`design_smell_density_per_kloc` in that CSV should be read as
-pre-revision until a re-run happens.
-
 **Residual, accepted limitation**: even at 10%/10%, `crewAI`'s tiny
 sample (7 classes) still shows 14.29% - unchanged before/after, because
 tightening the percentile can't fix a single-digit denominator's
@@ -510,3 +503,69 @@ inherent noise (1 flagged class out of 7 is 14.3% no matter where the
 cutoff sits within that range). Not a formula problem to solve further;
 a small-N caveat to carry forward alongside the count wherever a
 sparse snapshot's `design_smell_density_per_kloc` gets used on its own.
+
+### Full re-run with the corrected thresholds (2026-08-11, same day)
+
+The pre-fix batch output was archived (not deleted) to
+`results/analysis/archive_pre-godclass-fix_2026-08-11/` and
+`pool_inhouse_smells.py --exclude-repo "azure-sdk-for-python"` re-run
+from a clean slate - moving the old output out of `results/analysis/`
+first was necessary, not optional: `_load_done_keys()`'s resumability
+globs `*-inhouse-smells-python-*.csv` and only checks key columns
+(`repo_id`/`track`/`target_date`/`commit_sha`), so leaving the old file
+in place would have silently skipped every already-completed row and
+left its stale pre-fix `n_god_class` values untouched.
+
+**More data than the first run, incidentally**: while this run was
+in flight, several repos that had 0 materialized snapshots the first
+time around (`Significant-Gravitas/AutoGPT`, `ikamensh/flynt`,
+`marimo-team/marimo`, plus more of `browser-use`/`levanter`) turned out
+to have real output this time - Phase 1e materialization progressing in
+the background on the primary checkout, unrelated to this investigation.
+**926/926 rows, 799 ok (up from 495), 127 failed** (down from 431) -
+elapsed 8,192s (~137 min).
+
+**Pooled rates, all four strategies, before vs. after** (different row
+counts - 495 ok pre-fix vs. 799 ok post-fix, since more repos landed -
+so this is like-for-like on *rate*, not on raw count):
+
+| Strategy | Pre-fix rate | Post-fix rate |
+|---|---|---|
+| God Class | **11.71%** | **2.46%** |
+| Data Class | 0.45% | 0.49% |
+| Feature Envy | 1.17% | 1.61% |
+| Brain Method | 3.76% | 3.62% |
+
+God Class now sits *inside* the other three strategies' range instead of
+5-25x above it - the fix holds at full corpus scale, not just on the
+3-snapshot investigation sample. Data Class/Feature Envy/Brain Method's
+small movements are just the new repos changing the pooled population,
+not a formula effect (their thresholds didn't change).
+
+**Validation re-run** (`validate_smells_against_pilot.py`, same 264
+DPy-joined rows - `airbyte`/`crewAI`/`mlflow` are the only repos with
+DPy ground truth, unaffected by the newly-materialized repos above):
+
+| Metric | Pre-fix *r* | Post-fix *r* |
+|---|---|---|
+| `design_smell_density_per_kloc` | −0.201 | **−0.100** |
+| `implementation_smell_density_per_kloc` | −0.081 | −0.081 (unchanged - expected, Feature Envy/Brain Method don't touch God Class) |
+
+The design-smell correlation improved (less negative), but did **not**
+flip positive - reported plainly, not spun as a fix that "solved"
+validation. **Every pre/post direction-agreement call is unchanged** from
+the pre-fix run (still 2/2 pooled, 4/6 per-repo, same specific
+matches/splits) - the God Class inflation was shrinking an already-small
+number by a large factor, not flipping which side of zero any pre/post
+delta landed on. Interesting secondary observation, not confirmed as
+meaningful: the pooled design-density *percent change* pre→post is
+notably closer between the two tools post-fix (ours −22.2%, DPy −18.3%)
+than it looked pre-fix - consistent with, but not proof of, the
+inflation having been partly noise rather than signal.
+
+Updated output: `results/analysis/08-11-inhouse-smells-python-926.csv`
+(+ `-errors.csv`/`-progress.json`), `08-11-inhouse-smell-validation-
+correlation.csv`, `08-11-inhouse-smell-validation-direction.csv` -
+all now reflect the 10%/10% thresholds. Pre-fix versions of all five
+preserved under `archive_pre-godclass-fix_2026-08-11/` for anyone
+wanting the exact before/after diff.
