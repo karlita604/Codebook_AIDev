@@ -10,9 +10,10 @@ Writing/InHouseTooling.md's "What's easy: OO metrics" section for why that
 matters (this project needs to know exactly what's being counted to make a
 meaningful comparison against DPy's real output).
 
-Used by both the OO-metrics engine (py_metrics.py) and, later, the RQ3
-entity tracker (Writing/RQ3_CodeTracking.md, Phase D) - one AST-walking
-layer, not two.
+Used by the OO-metrics engine (py_metrics.py), the smell-detection engine
+(py_smells.py, Writing/PySmellDetection.md), and, later, the RQ3 entity
+tracker (Writing/RQ3_CodeTracking.md, Phase D) - one AST-walking layer, not
+three.
 """
 
 import ast
@@ -310,6 +311,149 @@ def extract_functions(tree, module_qualname):
         for node in tree.body
         if isinstance(node, FUNC_TYPES)
     ]
+
+
+_NESTING_TYPES = (
+    ast.If, ast.For, ast.AsyncFor, ast.While, ast.Try, ast.With,
+    ast.AsyncWith,
+)
+if hasattr(ast, "TryStar"):  # 3.11+
+    _NESTING_TYPES = _NESTING_TYPES + (ast.TryStar,)
+
+
+class _MaxNestingVisitor(ast.NodeVisitor):
+    """Deepest control-flow nesting depth, for Lanza & Marinescu's
+    MAXNESTING (see Writing/PySmellDetection.md's Brain Method strategy).
+    Counts If/For/While/Try/With (and async variants) as nesting levels -
+    the same block types cyclomatic_complexity's _CCVisitor treats as
+    decision points, minus BoolOp/IfExp/comprehension (those don't nest a
+    *block*, just an expression). Stops at nested def/class boundaries,
+    same convention as _CCVisitor - a nested function's own nesting isn't
+    folded into its enclosing function's depth."""
+
+    def __init__(self):
+        self.depth = 0
+        self.max_depth = 0
+
+    def visit_FunctionDef(self, node):
+        pass
+
+    def visit_AsyncFunctionDef(self, node):
+        pass
+
+    def visit_ClassDef(self, node):
+        pass
+
+    def generic_visit(self, node):
+        if isinstance(node, _NESTING_TYPES):
+            self.depth += 1
+            self.max_depth = max(self.max_depth, self.depth)
+            super().generic_visit(node)
+            self.depth -= 1
+        else:
+            super().generic_visit(node)
+
+
+def max_nesting_level(func_node):
+    visitor = _MaxNestingVisitor()
+    for stmt in func_node.body:
+        visitor.visit(stmt)
+    return visitor.max_depth
+
+
+def accessed_variable_names(func_node):
+    """Distinct variable-ish names read/written/deleted anywhere in
+    func_node - bare Name nodes (any ctx) plus self.attr/cls.attr accesses
+    kept as the two-part string "self.attr" (not just "attr") so a
+    self-attribute can't collide with an unrelated bare local of the same
+    name. Proxy for Lanza & Marinescu's NOAV (Number of Accessed
+    Variables, Writing/PySmellDetection.md's Brain Method strategy) - the
+    published metric doesn't distinguish reads from writes either, so
+    neither does this. Stops at nested def/class boundaries (same
+    convention as cyclomatic_complexity/max_nesting_level) - a nested
+    function's own local variables aren't the enclosing function's."""
+    names = set()
+    for node in ast.walk(func_node):
+        if isinstance(node, FUNC_TYPES + (ast.ClassDef,)) and node is not func_node:
+            continue
+        if isinstance(node, ast.Name):
+            names.add(node.id)
+        elif (
+            isinstance(node, ast.Attribute)
+            and isinstance(node.value, ast.Name)
+            and node.value.id in ("self", "cls")
+        ):
+            names.add(f"{node.value.id}.{node.attr}")
+    return names
+
+
+def foreign_attribute_accesses(func_node, known_field_names):
+    """Heuristic Access-To-Foreign-Data primitive - the shared basis for
+    ATFD/FDP/LAA (Writing/PySmellDetection.md's "New metric primitives"
+    section). Every `X.attr` access where X is a bare Name other than
+    self/cls, filtered to attr names present in known_field_names (the
+    whole-snapshot field-name catalog - same source _build_class_index
+    draws from in py_metrics.py). Returns a list of (receiver_name,
+    attr_name) pairs, one per access site (duplicates included - callers
+    decide whether to dedupe).
+
+    Textual/heuristic, NOT real type resolution - same category of
+    approximation as py_metrics.py's _referenced_class_names (itself used
+    for Fan-In/Fan-Out): no import-alias resolution, no way to confirm the
+    receiver is actually an instance of whatever class happens to declare
+    a same-named field elsewhere in the snapshot. Filtering against
+    known_field_names (rather than treating every `X.attr` as foreign) is
+    a deliberate precision/recall tradeoff to cut stdlib/module-attribute
+    noise (e.g. `os.path`, `response.text`), at the cost of missing
+    foreign fields the snapshot's own catalog didn't happen to include."""
+    accesses = []
+    for node in ast.walk(func_node):
+        if isinstance(node, FUNC_TYPES + (ast.ClassDef,)) and node is not func_node:
+            continue
+        if (
+            isinstance(node, ast.Attribute)
+            and isinstance(node.value, ast.Name)
+            and node.value.id not in ("self", "cls")
+            and node.attr in known_field_names
+        ):
+            accesses.append((node.value.id, node.attr))
+    return accesses
+
+
+def is_accessor_method(method_node):
+    """A method is a getter/setter (Lanza & Marinescu's NOAM, needed for
+    WOC too - Writing/PySmellDetection.md's Data Class strategy) if it's
+    @property-decorated, or its entire body is one `return self.<name>`
+    statement (getter), or one `self.<name> = <value>` statement (setter).
+    Python has no getter/setter *syntax* the way the metric's originating
+    languages (Java/C++) do, so this is a structural proxy for the same
+    intent, not a native language concept - same spirit as _is_public's
+    underscore convention standing in for Java's public/private keywords."""
+    decorators = getattr(method_node, "decorator_list", [])
+    for d in decorators:
+        name = d.id if isinstance(d, ast.Name) else getattr(d, "attr", None)
+        if name in ("property", "setter", "getter", "deleter"):
+            return True
+    body = method_node.body
+    if len(body) != 1:
+        return False
+    stmt = body[0]
+    if (
+        isinstance(stmt, ast.Return)
+        and isinstance(stmt.value, ast.Attribute)
+        and isinstance(stmt.value.value, ast.Name)
+        and stmt.value.value.id == "self"
+    ):
+        return True
+    if (
+        isinstance(stmt, ast.Assign)
+        and len(stmt.targets) == 1
+        and isinstance(stmt.targets[0], ast.Attribute)
+        and isinstance(stmt.targets[0].value, ast.Name)
+        and stmt.targets[0].value.id == "self"
+    ):
+        return True
+    return False
 
 
 def module_qualname(relative_path):
