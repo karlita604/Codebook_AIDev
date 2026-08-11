@@ -133,6 +133,14 @@ def main():
         "--repo", type=str, default=None,
         help="only process rows whose full_name contains this substring",
     )
+    parser.add_argument(
+        "--exclude-repo", type=str, default=None,
+        help="skip rows whose full_name contains this substring - a "
+             "per-run scope decision (e.g. azure-sdk-for-python's "
+             "23,744-file-per-snapshot scale dominating total runtime, "
+             "2026-08-11), distinct from EXCLUDED_REPOS's permanent, "
+             "tooling-blocker exclusions (materialize_snapshots.py)",
+    )
     args = parser.parse_args()
 
     manifest_path = args.manifest or latest_manifest()
@@ -146,6 +154,10 @@ def main():
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
+    if args.exclude_repo:
+        eligible = eligible[
+            ~eligible["full_name"].str.contains(args.exclude_repo)
+        ]
     if args.limit:
         eligible = eligible.head(args.limit)
     total = len(eligible)
