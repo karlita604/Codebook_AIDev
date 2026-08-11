@@ -13,11 +13,10 @@ plain line-counting.
 
 Ground truth: results/analysis/07-29-pooled-structural-metrics.csv, the
 already-validated pool of the real pilot's DPy+Designite output
-(ProjectStatus.md: "351 pooled rows... consolidated in" this file),
-filtered to language == "Python" (DPy rows only - Designite/Dock is C#,
-out of scope for Phase A, see Writing/InHouseTooling.md's design-decisions
-section on why Phase A is Python-only in practice even though both
-languages are in scope for the eventual tool).
+(ProjectStatus.md: "351 pooled rows... consolidated in" this file) - both
+languages, DPy (Python) and Designite (C#/Dock). Which rows actually join
+depends entirely on which repos the in-house glob covers; no language
+filter is applied here on either side.
 
 Usage:
     python validate_against_pilot.py [--inhouse-glob PATTERN]
@@ -72,14 +71,22 @@ def _load_inhouse(glob_pattern):
 
 
 def _load_ground_truth():
-    gt = pd.read_csv(GROUND_TRUTH_PATH)
-    return gt[gt["language"] == "Python"]
+    return pd.read_csv(GROUND_TRUTH_PATH)
 
 
-def build_report(inhouse, ground_truth):
-    merged = inhouse.merge(
-        ground_truth, on=KEY_COLS, suffixes=("_inhouse", "_dpy")
-    )
+def _normalize_target_date(df):
+    """The manifest's raw target_date string ('...T00:00:00+00:00') and
+    the pooled ground-truth CSV's re-serialized one ('... 00:00:00+00:00',
+    space instead of 'T' - picked up when long_analysis.py's pipeline
+    round-trips it through a datetime somewhere) are the same instant but
+    don't string-equal, which silently zeroes out the join if left as raw
+    strings. Parse to a real timestamp on both sides before merging."""
+    df = df.copy()
+    df["target_date"] = pd.to_datetime(df["target_date"], utc=True)
+    return df
+
+
+def build_report(merged):
     rows = []
     for metric in SHARED_METRICS:
         col_a, col_b = f"{metric}_inhouse", f"{metric}_dpy"
@@ -112,31 +119,48 @@ def build_report(inhouse, ground_truth):
             ),
             "spearman_r": round(corr, 3) if corr is not None else None,
         })
-    return pd.DataFrame(rows), merged
+    return pd.DataFrame(rows)
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
-        "--inhouse-glob", default="*-inhouse-metrics-python-*.csv",
+        "--inhouse-glob", default="*-inhouse-metrics-*.csv",
         help="glob (within results/analysis/) for in-house output files",
     )
     args = parser.parse_args()
 
-    inhouse = _load_inhouse(args.inhouse_glob)
-    ground_truth = _load_ground_truth()
-    print(
-        f"in-house rows: {len(inhouse)} | pilot Python ground-truth rows: "
-        f"{len(ground_truth)}"
+    inhouse = _normalize_target_date(_load_inhouse(args.inhouse_glob))
+    ground_truth = _normalize_target_date(_load_ground_truth())
+    print(f"in-house rows: {len(inhouse)} | pilot ground-truth rows: "
+          f"{len(ground_truth)}")
+
+    merged = inhouse.merge(
+        ground_truth, on=KEY_COLS, suffixes=("_inhouse", "_dpy")
     )
-
-    report, merged = build_report(inhouse, ground_truth)
     print(f"joined on {KEY_COLS}: {len(merged)} row(s)\n")
-    print(report.to_string(index=False))
 
-    out_path = OUT_DIR / "08-10-inhouse-validation-report.csv"
-    report.to_csv(out_path, index=False)
-    print(f"\nreport written to {out_path}")
+    out_path = OUT_DIR / "08-11-inhouse-validation-report.csv"
+    all_reports = []
+
+    # language_inhouse/language_dpy are the same value per row (both sides
+    # carry a language column, merge suffixes both since it's not a join
+    # key) - split by it so a Python-heavy and a C#-heavy metric offset
+    # don't average into one misleading blended number, same reasoning
+    # behind not comparing Dock's absolute smell share to the Python
+    # repos' elsewhere in this project (Results.md).
+    for lang in sorted(merged["language_inhouse"].unique()):
+        sub = merged[merged["language_inhouse"] == lang]
+        report = build_report(sub)
+        report.insert(0, "language", lang)
+        print(f"--- {lang} (n={len(sub)} joined rows) ---")
+        print(report.drop(columns="language").to_string(index=False))
+        print()
+        all_reports.append(report)
+
+    combined = pd.concat(all_reports, ignore_index=True)
+    combined.to_csv(out_path, index=False)
+    print(f"report written to {out_path}")
 
 
 if __name__ == "__main__":

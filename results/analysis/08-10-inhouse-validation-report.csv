@@ -1,0 +1,10 @@
+metric,n,mean_diff,mean_pct_diff,spearman_r
+total_loc,264,122085.89,91.5,0.943
+n_classes,264,825.54,28.1,0.999
+n_methods,264,6.81,0.1,1.0
+class_loc_p50,264,6.88,50.5,0.899
+class_loc_p90,264,32.86,30.6,0.954
+method_loc_p50,264,2.05,25.2,0.942
+method_loc_p90,264,7.02,25.4,0.984
+cyclomatic_complexity_p50,264,0.0,0.0,
+cyclomatic_complexity_p90,264,0.65,20.5,0.563

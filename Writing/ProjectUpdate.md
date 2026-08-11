@@ -578,3 +578,236 @@ row/commit counts, any new blockers hit) are logged in the entry below once
 that run completes — per this file's own convention, only real results get
 recorded here, not planned ones.
 
+## 2026-08-10 — Phase 2 raw collection lands; in-house tool Phase A (Python OO metrics) built and validated
+
+**Phase 2 raw collection — real outcomes** (the "logged once it completes"
+promised above). Repo selection refreshed 2026-08-04
+(`results/repos/08-04-repo-summary-235.csv`, 235 candidates), landing on a
+**21-repo manifest** (`results/snapshots/08-04-repo-snapshot-manifest-2016.csv`
+— 2016 grid rows, 1673 resolved to a real `commit_sha`), up from the
+pilot's 5-repo/480-row manifest. Track B PR sampling ran at the new scale:
+`results/pr_samples/08-04-pr-sample-4990.csv`, 4990 PR rows (up from 265).
+Track A materialization (Phase 1e) is essentially done: **20 of the 21
+manifest repos have real source trees in `data/snapshots/`** — only
+`julep-ai/julep` doesn't yet (not investigated further this entry). New
+repos beyond the original pilot: `567-labs/instructor`,
+`AgentOps-AI/agentops`, `Azure/azure-sdk-for-python`,
+`Significant-Gravitas/AutoGPT`, `browser-use/browser-use`,
+`crewAIInc/crewAI-tools`, `featureform/enrichmcp`, `ikamensh/flynt`,
+`marimo-team/marimo`, `marin-community/levanter`, `microsoft/testfx`,
+`wieslawsoltes/Svg.Skia`, `dotnet/maui`, `dotnet/aspnetcore`,
+`elsa-workflows/elsa-core`, `julep-ai/julep` (per the manifest's unique
+`full_name` list) — a mix of Python and C#, so the in-house tool's C# leg
+(Phase B, not built yet) matters for full Phase 2 coverage, not just the
+Python side built this entry.
+
+**In-house tool, Phase A: built.** Following up on `Writing/InHouseTooling.md`
+and `Writing/RQ3_CodeTracking.md` (both still brainstorm docs as of
+2026-08-04), this session made the scoping decisions needed to actually
+build the replacement and logged them as "Design decisions (2026-08-05)"
+sections in both docs, then built Phase A per the resulting plan
+(`C:\Users\kvrlv\.claude\plans\woolly-jumping-acorn.md`): a from-scratch
+Python OO-metrics engine, no LOC cap.
+
+New code, all in `src/inhouse/`:
+- `ast_common.py` — shared AST primitives: entity extraction (class/method/
+  function inventories via the stdlib `ast` module, not `radon`), and a
+  from-scratch McCabe cyclomatic-complexity walker that stops at nested
+  def/class boundaries (a nested function gets its own CC, not folded into
+  its enclosing function's).
+- `py_metrics.py` — assembles those primitives into the DPy-schema metrics:
+  per-class LOC/NOM/NOPM/NOF/NOPF/WMC/LCOM/DIT/Fan-In/Fan-Out, per-method
+  LOC/CC/PC, rolled up into a snapshot-level row matching
+  `parse_tool_output()`'s confirmed DPy schema (`total_loc`, `n_classes`,
+  `n_methods`, `class_loc_p50/p90`, `method_loc_p50/p90`,
+  `cyclomatic_complexity_p50/p90`) plus additive CK-suite percentile
+  columns (`wmc_p50/p90`, `lcom_p50/p90`, `dit_p50/p90`, `fan_in_p50/p90`,
+  `fan_out_p50/p90`, `pc_p50/p90`) DPy computes per-class but never pooled
+  into its own summary row.
+- `pool_inhouse_metrics.py` — CLI orchestrator, deliberately copying
+  `long_analysis.py`'s conventions (argparse `--repo`/`--limit`/`--dry-run`,
+  resumable via a global done-keys check across every same-tag output file,
+  append-per-row, separate error CSV, progress JSON) rather than inventing
+  a new shape.
+- `validate_against_pilot.py` — joins the in-house output against the real
+  pilot's DPy ground truth (`07-29-pooled-structural-metrics.csv`, filtered
+  to `language == "Python"`) on `(repo_id, track, target_date, commit_sha)`
+  and reports per-metric mean diff / mean %-diff / Spearman correlation —
+  the concrete version of `InHouseTooling.md`'s "Validation plan" step 3.
+
+**Caught a real bug via hand-checking, not just trusting the numbers.**
+Built a synthetic fixture (`animals.py` — a module-level function plus a
+base/subclass pair with known field/method structure) with metrics
+pre-computed by hand, then ran the engine against it. Every value matched
+by hand *except* the subclass's field count, which was inflated by one:
+`self.speak()` (a call to an *inherited* method) was being counted as a
+field access, since `self.name` and `self.speak(...)` are structurally
+identical `ast.Attribute` nodes - nothing in a bare walk distinguishes a
+field read from a method call. Fixed by adding an `exclude` set (the
+class's own directly-defined method names) to the shared attribute-walk
+helper (`ast_common.self_attribute_names`), used by both NOF/field
+collection and LCOM's per-method field-access sets. Re-ran the fixture:
+every value matched hand-computed expectations exactly, including the
+*remaining*, now-documented blind spot the fix doesn't cover (a subclass
+calling a method it only *inherits*, not one it defines itself, still
+isn't recognized as a call - no cross-class method-name resolution is
+attempted, same scope boundary as Fan-In/Fan-Out/DIT's own approximations).
+
+**Real run + validation.** Ran `pool_inhouse_metrics.py` against all three
+pilot Python repos' materialized snapshots (crewAI + crewAI-tools, airbyte,
+mlflow - `--repo` substring matching pulled in crewAI-tools alongside
+crewAI, unplanned but harmless, more real validation data). Speed: ~1
+second per snapshot end to end (5 real crewAI snapshots: 4.0s total) -
+qualitatively different from DPy's per-chunk runtime at LOC-cap scale (the
+mlflow snapshot that cost DPy ~29 hours chunked would be seconds here,
+un-chunked, since there's no license cap to chunk around at all). A
+handful of rows failed with real, expected "not materialized" errors (some
+Phase 2 commits, e.g. a few crewAI-tools A1/A2 grid points, don't have a
+materialized snapshot yet) - logged to the errors CSV per
+`pool_inhouse_metrics.py`'s convention, not silently dropped or crashing
+the run.
+
+`validate_against_pilot.py`'s real agreement numbers against DPy: see
+`Writing/Results.md`'s new in-house-tool section - not duplicated here per
+this file's "real results belong in the entry, but the actual numbers/
+interpretation belong in Results.md" split already used for the pilot's
+first analysis. **One finding from that validation is worth flagging here
+directly, not just in Results.md**: airbyte's total_loc/n_classes disagree
+with DPy far more (2.41x, final across all 96/96 rows) than crewAI/mlflow
+(1.54x/1.71x), and a direct
+`wc -l` cross-check on one commit confirms the in-house number
+(352,778 lines) is right and DPy's own reported figure (125,111) is the
+one that's off - that commit needed 411 DPy chunks (airbyte's repo-wide
+average: ~374 chunks/snapshot, vs. crewAI's ~30), consistent with DPy's
+Trial-cap chunking silently losing coverage as chunk count grows, not a
+labeling/convention difference. Full writeup: `Results.md`.
+
+**Not built this entry** (scoped in the plan, follow-on work): Phase B
+(C# via Roslyn `CSharpSyntaxTree.ParseText`, no `.sln`/`MSBuildWorkspace`
+load - expected to also unblock `dotnet/aspire`, still excluded from the
+pilot on the Designite side), Phase C (time-series + pre/post
+Spearman-correlation-matrix visualization, reusing
+`analyze_dock_designite.py`'s existing chart conventions), Phase D (RQ3
+entity/snippet lifetime tracker - reuses `ast_common.py`'s entity
+extraction, walks `git log --follow` per file rather than the monthly
+snapshot grid). Also un-investigated: exactly why `julep-ai/julep` didn't
+materialize, and the handful of Phase 2 commits that produced "not
+materialized" errors during the validation run above.
+
+## 2026-08-11 — In-house tool Phase B (C# via Roslyn) built and validated; a real manifest bug found along the way
+
+Prompted by a direct question: why hadn't the in-house tool been run
+against Phase 2's ~16 new repos yet? Answer at the time: it couldn't be,
+not just hadn't been - Phase A only computes OO metrics (no smell
+detection, the pilot's actual headline metric), and 9 of the 21 manifest
+repos are C# with no analyzer at all. Asked which gap to close first;
+answer was Phase B (C#), not smell detection - get all 21 repos onto some
+structural-metrics footing before deepening what's measured for the
+Python-only 12.
+
+**Reconnaissance before committing to the build** (per the pattern that
+worked for Phase A - hand-check before trusting): confirmed `dotnet`
+8.0.423 restores `Microsoft.CodeAnalysis.CSharp` from NuGet fine (network
+access, not a given - checked), confirmed `CSharpSyntaxTree.ParseText`
+correctly extracts classes/methods/bases/LOC with a throwaway probe
+program before writing anything real, confirmed Dock's materialized
+snapshots are genuinely plain `.cs` files with no `.sln` needed for a
+syntax-only read.
+
+**Built** (`src/inhouse/roslyn_tool/`, a small .NET console project):
+- `Entities.cs` / `CcWalker.cs` / `SnapshotAnalyzer.cs` - direct
+  translation of Phase A's design (`ast_common.py`/`py_metrics.py`) onto
+  Roslyn's syntax model: same McCabe CC rules (adapted node types - `if`/
+  `for`/`foreach`/`while`/`do`/`catch`/`case`/switch-expression-arm/
+  ternary/`&&`/`||`, same nested-def/type boundary rule, lambdas not a
+  boundary), same WMC/NOM/NOPM/NOF/NOPF/LCOM/DIT/Fan-In/Fan-Out
+  definitions, same span-based LOC, same output schema (pools directly
+  onto Phase A's columns, no adapter).
+- `Program.cs` - CLI entry point, one materialized snapshot dir in, one
+  line of JSON on stdout, mirroring how `run_designite()` already shells
+  out to `DesigniteConsole` in `long_analysis.py`.
+- `src/inhouse/csharp_metrics.py` - Python subprocess glue, same
+  `analyze_snapshot(dir) -> dict` interface Phase A's `py_metrics.py`
+  exposes, so `pool_inhouse_metrics.py` could route by `row["language"]`
+  instead of hardcoding Python.
+
+**A real gap caught by hand-checking, before real data**: the same
+`Animal`/`Dog` synthetic fixture used for Phase A, translated to C#.
+Every value matched by hand except the whole thing was initially wrong in
+a worse way than Phase A's bug - constructors weren't being extracted at
+all. `ConstructorDeclarationSyntax` is a sibling of
+`MethodDeclarationSyntax`, not a subtype, so
+`node.Members.OfType<MethodDeclarationSyntax>()` silently skips every
+constructor - which would have dropped constructors from NOM/WMC and,
+worse, from LCOM's field-access scan (a constructor is often the one
+method that touches every field, exactly the case LCOM is supposed to be
+sensitive to). Fixed by extracting `BaseMethodDeclarationSyntax`
+throughout (covers methods, constructors, destructors, operators) and
+adding a `MethodNameOf()` helper since the concrete subtypes name
+themselves differently (`.Identifier` vs. `.OperatorToken`). Re-ran the
+fixture: exact match on every hand-computed value. Bonus finding, not a
+bug: C#'s real field-declaration syntax means the LCOM/NOF computation
+never needed Phase A's self.method()-vs-self.field disambiguation hack in
+the first place - the same fixture's `Dog` class correctly gets `NOF=0` in
+C# (it declares no fields), vs. Python's `NOF=1` from mis-reading
+`self.speak()` as a field access. A structural advantage of C# having
+field declarations at all, not a fix applied here.
+
+**Real run, real validation**:
+- Full Dock set (96/96 rows, `ok`, 0 failures) and full `dotnet/aspire`
+  set (75/75 rows, `ok`) - both from real materialized snapshots, ~1s per
+  snapshot.
+- `validate_against_pilot.py` extended to stop hardcoding Python: ground
+  truth is no longer filtered to `language == "Python"`, and the report
+  now splits by language instead of averaging Python and C# into one
+  blended (and misleading) number.
+- **First join attempt returned 2/87 matches for Dock - not a validation
+  failure.** Traced it to the *manifest*, not the tool: the latest
+  snapshot manifest (`08-04-repo-snapshot-manifest-2016.csv`) resolves 94
+  of Dock's 96 grid points to just 2 distinct commits (mostly one from
+  2022-01-27), while the original manifest
+  (`07-21-repo-snapshot-manifest-480.csv`) correctly resolves 64 distinct
+  commits, all genuinely materialized on disk already. Root cause:
+  `data/repo_cache/wieslawsoltes__Dock`'s local clone is currently stale,
+  capped at that same January 2022 commit - the newer manifest's
+  "closest commit at or before this date" resolution has nothing newer to
+  resolve to, so it keeps returning the same one. Checked whether this was
+  systemic before treating it as Dock-specific: it isn't - airbyte
+  (95→95), crewAI (71→71), mlflow (96→96), and `dotnet/aspire` (75→75) all
+  kept full commit diversity across both manifest versions. Worked around
+  for this validation run via `pool_inhouse_metrics.py --manifest
+  results/snapshots/07-21-repo-snapshot-manifest-480.csv`; the underlying
+  clone staleness itself is unresolved (needs a fresh `git fetch`/backfill
+  for Dock specifically) - logged in `ProjectStatus.md` §7, not fixed here,
+  since it's a Phase 1c/data-collection issue, not an in-house-tool one.
+- **Real numbers, 87/87 Designite-successful Dock rows joined**:
+  `total_loc` r=0.999, `n_classes` r=0.998, `n_methods` r=0.997,
+  `cyclomatic_complexity_p90` r=0.546 (weaker - same class of
+  cross-implementation CC-counting divergence Phase A's Python validation
+  already showed). Class/method counts run negative vs. Designite (-11 to
+  -15%), the opposite sign from Phase A's Python offset - plausibly
+  explained by a Designite quirk already logged in `DESIGNITE_TASK.md`:
+  multi-targeted projects get a full duplicate metrics set per target
+  framework, undeduplicated, so Designite's own counts run inflated, not
+  ours short. Not independently re-confirmed this session (noting the
+  plausible explanation, not asserting it as proven).
+
+**Two unplanned wins, both a direct consequence of never loading a project
+graph**: `dotnet/aspire` (excluded from the pilot entirely - Designite
+can't evaluate its project without replicating Arcade's private-feed
+bootstrap) now has real structural data for the first time this project
+has ever had it. Dock's post-`.slnx`-migration months (9/96 rows Designite
+can't read, censoring exactly the back half of its post-intervention
+window - a real, repeatedly-flagged limitation on the pilot's Dock
+results) are no longer censored for the in-house tool - all 96/96 read
+cleanly.
+
+**Not done this entry**: re-running the pilot's actual RQ1-RQ5 analysis
+(segmented regression etc.) on the now-available in-house Dock/aspire data
+- that's a real next step (Phase C territory) but wasn't asked for this
+entry, which was scoped to "get Phase B built and validated." Also not
+done: fixing Dock's stale `repo_cache` clone, or running Phase B against
+the other 8 Phase 2 C# repos (`dotnet/maui`, `dotnet/aspnetcore`,
+`wieslawsoltes/Svg.Skia`, `microsoft/testfx`, `elsa-workflows/elsa-core`) -
+the tool is ready for them, just not pointed at them yet.
+

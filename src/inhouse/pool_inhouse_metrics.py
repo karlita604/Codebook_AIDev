@@ -1,9 +1,10 @@
 """
-In-house replacement for Phase 1d's DPy leg: run py_metrics.py's
-from-scratch AST analyzer against every materialized Python snapshot
-(Phase 1e, materialize_snapshots.py) and pool the results into one table
-keyed the same way long_analysis.py's DPy/Designite output already is -
-(repo_id, track, target_date, commit_sha) - so this drops straight into
+In-house replacement for Phase 1d's DPy/Designite leg: run py_metrics.py
+(Phase A, Python) or csharp_metrics.py (Phase B, C# via Roslyn) against
+every materialized snapshot (Phase 1e, materialize_snapshots.py) and pool
+the results into one table keyed the same way long_analysis.py's
+DPy/Designite output already is - (repo_id, track, target_date,
+commit_sha) - so this drops straight into
 results/analysis/07-29-pooled-structural-metrics.csv's join without an
 adapter step. See Writing/InHouseTooling.md's design-decisions section for
 why this exists (no LOC cap - own code, not a licensed trial tool) and
@@ -14,7 +15,9 @@ for them - see ProjectUpdate.md's 2026-08-04 entry).
 
 CLI shape, resumability, and progress/error-file conventions all mirror
 long_analysis.py's main() deliberately - same pipeline, same tool, just a
-from-scratch metrics engine instead of a subprocess call to DPy.
+from-scratch metrics engine instead of a subprocess call to a licensed
+trial-cap tool (Roslyn is still a subprocess call - to our own compiled
+console app, not a third-party one).
 
 Use --dry-run to smoke-test snapshot lookup/bookkeeping without running the
 analyzer. Use --limit/--repo to test on a handful of rows first.
@@ -31,13 +34,19 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import csharp_metrics  # noqa: E402
 import py_metrics  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase0"))
 from materialize_snapshots import (  # noqa: E402
-    EXCLUDED_REPOS, SNAPSHOT_DIR, _is_materialized, _safe_dirname,
-    latest_manifest,
+    SNAPSHOT_DIR, _is_materialized, _safe_dirname, latest_manifest,
 )
+
+LANGUAGE_ANALYZER = {
+    "Python": py_metrics.analyze_snapshot,
+    "C#": csharp_metrics.analyze_snapshot,
+}
+LANGUAGE_GLOB = {"Python": "*.py", "C#": "*.cs"}
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "results" / "analysis"
@@ -114,13 +123,22 @@ def process_row(row, dry_run):
             f"{snapshot_dir} - run materialize_snapshots.py (Phase 1e) first"
         )
 
+    language = row["language"]
+    analyze = LANGUAGE_ANALYZER.get(language)
+    if analyze is None:
+        raise ValueError(
+            f"no in-house analyzer mapped for language={language!r}"
+        )
+
     if dry_run:
-        n_files = sum(1 for p in snapshot_dir.rglob("*.py") if p.is_file())
+        glob = LANGUAGE_GLOB[language]
+        n_files = sum(1 for p in snapshot_dir.rglob(glob) if p.is_file())
         return {
-            **_snapshot_key(row), "n_py_files": n_files, "status": "dry_run",
+            **_snapshot_key(row), "n_source_files": n_files,
+            "status": "dry_run",
         }
 
-    metrics = py_metrics.analyze_snapshot(snapshot_dir)
+    metrics = analyze(snapshot_dir)
     return {**_snapshot_key(row), **metrics}
 
 
@@ -149,10 +167,17 @@ def main():
     manifest = pd.read_csv(manifest_path)
     print(f"manifest: {manifest_path} ({len(manifest)} rows)", flush=True)
 
+    # Deliberately NOT filtering out materialize_snapshots.py's
+    # EXCLUDED_REPOS ({"dotnet/aspire"}) here - that exclusion is specific
+    # to MSBuildWorkspace not being able to evaluate aspire's project graph
+    # (Designite's blocker), which doesn't apply to us: Phase B never loads
+    # a .sln/.csproj at all (syntax-only Roslyn - see
+    # Writing/InHouseTooling.md's design-decisions section). Inheriting that
+    # exclusion here would silently reproduce a limitation this tool exists
+    # specifically to not have.
     eligible = manifest[
         manifest["commit_sha"].notna()
-        & (manifest["language"] == "Python")
-        & ~manifest["full_name"].isin(EXCLUDED_REPOS)
+        & manifest["language"].isin(LANGUAGE_ANALYZER.keys())
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
@@ -160,12 +185,18 @@ def main():
         eligible = eligible.head(args.limit)
     total = len(eligible)
     print(
-        f"{total} eligible Python row(s) (have a resolved commit)",
+        f"{total} eligible row(s) (have a resolved commit, "
+        f"Python or C#)",
         flush=True,
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    tag = "dryrun-inhouse" if args.dry_run else "inhouse-metrics-python"
+    # Not "-python" anymore - covers both languages now that Phase B (C#)
+    # exists. "inhouse-metrics" is still a glob-prefix match against the
+    # older Python-only "inhouse-metrics-python-*.csv" files from Phase A's
+    # validation runs, so _load_done_keys() still sees those rows as done
+    # and won't reprocess them under the new tag.
+    tag = "dryrun-inhouse" if args.dry_run else "inhouse-metrics"
 
     scope = re.sub(r"[^a-zA-Z0-9]+", "", args.repo)[:30] if args.repo else None
     scope_suffix = f"{scope}-{total}" if scope else str(total)

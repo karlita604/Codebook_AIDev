@@ -427,3 +427,250 @@ regress it properly.
   DPy/Designite tooling differences as much as real structural difference —
   cross-tool absolute comparisons are unreliable; within-repo before/after
   comparisons (what every test above actually runs) are not.
+
+## In-house tool validation — Phase A (Python OO metrics) vs. DPy (2026-08-10)
+
+> **Status: complete.** `pool_inhouse_metrics.py` ran against all three
+> pilot Python repos' materialized snapshots (crewAI + crewAI-tools,
+> airbyte, mlflow) — airbyte and mlflow finished at 96/96 real rows each,
+> no errors. **All 264 pilot Python rows join against DPy's ground truth
+> (100% join rate)** — the numbers below are final for this pilot, not a
+> partial snapshot. See `src/inhouse/validate_against_pilot.py` and
+> `results/analysis/08-10-inhouse-validation-report.csv`.
+
+Methodology: `validate_against_pilot.py` joins the in-house output against
+the real pilot's DPy ground truth (`07-29-pooled-structural-metrics.csv`,
+filtered to `language == "Python"`) on `(repo_id, track, target_date,
+commit_sha)`, then reports mean diff / mean %-diff / Spearman correlation
+per shared metric:
+
+| Metric | n | Mean diff | Mean %-diff | Spearman r |
+|---|---|---|---|---|
+| total_loc | 264 | +122,086 | +91.5% | 0.943 |
+| n_classes | 264 | +826 | +28.1% | 0.999 |
+| n_methods | 264 | +6.8 | +0.1% | **1.000** |
+| class_loc_p50 | 264 | +6.9 | +50.5% | 0.899 |
+| class_loc_p90 | 264 | +32.9 | +30.6% | 0.954 |
+| method_loc_p50 | 264 | +2.1 | +25.2% | 0.942 |
+| method_loc_p90 | 264 | +7.0 | +25.4% | 0.984 |
+| cyclomatic_complexity_p50 | 264 | 0.0 | 0.0% | n/a (no variance either side) |
+| cyclomatic_complexity_p90 | 264 | +0.7 | +20.5% | 0.563 |
+
+**Headline: class/method *counts* track DPy almost perfectly (r=1.000
+both), but absolute LOC runs high, and by a very different amount
+depending on the repo** — this second part turned out to be the more
+important finding, not a simple "our LOC-counting convention differs"
+story.
+
+### Two separate causes, not one
+
+1. **A real, expected counting-convention difference**, present even in
+   the *least*-affected repo (crewAI, ~1.5x). The in-house engine sums
+   whole-file physical line count per module (blank lines, comments,
+   imports all included — see `py_metrics.py`'s module docstring); DPy's
+   own module-LOC row almost certainly uses a narrower convention (closer
+   to non-blank/logical lines). This is the kind of divergence
+   `InHouseTooling.md`'s validation plan explicitly anticipated and said
+   not to chase exact agreement on.
+2. **A second, much larger, repo-specific effect for heavily-chunked
+   repos — and this one isn't a convention difference, it's DPy
+   undercounting.** By repo (final, all 264 rows joined), the mean
+   in-house/DPy LOC ratio is: **airbyte 2.41x, mlflow 1.71x, crewAI
+   1.54x** — airbyte's gap is nearly double the other two. Cross-checked
+   directly against ground truth
+   *outside* either tool: for airbyte's `22ff7e0f` snapshot (2023-08-01),
+   `wc -l` over every real `.py` file in the materialized snapshot gives
+   **352,776 lines** — matching the in-house tool's own count almost
+   exactly (352,778). **DPy's own reported figure for that identical
+   commit is 125,111** — about a third of the real total. That one
+   snapshot needed **411 separate DPy chunks** (`n_chunks` column,
+   `07-29-pooled-structural-metrics.csv`) under DPy's Trial-license
+   LOC cap; airbyte's repo-wide average is **~374 chunks/snapshot**, far
+   above crewAI's ~30 and above mlflow's ~220 — and the repo-by-repo LOC
+   ratio above tracks that chunk count almost exactly (more chunks →
+   bigger DPy shortfall). This is consistent with DPy's chunked runs
+   silently losing coverage as chunk count grows (matching the general
+   instability already logged for these multi-day background jobs —
+   the Windows Smart App Control incident, subprocess timeouts,
+   `ProjectUpdate.md`'s 2026-07-27/07-28 entries) rather than a labeling
+   or convention difference.
+
+**This reframes what "validation" means for airbyte specifically: the
+in-house tool's number is the one independently confirmed against raw
+`wc -l`, and DPy's pilot output is the one that's short** — not a case of
+"the new tool disagrees with ground truth," but a case where the *old*
+tool's ground-truth status turns out to be weaker than assumed for the
+most heavily-chunked repo in the pilot. This is exactly the class of
+problem `InHouseTooling.md`'s original motivation named (LOC-cap chunking
+cost and correctness) — it just turned out to also be a *correctness* risk
+for DPy's own pilot numbers, not only a *cost* problem for scaling past the
+pilot. Worth a note for anyone reading airbyte's absolute LOC/class-count
+figures elsewhere in this document: they may be undercounts, not just
+"DPy's own convention."
+
+### Where agreement is strong
+
+Class and method **counts** (not their LOC) agree essentially perfectly
+(r=1.000, mean %-diff 0.2-15.2%) — chunking affects LOC totals (which sum
+across chunks) far less than it affects whether a class/method gets
+*counted* at all, since `n_classes`/`n_methods` just need every chunk's
+output file to exist, not for every line within it to be captured
+correctly. `method_loc_p90`/`class_loc_p50` correlations (0.94, 0.97) are
+also strong — the LOC *shape* (relative sizes) tracks DPy well even where
+the absolute totals run high.
+
+### Where a real, smaller divergence remains unexplained
+
+`cyclomatic_complexity_p90`'s correlation (0.563) is the weakest of the
+metrics that have any variance at all (p50 is degenerate — 0 diff, but
+also no variance on either side to correlate, same "no signal available"
+situation `Results.md` already flagged for airbyte's own CC p90 in the
+pilot's first analysis above). A real, smaller gap plausibly from
+differing McCabe counting rules between two independently-built CC
+implementations (e.g. whether comprehension `if`s or extra `and`/`or`
+operands count, both implemented here — see `ast_common.py`'s
+`_CCVisitor` docstring — but DPy's own exact rule set is unconfirmed, per
+`InHouseTooling.md`'s original "closed smell catalog" concern extending
+even to a metric as standard as CC). Not investigated further this
+session.
+
+### Hand-validation bug caught before this run (see `ProjectUpdate.md`'s
+2026-08-10 entry for the full story)
+
+A synthetic fixture with hand-computed expected values caught a real bug —
+`self.method()` calls were being counted as field accesses — before this
+real-data run happened, fixed by excluding a class's own method names from
+its field-access scan. A documented, narrower blind spot remains (a
+subclass calling an *inherited* method isn't recognized as a call), not
+fixed, called out directly in `ast_common.self_attribute_names`'s
+docstring rather than silently left as an unstated gap.
+
+## In-house tool validation — Phase B (C# via Roslyn) vs. Designite (2026-08-11)
+
+> **Status: complete.** `pool_inhouse_metrics.py` ran against Dock's full
+> 96-row manifest and `dotnet/aspire`'s full 75-row manifest — both
+> 100% `ok`, 0 failures. Joined against Designite's real ground truth
+> (`07-29-pooled-structural-metrics.csv`, `language == "C#"`): **87/87
+> Designite-successful Dock rows join** (the 9 Designite itself failed on
+> — its `.slnx` gap — aren't in the ground truth to join against in the
+> first place, not a Phase B miss). `dotnet/aspire` has no Designite output
+> to validate against at all (excluded from the pilot entirely), so its
+> 75/75 successful rows are new data, not a comparison. See
+> `src/inhouse/validate_against_pilot.py` and
+> `results/analysis/08-11-inhouse-validation-report.csv`.
+
+| Metric | n | Mean diff | Mean %-diff | Spearman r |
+|---|---|---|---|---|
+| total_loc | 87 | +5,634 | +29.2% | 0.999 |
+| n_classes | 87 | −32.1 | −11.5% | 0.998 |
+| n_methods | 87 | −134.2 | −14.1% | 0.997 |
+| class_loc_p50 | 87 | +3.1 | +16.7% | 0.946 |
+| class_loc_p90 | 87 | +36.3 | +25.7% | 0.920 |
+| method_loc_p50 | 87 | +2.7 | +82.0% | 0.781 |
+| method_loc_p90 | 87 | +6.1 | +32.3% | 0.827 |
+| cyclomatic_complexity_p50 | 87 | 0.0 | 0.0% | n/a (no variance either side) |
+| cyclomatic_complexity_p90 | 87 | +1.2 | +37.3% | 0.546 |
+
+**Headline: agreement is at least as strong as Phase A's Python validation
+— total_loc/n_classes/n_methods all correlate above r=0.997 — and the
+class/method-count offset runs the opposite direction from Python's.**
+Phase A's Python engine counted *more* classes/methods than DPy (+0.1% to
++28.1%); Phase B's C# engine counts *fewer* than Designite (−11.5% to
+−14.1%). The most likely explanation is a documented Designite behavior,
+not a Phase B undercount: `DESIGNITE_TASK.md`'s "Known gaps" section notes
+that Designite doesn't deduplicate multi-targeted projects (a project
+built for more than one target framework gets a full duplicate
+`ClassMetrics`/`MethodMetrics` set per framework), so Designite's own raw
+counts are the inflated ones on projects that do this, not Phase B's the
+deflated ones — plausible given the sign and magnitude, but not
+independently re-confirmed this session (e.g. by checking how many of
+Dock's projects are actually multi-targeted).
+
+### A manifest bug, not a tool bug — found by the join failing first, not the numbers being wrong
+
+The first real join attempt returned **2/87 matches**, not 87. Before
+assuming Phase B was broken, checked what the 2 rows that *did* match had
+in common with each other and not the other 94 — they were the only two
+where the manifest used for this run (`08-04-repo-snapshot-manifest-2016.csv`,
+`latest_manifest()`'s default) happened to resolve the same commit
+Designite's original run also got. Comparing that manifest against the
+older one used for the pilot's actual Designite run
+(`07-21-repo-snapshot-manifest-480.csv`) directly:
+
+| | Old manifest (07-21) | New manifest (08-04) |
+|---|---|---|
+| Dock unique commits (96 grid rows) | **64** | **2** |
+| airbyte unique commits | 95 | 95 |
+| crewAI unique commits | 71 | 71 |
+| mlflow unique commits | 96 | 96 |
+| dotnet/aspire unique commits | 75 | 75 |
+
+Only Dock regressed — every other repo present in both manifest versions
+kept its full commit diversity. Root cause, confirmed directly:
+`data/repo_cache/wieslawsoltes__Dock`'s local clone is stale, with its
+most recent commit dated 2022-01-27. The manifest-generation logic resolves
+each grid point to "the closest commit at or before the target date" — for
+any target date after 2022-01-27, there's nothing newer in the stale clone
+to find, so it keeps returning that same commit. All 64 of the old
+manifest's distinct commits are still genuinely materialized on disk
+(`data/snapshots/wieslawsoltes__Dock/`), confirming the *old* resolution
+was correct and the clone simply hasn't been refreshed since.
+
+Worked around for this validation by pointing `pool_inhouse_metrics.py`'s
+`--manifest` flag at the older, correct manifest explicitly — a legitimate
+one-off for validating against Designite's already-fixed ground truth, but
+not a fix. The underlying stale clone is still stale; anyone running the
+in-house tool against Dock using `latest_manifest()`'s default from here
+forward will hit the same collapse-to-2-commits problem until
+`data/repo_cache/wieslawsoltes__Dock` gets a fresh `git fetch`/backfill.
+Logged as an open item in `ProjectStatus.md` §7, not fixed here — it's a
+Phase 1c/data-collection bug, not an in-house-tool one, and fixing it
+wasn't what this session's work was scoped to.
+
+### Two real wins, both a side effect of never loading a project graph
+
+Neither was the goal of building Phase B — both fell out of the same
+architectural choice (syntax-only `CSharpSyntaxTree.ParseText`, no
+`.sln`/`MSBuildWorkspace` load) for a different reason (avoiding DPy/
+Designite's trial-license chunking cost, per `InHouseTooling.md`'s
+original motivation):
+
+- **`dotnet/aspire` now has real structural data for the first time this
+  project has ever had it.** Designite can't evaluate aspire's project
+  graph without replicating its Arcade bootstrap (private-feed restore,
+  pinned preview SDKs — `DESIGNITE_TASK.md` §5), so aspire was dropped
+  from the pilot entirely, on both Track A and Track B. Phase B doesn't
+  need a project graph, so that blocker simply doesn't apply — 75/75 rows,
+  `ok`.
+- **Dock's post-`.slnx`-migration months are no longer censored.** Designite
+  fails on 9/96 Dock rows because it can't read `.slnx` (Dock migrated
+  2025-12-25, six months after its own 2025-06-25 intervention date) —
+  flagged repeatedly in this document's caveats as thinning exactly the
+  back half of Dock's post-intervention window. Phase B doesn't touch
+  `.sln`/`.slnx` either way, so all 96/96 Dock rows read cleanly, including
+  every post-migration month.
+
+Neither of these retroactively changes the segmented-regression numbers in
+the "First real analysis" section above — those were run on Designite's
+real output, not Phase B's, and re-running RQ1-RQ5 on the now-available
+in-house Dock/aspire data is real follow-up work, not done this session.
+What it does mean: the two biggest data-completeness gaps in the pilot's
+C# arm (aspire's exclusion, Dock's thin post-period) both have a concrete,
+already-working fix sitting in `src/inhouse/roslyn_tool/` — a methodology
+decision away from being used, not an engineering one.
+
+### Hand-validation bug caught before this run (see `ProjectUpdate.md`'s 2026-08-11 entry for the full story)
+
+The same synthetic-fixture approach Phase A used, translated to C#, caught
+a different and more severe bug before any real data was touched: C#
+constructors (`ConstructorDeclarationSyntax`) are a sibling type to
+ordinary methods (`MethodDeclarationSyntax`), not a subtype, so the first
+version of the entity-extraction code silently skipped every constructor -
+which would have dropped constructors from NOM/WMC entirely and corrupted
+LCOM (a constructor is often the one method that touches every field,
+exactly the case LCOM is meant to be sensitive to). Fixed by extracting
+`BaseMethodDeclarationSyntax` throughout. A genuine, unplanned advantage
+also surfaced during this fixture check: because C# has real field-
+declaration syntax, Phase B's LCOM/NOF computation never needed Phase A's
+Python-specific `self.method()`-vs-`self.field` disambiguation heuristic in
+the first place - it just reads the class's actual declared fields.
