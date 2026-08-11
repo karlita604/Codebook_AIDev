@@ -317,11 +317,101 @@ excluded.**
   rows). Resumed correctly from the 154 rows already completed
   (`_load_done_keys`'s cross-file resumability, unchanged from
   `pool_inhouse_metrics.py`'s convention) — no wasted recomputation.
-- **Status as of this entry: running**, 264/926 done (183 ok, 81 of those
-  the expected AutoGPT not-materialized fails), currently in `airbytehq/airbyte`.
-  A periodic (5-min) background status monitor is watching
+- A periodic (5-min) background status monitor watched
   `08-11-inhouse-smells-python-926-progress.json` for the remainder of the
   run, including a staleness check that flags if `done` stops advancing for
   ~15 minutes (same signal that caught the azure-sdk stall, now automated).
-  Will update this entry with final counts and the validation report
-  (`validate_smells_against_pilot.py`) once complete.
+  No further stalls - remaining runtime was genuinely just proportional
+  work (airbyte's 96 rows, then fast fails through fully-unmaterialized
+  `browser-use`/`flynt`/`marimo`, then `crewAI`/`crewAI-tools`/
+  `featureform`/`levanter`, then `mlflow`'s 96 rows last).
+
+**Final result: 926/926 done, 495 ok, 431 failed** (elapsed 5,028s ≈ 84
+min). Every failure confirmed to be the expected "not materialized"
+case, not a real error - `431` matches exactly `1022 - 495 (materialized
+non-azure rows) - 96 (azure rows, excluded before counting toward this
+run's 926 total)`, i.e. no unexplained failures. Per-repo ok counts:
+`airbytehq/airbyte` 96, `mlflow/mlflow` 96, `crewAIInc/crewAI` 72,
+`crewAIInc/crewAI-tools` 54, `marin-community/levanter` 12,
+`featureform/enrichmcp` 11 (the last two limited by how much of Phase 2's
+materialization has landed so far, not a smell-detection issue).
+
+**Aggregate smell counts across all 495 rows**: 72,402 God Class,
+2,761 Data Class, 14,730 Feature Envy, 47,250 Brain Method flags.
+
+**A real finding, not a bug - God Class's flag rate is much higher than
+expected (~11.7% of all classes, pooled across every row), and it's
+God-Class-specific, not a general problem**: Data Class (0.45% of
+classes), Feature Envy (1.17% of methods), and Brain Method (3.76% of
+methods) all land in the low-single-digit range typical smell-detection
+literature reports. God Class stands out because it's the only one of
+the four strategies built from **two independently percentile-relative
+filters ANDed together** (`WMC >= TopValues(25%)` and
+`TCC <= BottomValues(25%)`, per Marinescu's own Eq. 1, reproduced
+verbatim - see "The method, precisely" above) - by construction, roughly
+a quarter of classes clear *each* filter on *every single run*, no matter
+how the codebase's actual design quality trends over time. If WMC and
+TCC are anti-correlated even mildly (larger classes tending toward lower
+cohesion - plausible and apparently true here), the intersection lands
+well above the naive-independence estimate of ~6.25%, which is exactly
+what's observed. This was flagged as a theoretical risk in "Open
+questions" above before the run; this is the concrete measurement
+confirming it's a real, non-trivial effect, not a hypothetical one - a
+strong candidate for revisiting the God Class formula specifically in a
+v2 (e.g. a tighter percentile band, an absolute WMC floor as well as the
+percentile filter, or computing the percentile pooled across a repo's
+full history rather than per-snapshot so a snapshot's own count reflects
+real change instead of partially just re-deriving "top quarter of
+whatever exists this month").
+
+**Validation (`validate_smells_against_pilot.py`), reported honestly, not
+spun**: 264 rows joined against DPy's pilot ground truth (only
+`airbyte`/`crewAI`/`mlflow` have DPy ground truth at all - Phase 2's
+other repos were never run through DPy, so 0 join rows for those is
+expected, not a gap).
+
+- **Row-for-row Spearman correlation between our density and DPy's is
+  weak and slightly negative**, not the hoped-for positive signal:
+  `design_smell_density_per_kloc` r = -0.201, `implementation_smell_density_per_kloc`
+  r = -0.081 (n=264 both). Per this doc's own stated framing, exact
+  agreement was never the bar - but a weak *negative* correlation is a
+  real, worth-flagging result, not just "expected divergence." The God
+  Class percentile-rate effect above is a plausible partial explanation
+  for `design_smell_density_per_kloc` specifically (our density partly
+  tracks the WMC/TCC distribution's *shape*, not purely "badness," which
+  DPy's own absolute-threshold-based count has no reason to track the
+  same way) - not confirmed as the sole cause, flagged as the leading
+  hypothesis.
+- **Pre/post-intervention direction (the actual check this doc's
+  validation plan asks for) is mixed but leans toward agreement**: pooled
+  across all three repos, both `design_smell_density_per_kloc` and
+  `implementation_smell_density_per_kloc` move the **same direction** we
+  do (design: both down, 18.12→14.80 kloc-density DPy vs. 1.03→0.85
+  ours; implementation: both up, 92.24→93.66 DPy vs. 0.97→1.00 ours) -
+  2/2 pooled agreement. Per-repo is weaker: `crewAIInc/crewAI` agrees on
+  both metrics; `airbytehq/airbyte` agrees on design (both down) but not
+  implementation (DPy up, ours down); `mlflow/mlflow` agrees on
+  implementation (both up) but not design (DPy down, ours up) - 4/6
+  per-repo agreement. Full numbers in
+  `results/analysis/08-11-inhouse-smell-validation-direction.csv`.
+- **Magnitude gap is enormous and expected, not informative on its own**:
+  DPy's implementation-smell density runs ~90-100 per KLOC vs. our
+  ~0.5-1.2 per KLOC, a ~100x gap - unsurprising given DPy's catalog almost
+  certainly includes many more (and much lower-severity) implementation
+  smell categories than this engine's single Brain Method strategy;
+  consistent with this doc's "not row-for-row agreement" framing from the
+  start, not a new concern.
+
+**Bottom line**: this is a mixed, informative first validation result,
+not a clean pass. Pooled pre/post direction agreement (2/2) is
+encouraging; per-repo agreement (4/6) and the weak/negative row-level
+correlation are not a strong confirmation either way. The God Class
+percentile-inflation finding is a concrete, actionable lead for a v2
+before trusting this tool's `design_smell_density_per_kloc` figure on its
+own for anything - `implementation_smell_density_per_kloc` (built from
+Feature Envy + Brain Method, neither of which shares God Class's
+double-percentile-filter structure) is on firmer footing right now.
+Raw output: `results/analysis/08-11-inhouse-smells-python-926.csv`
+(+ matching `-errors.csv`/`-progress.json`); validation reports:
+`results/analysis/08-11-inhouse-smell-validation-correlation.csv` and
+`08-11-inhouse-smell-validation-direction.csv`.
