@@ -1,4 +1,4 @@
-// Phase B's entry point: analyze one materialized C# snapshot directory
+// Tool-CS's entry point: analyze one materialized C# snapshot directory
 // (Phase 1e, materialize_snapshots.py) and print its metrics row as a
 // single line of JSON on stdout - invoked from Python
 // (src/inhouse/csharp_metrics.py) the same way run_designite() shells out

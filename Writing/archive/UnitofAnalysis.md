@@ -1,3 +1,11 @@
+> **Superseded / archived.** An early draft of the dataset-filter criteria and
+> metric wishlist sketched here — including an unfinished "Task Formulation"
+> section that cuts off mid-sentence — is now covered more rigorously by
+> `Writing/Longitudinal.md` (filtering, sampling design) and
+> `Writing/characteristic_metrics.md` (the actual metric catalog, with formal
+> definitions and citations). Kept for historical reference only; not
+> maintained. See `Writing/PHASES.md` for how this fits the project's current
+> docs.
 
 
 
@@ -27,7 +35,6 @@ GitHub is a rich data source for software development, but repositories, issues,
 Artifacts:
 * list of self-affirmed refactoring patterns (from titles, different type )
 * distribution of commits and prs (#) by associated ai agent
-
 
 We also want to analyze these behaviors through longitudinal analysis. To quantify the impact we extract object-oriented metrics and design smells before and after agents were introduced. 
 

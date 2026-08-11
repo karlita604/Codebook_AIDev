@@ -1,4 +1,4 @@
-# Project Status — 2026-08-11 (updated: in-house Phase A + Phase B both built)
+# Project Status — 2026-08-11 (updated: in-house Tool-Py + Tool-CS both built)
 
 *Companion to `ProjectUpdate.md` (the raw chronological build log — kept
 append-only, dated entries). This doc is a clean, current snapshot,
@@ -33,15 +33,15 @@ Phase 2's raw collection is essentially done — repo selection, PR sampling,
 and snapshot manifest/materialization all landed at a 21-repo scale (20/21
 repos materialized; only `julep-ai/julep` still pending) — leaving
 structural metrics (Phase 1d) as the only real remaining gap, which is
-exactly what the in-house tool targets. **Update, 2026-08-11: both Phase A
-(Python OO-metrics, stdlib `ast`) and Phase B (C# via Roslyn, syntax-only —
+exactly what the in-house tool targets. **Update, 2026-08-11: both Tool-Py
+(Python OO-metrics, stdlib `ast`) and Tool-CS (C# via Roslyn, syntax-only —
 no `.sln`/`MSBuildWorkspace` load) are now built and validated against the
-real pilot's DPy/Designite output** — see section 6 below. Phase B's
+real pilot's DPy/Designite output** — see section 6 below. Tool-CS's
 syntax-only approach turned out to unblock both `dotnet/aspire` (excluded
 from the pilot entirely — Designite can't load its project graph) and
 Dock's post-`.slnx`-migration months (Designite can't read `.slnx`) as a
-side effect of not needing a project graph at all. Visualization (Phase C)
-and the RQ3 entity tracker (Phase D) are scoped but not yet built (see
+side effect of not needing a project graph at all. Visualization (Tool-Viz)
+and the RQ3 entity tracker (Tool-RQ3) are scoped but not yet built (see
 `Writing/InHouseTooling.md` and `Writing/RQ3_CodeTracking.md`'s
 design-decisions sections).
 
@@ -58,7 +58,7 @@ design-decisions sections).
 | First analysis (segmented regression, composition, process) | **Done for the pilot — see `Results.md`.** Preliminary, N=4, not re-run since |
 | Designite branch → `main` merge | **Done 2026-08-04** — Dock's Designite output now lives in this checkout, no cross-checkout reads needed |
 | Phase 2 — expand to 20-repo minimum | **Raw collection essentially done** (2026-08-10) — 21-repo manifest, 20/21 repos materialized (`julep-ai/julep` pending); structural-metric analysis is the one remaining piece |
-| In-house tool, Phase A (Python) + Phase B (C#/Roslyn) | **Both built and validated 2026-08-11** — see section 6 below. Phase C (viz)/D (RQ3 entity tracker) not started |
+| In-house tool, Tool-Py (Python) + Tool-CS (C#/Roslyn) | **Both built and validated 2026-08-11** — see section 6 below. Tool-Viz (viz)/Tool-RQ3 (RQ3 entity tracker) not started |
 
 ## 1. The pilot (now 4 repos, not 5)
 
@@ -183,7 +183,7 @@ made the pilot expensive. Full repo list and any remaining collection
 gaps (starting with `julep-ai/julep`'s materialization): `ProjectUpdate.md`'s
 2026-08-04 and 2026-08-10 entries.
 
-## 6. In-house metrics tool — Phase A and Phase B built and validated (2026-08-11)
+## 6. In-house metrics tool — Tool-Py and Tool-CS built and validated (2026-08-11)
 
 `Writing/InHouseTooling.md` and `Writing/RQ3_CodeTracking.md` moved from
 brainstorm to a real build this session. Design decisions (scope, language
@@ -241,9 +241,9 @@ sections actually run are less affected (both pre- and post-intervention
 snapshots would be similarly chunked). Full analysis: `Results.md`'s
 in-house-tool validation section.
 
-### Phase B — C# via Roslyn, built and validated same day
+### Tool-CS — C# via Roslyn, built and validated same day
 
-Followed the same shape as Phase A, translated to C#: `src/inhouse/roslyn_tool/`
+Followed the same shape as Tool-Py, translated to C#: `src/inhouse/roslyn_tool/`
 is a small .NET console app (`Microsoft.CodeAnalysis.CSharp`,
 `CSharpSyntaxTree.ParseText` — **no `.sln`/`MSBuildWorkspace` load, ever**),
 invoked via subprocess from `src/inhouse/csharp_metrics.py` the same way
@@ -251,9 +251,9 @@ invoked via subprocess from `src/inhouse/csharp_metrics.py` the same way
 `long_analysis.py`. `pool_inhouse_metrics.py` now routes each manifest row
 to the right analyzer by `language` instead of filtering to Python only.
 
-**Validated the same two ways as Phase A:**
+**Validated the same two ways as Tool-Py:**
 1. **Hand-checked synthetic fixture** (same `Animal`/`Dog` shape as
-   Phase A's, for a direct side-by-side). Caught a real gap before it
+   Tool-Py's, for a direct side-by-side). Caught a real gap before it
    became a silent undercount: C# constructors are a *different* Roslyn
    node type (`ConstructorDeclarationSyntax`), not a subtype of
    `MethodDeclarationSyntax` — missing this would have dropped every
@@ -263,7 +263,7 @@ to the right analyzer by `language` instead of filtering to Python only.
    `BaseMethodDeclarationSyntax` (covers methods, constructors,
    destructors, operators) throughout. Every hand-computed value matched
    after the fix — including confirmation that C#'s real field-declaration
-   syntax sidesteps Phase A's Python-specific blind spot entirely: the
+   syntax sidesteps Tool-Py's Python-specific blind spot entirely: the
    same fixture's `Dog` class gets `NOF=0` in C# (correct), not the `NOF=1`
    the Python engine produces from mis-reading `self.speak()` as a field
    access, because the C# side reads real declared fields instead of
@@ -273,9 +273,9 @@ to the right analyzer by `language` instead of filtering to Python only.
    Designite-successful Dock rows joined, and agreement is strong**:
    `total_loc` r=0.999, `n_classes` r=0.998, `n_methods` r=0.997,
    `cyclomatic_complexity_p90` r=0.546 (weaker, same category of
-   cross-implementation CC-counting divergence Phase A's validation
+   cross-implementation CC-counting divergence Tool-Py's validation
    already showed on the Python side). Class/method counts run a
-   *negative* 11-15% vs. Designite — the opposite direction from Phase A's
+   *negative* 11-15% vs. Designite — the opposite direction from Tool-Py's
    Python offset — consistent with a documented Designite quirk
    (`DESIGNITE_TASK.md`'s "known gaps"): multi-targeted projects (built for
    more than one target framework) get a full duplicate class/method set
@@ -286,18 +286,18 @@ to the right analyzer by `language` instead of filtering to Python only.
 - **`dotnet/aspire` analyzed successfully — 75/75 rows, `ok`.** This is the
   repo excluded from the pilot entirely because `MSBuildWorkspace` can't
   evaluate its project graph without replicating Arcade's bootstrap
-  (`DESIGNITE_TASK.md` §5). Phase B never loads a project graph at all, so
+  (`DESIGNITE_TASK.md` §5). Tool-CS never loads a project graph at all, so
   that blocker doesn't apply — this is the first real structural data this
   project has ever had for `dotnet/aspire`.
 - **Dock's post-`.slnx`-migration period is no longer censored.** Designite
   fails on 9/96 Dock rows because it can't read `.slnx` (Dock migrated
   2025-12-25, six months after its own intervention date) — flagged
   repeatedly as a real limitation on Dock's post-intervention data
-  (`Results.md`'s caveats). Phase B doesn't touch `.sln`/`.slnx` either, so
+  (`Results.md`'s caveats). Tool-CS doesn't touch `.sln`/`.slnx` either, so
   **all 96/96 Dock rows succeeded**, including the previously-unreadable
   post-migration months.
 
-**A real bug this surfaced, unrelated to Phase B's own code**: joining
+**A real bug this surfaced, unrelated to Tool-CS's own code**: joining
 against Designite's ground truth using the *latest* snapshot manifest
 (`08-04-repo-snapshot-manifest-2016.csv`) initially returned only 2/87
 matches for Dock — not a validation failure, a **manifest regression**.
@@ -316,12 +316,12 @@ underlying clone staleness is unresolved and needs its own fix (a
 `git fetch`/backfill re-run for Dock specifically) before the *latest*
 manifest can be trusted for Dock again — see "What's still open" below.
 
-**Not yet built** (scoped, not started): Phase C (time-series + pre/post
-correlation-matrix visualization), Phase D (RQ3 entity/snippet lifetime
+**Not yet built** (scoped, not started): Tool-Viz (time-series + pre/post
+correlation-matrix visualization), Tool-RQ3 (RQ3 entity/snippet lifetime
 tracker — "how many times was this method edited," "did it get renamed,"
 etc.). "How many rounds of *review*" specifically (as opposed to edit
 count) stays blocked on Track B's still-missing deeper PR-diff stats
-regardless of Phase D's own progress — see item 4 below, unchanged since
+regardless of Tool-RQ3's own progress — see item 4 below, unchanged since
 2026-07-21.
 
 ## 7. What's still open
@@ -330,19 +330,19 @@ Ranked by what would change the analysis most:
 
 1. **`dotnet/aspire`'s exclusion / the language imbalance — resolved for
    the in-house tool, still open for the pilot's published Designite
-   numbers.** Phase B gives real structural data for `dotnet/aspire`
+   numbers.** Tool-CS gives real structural data for `dotnet/aspire`
    (75/75 rows) and doesn't need the language-imbalance workaround the
    original Designite-based pilot needed. The *pilot's first analysis*
    (section 4 above) still only has Designite/DPy data and still excludes
    aspire — re-running that analysis on in-house data, or deciding whether
    to formally supersede the Designite numbers, is a methodology call, not
-   done automatically by Phase B existing.
+   done automatically by Tool-CS existing.
 2. **Dock's `.slnx` gap — resolved for the in-house tool, still open for
-   Designite's own numbers.** Phase B reads all 96/96 Dock rows including
+   Designite's own numbers.** Tool-CS reads all 96/96 Dock rows including
    the post-migration months; Designite's real output (used in the pilot's
    published first analysis) still only has 87/96. Same "which numbers are
    now authoritative" methodology call as item 1.
-3. **The Dock manifest commit-resolution bug** (found validating Phase B,
+3. **The Dock manifest commit-resolution bug** (found validating Tool-CS,
    section 6) — `data/repo_cache/wieslawsoltes__Dock` is stale, capped at
    a January 2022 commit, so the *latest* snapshot manifest
    (`08-04-repo-snapshot-manifest-2016.csv`) resolves 94/96 of Dock's grid
@@ -351,14 +351,14 @@ Ranked by what would change the analysis most:
    repo-specific, not systemic) before the latest manifest can be trusted
    for Dock again.
 4. **The in-house metrics tool, Python + C# are done; viz/RQ3 aren't.**
-   Phase A and Phase B (section 6) are both built and validated. Still
+   Tool-Py and Tool-CS (section 6) are both built and validated. Still
    needed before Phase 2's raw-collected repos are *fully* analyzable:
-   Phase C (the actual time-series/correlation figures) and Phase D (RQ3
+   Tool-Viz (the actual time-series/correlation figures) and Tool-RQ3 (RQ3
    entity tracking). Also: `julep-ai/julep` still needs Phase 1e
    materialization before either analyzer can run against it.
 5. **Track B's deeper PR stats** (diff size, review detail) — needed to
    extend RQ3 beyond timestamps/comments, and specifically blocks any
-   "how many rounds of review" question the RQ3 entity tracker (Phase D)
+   "how many rounds of review" question the RQ3 entity tracker (Tool-RQ3)
    will eventually want to answer — "how many times edited" doesn't need
    this (commit history alone answers it), but "how many review rounds"
    does. Unchanged since 2026-07-21 — still not built.
@@ -377,13 +377,13 @@ Ranked by what would change the analysis most:
 - In-house tooling plan/decisions: `Writing/InHouseTooling.md`
 - RQ3 code-tracking plan/decisions: `Writing/RQ3_CodeTracking.md`
 - In-house tool build plan: `C:\Users\kvrlv\.claude\plans\woolly-jumping-acorn.md`
-- In-house tool code: `src/inhouse/` — Python (Phase A): `ast_common.py`,
-  `py_metrics.py`; C# (Phase B): `roslyn_tool/` (.NET console project),
+- In-house tool code: `src/inhouse/` — Python (Tool-Py): `ast_common.py`,
+  `py_metrics.py`; C# (Tool-CS): `roslyn_tool/` (.NET console project),
   `csharp_metrics.py` (subprocess glue); shared: `pool_inhouse_metrics.py`
   (orchestrator), `validate_against_pilot.py`
 - In-house tool output: `results/analysis/08-10-inhouse-metrics-python-*.csv`
-  (Phase A, pilot validation runs), `results/analysis/08-11-inhouse-metrics-{Dock,aspire}-*.csv`
-  (Phase B)
+  (Tool-Py, pilot validation runs), `results/analysis/08-11-inhouse-metrics-{Dock,aspire}-*.csv`
+  (Tool-CS)
 - In-house vs. DPy/Designite agreement report: `results/analysis/08-11-inhouse-validation-report.csv`
 - Pooled structural data (pilot only): `results/analysis/07-29-pooled-structural-metrics.csv`
 - Regression / composition / process output: `results/analysis/07-29-{segmented-regression-A1,rq2-composition,rq3-process}.csv`

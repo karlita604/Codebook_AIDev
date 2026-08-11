@@ -8,7 +8,11 @@
 > "First real analysis" sections below are an **N=4 pilot**, explicitly
 > preliminary and superseded once Phase 2's larger sample lands — see the
 > 2026-08-04 entry at the end of this file, and `Results.md`'s banner, for
-> current status.
+> current status. **Terminology note**: entries below say "Phase A"/"Phase B"
+> for the in-house tool — those were renamed to Tool-Py/Tool-CS everywhere
+> else in this pass; see `PHASES.md` for the full naming crosswalk. Kept
+> as-written here since this file is a verbatim historical record, not
+> rewritten for current terms.
 
 ## Where things stand
 

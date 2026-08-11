@@ -1,3 +1,10 @@
+> **Superseded / archived.** This early doc describes `PRfilter.py` and
+> `phase1.py` in detail (still accurate as far as it goes) but its "Phase 1.5"
+> label for `metrics.py` predates and conflicts with the project's current
+> phase naming — see `Writing/PHASES.md` for the resolved naming and
+> `Writing/Longitudinal.md` for the current, fuller pipeline description
+> (Phase 1a-1e). Kept for historical reference only; not maintained.
+
 # Phase 0 — Data
 
 ## Data filtering (`src/phase0/PRfilter.py`)

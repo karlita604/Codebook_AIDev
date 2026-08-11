@@ -188,7 +188,8 @@ belong to.
   at the event, uncontaminated by the months of drift a calendar-anchored
   sample would include on either side. Feeds the PR-level
   `delta = after - before` analysis sketched in
-  [UnitofAnalysis.md](UnitofAnalysis.md).
+  [archive/UnitofAnalysis.md](archive/UnitofAnalysis.md) (superseded draft,
+  kept for historical reference).
 - **Status:** not yet built (**Phase 1b**, same blocker as B1).
 - **Will be stored:** keyed by `(repo_id, track='B2', pr_id)`, location TBD.
 
@@ -633,6 +634,7 @@ age at snapshot — enter the regression models, not just the descriptives.
   orchestration built (`long_analysis.py`, Phase 1d), still needs DPy/Designite
   actually installed before it produces real output.
 - Track B1/B2 output (PR-level process metrics, delta table per
-  [UnitofAnalysis.md](UnitofAnalysis.md)) — needs Phase 1b.
+  [archive/UnitofAnalysis.md](archive/UnitofAnalysis.md), superseded draft) —
+  needs Phase 1b.
 - Segmented regression output per primary metric (level change, slope
   change) — needs the above.

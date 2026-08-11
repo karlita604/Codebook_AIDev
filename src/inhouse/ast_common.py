@@ -11,7 +11,7 @@ matters (this project needs to know exactly what's being counted to make a
 meaningful comparison against DPy's real output).
 
 Used by both the OO-metrics engine (py_metrics.py) and, later, the RQ3
-entity tracker (Writing/RQ3_CodeTracking.md, Phase D) - one AST-walking
+entity tracker (Writing/RQ3_CodeTracking.md, Tool-RQ3) - one AST-walking
 layer, not two.
 """
 
