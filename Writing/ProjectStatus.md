@@ -1,4 +1,4 @@
-# Project Status — 2026-08-11 (updated: in-house Tool-Py + Tool-CS both built)
+# Project Status — 2026-08-11 (updated: Tool-CS now covers all 7 C# repos)
 
 *Companion to `ProjectUpdate.md` (the raw chronological build log — kept
 append-only, dated entries). This doc is a clean, current snapshot,
@@ -41,9 +41,22 @@ syntax-only approach turned out to unblock both `dotnet/aspire` (excluded
 from the pilot entirely — Designite can't load its project graph) and
 Dock's post-`.slnx`-migration months (Designite can't read `.slnx`) as a
 side effect of not needing a project graph at all. Visualization (Tool-Viz)
-and the RQ3 entity tracker (Tool-RQ3) are scoped but not yet built (see
-`Writing/InHouseTooling.md` and `Writing/RQ3_CodeTracking.md`'s
-design-decisions sections).
+is scoped but not yet built (see `Writing/InHouseTooling.md`'s
+design-decisions section). **Update, 2026-08-11 (later): Tool-CS scaled to
+every C# repo in the Phase 2 manifest** — all 7 (Dock, aspire, and the 5
+remaining Phase 2 C# repos) now have full structural data, 651 rows, 100%
+`ok` (see section 6). Tool-Py's coverage is still pilot-only (3 repos);
+**and Tool-RQ3 (the RQ3 entity tracker) moved from scoped-only to a real,
+validated build** — Stages 1-4 of 6 (matcher, metrics, validation gate,
+Python+C# extraction) built and validated, Stage 5 (scale to the full
+pilot + Phase 2) running (a 21-repo pass in progress as of this writing).
+All of this lives on a separate branch (`rq3-entity-tracker`, not yet
+merged into `main`) — see `Writing/RQ3_CodeTracking.md`'s build log and
+`Writing/PHASES.md` for exactly what's built vs. still running vs. not
+started. Separately: the other 10 Phase 2 Python repos haven't been run
+through Tool-Py yet, deliberately — Python-side smell detection is in
+progress on its own separate branch and the Tool-CS scale-up above was
+scoped to C# specifically.
 
 ## Where each piece stands
 
@@ -58,7 +71,7 @@ design-decisions sections).
 | First analysis (segmented regression, composition, process) | **Done for the pilot — see `Results.md`.** Preliminary, N=4, not re-run since |
 | Designite branch → `main` merge | **Done 2026-08-04** — Dock's Designite output now lives in this checkout, no cross-checkout reads needed |
 | Phase 2 — expand to 20-repo minimum | **Raw collection essentially done** (2026-08-10) — 21-repo manifest, 20/21 repos materialized (`julep-ai/julep` pending); structural-metric analysis is the one remaining piece |
-| In-house tool, Tool-Py (Python) + Tool-CS (C#/Roslyn) | **Both built and validated 2026-08-11** — see section 6 below. Tool-Viz (viz)/Tool-RQ3 (RQ3 entity tracker) not started |
+| In-house tool, Tool-Py (Python) + Tool-CS (C#/Roslyn) | **Both built and validated 2026-08-11.** Tool-CS now covers all 7 Phase 2 C# repos (651 rows); Tool-Py still pilot-only (3 repos) — see section 6 below. Tool-Viz not started. Tool-RQ3: Stages 1-4 built and validated, Stage 5 running — on a separate, not-yet-merged branch (`rq3-entity-tracker`) |
 
 ## 1. The pilot (now 4 repos, not 5)
 
@@ -316,13 +329,56 @@ underlying clone staleness is unresolved and needs its own fix (a
 `git fetch`/backfill re-run for Dock specifically) before the *latest*
 manifest can be trusted for Dock again — see "What's still open" below.
 
-**Not yet built** (scoped, not started): Tool-Viz (time-series + pre/post
-correlation-matrix visualization), Tool-RQ3 (RQ3 entity/snippet lifetime
-tracker — "how many times was this method edited," "did it get renamed,"
-etc.). "How many rounds of *review*" specifically (as opposed to edit
-count) stays blocked on Track B's still-missing deeper PR-diff stats
-regardless of Tool-RQ3's own progress — see item 4 below, unchanged since
-2026-07-21.
+### Tool-CS rolled out to every C# repo in scope (same day, after validation)
+
+Once Dock/aspire validated cleanly, ran Tool-CS against the remaining 5
+Phase 2 C# repos too (`dotnet/maui`, `dotnet/aspnetcore`,
+`elsa-workflows/elsa-core`, `microsoft/testfx`, `wieslawsoltes/Svg.Skia`) —
+**all 7 C# repos in the manifest now have full in-house structural data**,
+651 rows total, 100% `ok`, 0 failures:
+
+| Repo | Rows | OK |
+|---|---|---|
+| `dotnet/aspire` | 75 | 75 |
+| `dotnet/aspnetcore` | 96 | 96 |
+| `dotnet/maui` | 96 | 96 |
+| `elsa-workflows/elsa-core` | 96 | 96 |
+| `microsoft/testfx` | 96 | 96 |
+| `wieslawsoltes/Dock` | 96 | 96 |
+| `wieslawsoltes/Svg.Skia` | 96 | 96 |
+
+None of these 5 new repos existed in the pilot's original manifest, so
+there's no Designite ground truth to validate them against (Designite was
+never run on them — Phase 2's own scope decision was to skip Phase 1d
+entirely and wait for this tool). Their materialized snapshots (Phase 1e)
+didn't exist yet either — `dotnet/maui`, `elsa-workflows/elsa-core`, and
+`microsoft/testfx` had **zero** materialized commits, `Svg.Skia` had 1 —
+ran `materialize_snapshots.py --repo <name>` for each first (clones already
+existed, just hadn't been archived yet).
+
+**Checked each for the Dock-style stale-clone bug before trusting its
+numbers** — none had it: all four showed high commit diversity relative to
+their 96 grid rows (93-95 unique) and recent local-clone HEAD commits
+(late July/early August 2026), unlike Dock's January-2022-stale clone.
+Confirms the earlier finding that this bug is Dock-specific, not systemic.
+
+**One data-hygiene fix along the way**: Dock's output files still had 94
+leftover rows from the *broken*-manifest run mixed in alongside the 96
+correct ones (different `commit_sha` for the same `target_date`, so they
+didn't collide as duplicates — they just sat there as extra, wrong rows).
+Filtered both Dock output files down to exactly the 96 rows matching the
+verified-correct old-manifest resolution before calling this done.
+
+**Not yet built**: Tool-Viz (time-series + pre/post correlation-matrix
+visualization) — scoped, not started. **Tool-RQ3** (RQ3 entity/snippet
+lifetime tracker — "how many times was this method edited," "did it get
+renamed," etc.) is further along than that: Stages 1-4 of 6 are built and
+validated and Stage 5 is running, on a separate branch not yet merged into
+`main` — see `Writing/PHASES.md` and `Writing/RQ3_CodeTracking.md`'s build
+log for the real state. "How many rounds of *review*" specifically (as
+opposed to edit count) stays blocked on Track B's still-missing deeper
+PR-diff stats regardless of Tool-RQ3's own progress — see item 4 below,
+unchanged since 2026-07-21.
 
 ## 7. What's still open
 
@@ -350,12 +406,25 @@ Ranked by what would change the analysis most:
    `git fetch`/backfill for Dock's clone specifically (confirmed
    repo-specific, not systemic) before the latest manifest can be trusted
    for Dock again.
-4. **The in-house metrics tool, Python + C# are done; viz/RQ3 aren't.**
-   Tool-Py and Tool-CS (section 6) are both built and validated. Still
-   needed before Phase 2's raw-collected repos are *fully* analyzable:
-   Tool-Viz (the actual time-series/correlation figures) and Tool-RQ3 (RQ3
-   entity tracking). Also: `julep-ai/julep` still needs Phase 1e
-   materialization before either analyzer can run against it.
+4. **The in-house metrics tool, Python + C# are built and validated;
+   coverage is C#-complete, Python isn't yet.** Tool-CS now covers **all 7
+   C# repos** in the manifest (651 rows, 100% `ok` — section 6). Tool-Py
+   is still only run against the 3 pilot Python repos (crewAI, airbyte,
+   mlflow) for validation purposes — the other 10 Phase 2 Python repos
+   (`567-labs/instructor`, `AgentOps-AI/agentops`,
+   `Azure/azure-sdk-for-python`, `Significant-Gravitas/AutoGPT`,
+   `browser-use/browser-use`, `featureform/enrichmcp`, `ikamensh/flynt`,
+   `marimo-team/marimo`, `marin-community/levanter`, `julep-ai/julep`)
+   haven't been run through it yet - deliberately out of scope this round
+   (Python-side smell-detection work is in progress on a separate branch).
+   Also still needed regardless of language: Tool-Viz (the actual
+   time-series/correlation figures, not started) — Tool-RQ3 (RQ3 entity
+   tracking) is further along, Stages 1-4 of 6 built and validated and
+   Stage 5 running on a separate branch (`rq3-entity-tracker`), not yet
+   merged into `main` (see `PHASES.md`). `julep-ai/julep` still needs
+   Phase 1e materialization before Tool-Py/Tool-CS can run against it,
+   though it's already usable for Tool-RQ3, which reads `data/repo_cache/`
+   directly, not the materialized-snapshot grid.
 5. **Track B's deeper PR stats** (diff size, review detail) — needed to
    extend RQ3 beyond timestamps/comments, and specifically blocks any
    "how many rounds of review" question the RQ3 entity tracker (Tool-RQ3)
@@ -382,8 +451,8 @@ Ranked by what would change the analysis most:
   `csharp_metrics.py` (subprocess glue); shared: `pool_inhouse_metrics.py`
   (orchestrator), `validate_against_pilot.py`
 - In-house tool output: `results/analysis/08-10-inhouse-metrics-python-*.csv`
-  (Tool-Py, pilot validation runs), `results/analysis/08-11-inhouse-metrics-{Dock,aspire}-*.csv`
-  (Tool-CS)
+  (Tool-Py, pilot validation runs); Tool-CS, all 7 C# repos:
+  `results/analysis/08-11-inhouse-metrics-{Dock,aspire,dotnetmaui,dotnetaspnetcore,elsaworkflowselsacore,microsofttestfx,SvgSkia}-*.csv`
 - In-house vs. DPy/Designite agreement report: `results/analysis/08-11-inhouse-validation-report.csv`
 - Pooled structural data (pilot only): `results/analysis/07-29-pooled-structural-metrics.csv`
 - Regression / composition / process output: `results/analysis/07-29-{segmented-regression-A1,rq2-composition,rq3-process}.csv`

@@ -48,10 +48,10 @@ forward in `ProjectStatus.md` and `src/inhouse/*`. Canonical definition:
 
 | New name | Old name | What it is | Status |
 |---|---|---|---|
-| **Tool-Py** | Phase A | Python OO metrics, stdlib `ast`, no LOC cap | Built and validated 2026-08-10 |
-| **Tool-CS** | Phase B | C# OO metrics, Roslyn `CSharpSyntaxTree.ParseText`, no `.sln`/`MSBuildWorkspace` load | Built and validated 2026-08-11 |
+| **Tool-Py** | Phase A | Python OO metrics, stdlib `ast`, no LOC cap | Built and validated 2026-08-10; pilot-only coverage (3 repos) |
+| **Tool-CS** | Phase B | C# OO metrics, Roslyn `CSharpSyntaxTree.ParseText`, no `.sln`/`MSBuildWorkspace` load | Built and validated 2026-08-11; scaled to all 7 Phase 2 C# repos same day |
 | **Tool-Viz** | Phase C | Time-series + pre/post correlation-matrix visualization | Scoped, not built |
-| **Tool-RQ3** | Phase D | RQ3 entity/snippet lifetime tracker | Scoped, not built |
+| **Tool-RQ3** | Phase D | RQ3 entity/snippet lifetime tracker | **In progress, not yet merged.** Stages 1-4 of 6 (matcher, metrics, validation gate, Python+C# extraction) built and validated; Stage 5 (scale to the full pilot + Phase 2) built and running — a 21-repo pass was in progress as of this writing, not yet complete. Stage 6 (windowed pre/post cut) not started. All on `rq3-entity-tracker` branch (`Codebook_AIDev-rq3` worktree, off `main`, commit `464c8cd9a`), not `main` itself. See `Writing/RQ3_CodeTracking.md`'s build log |
 
 **Historical note**: `ProjectUpdate.md`'s dated log entries (2026-08-10,
 2026-08-11) still say "Phase A"/"Phase B" — that file is an append-only,
