@@ -334,3 +334,27 @@ tar: Error exit delayed from previous errors.
   [archive] (2/61) Azure/azure-sdk-for-python@f3ca8ac: ok
   [archive] (3/61) Azure/azure-sdk-for-python@9379d2e: failed or timed out
   [archive] (4/61) Azure/azure-sdk-for-python@4d9bf58: failed or timed out
+  [archive] (5/61) Azure/azure-sdk-for-python@60f9e2f: failed or timed out
+  [archive] (6/61) Azure/azure-sdk-for-python@7d64115: failed or timed out
+  [archive] (7/61) Azure/azure-sdk-for-python@fdbbd75: ok
+  [archive] (8/61) Azure/azure-sdk-for-python@418882a: ok
+  [archive] (9/61) Azure/azure-sdk-for-python@6e86b7a: ok
+  [archive] (10/61) Azure/azure-sdk-for-python@01fecc2: ok
+  [archive] (11/61) Azure/azure-sdk-for-python@6dc8416: ok
+  [archive] (12/61) Azure/azure-sdk-for-python@8f34059: ok
+  [archive] (13/61) Azure/azure-sdk-for-python@b3f8572: ok
+  [archive] (14/61) Azure/azure-sdk-for-python@c032898: ok
+  [archive] (15/61) Azure/azure-sdk-for-python@8ee53b2: ok
+  [archive] (16/61) Azure/azure-sdk-for-python@e8e2ef3: ok
+  [archive] (17/61) Azure/azure-sdk-for-python@753f5d7: ok
+  [archive] (18/61) Azure/azure-sdk-for-python@999ded5: failed or timed out
+  [archive] (19/61) Azure/azure-sdk-for-python@b238b8b: ok
+  [archive] (20/61) Azure/azure-sdk-for-python@50f0fa2: ok
+  [archive] (21/61) Azure/azure-sdk-for-python@79f436b: ok
+  [archive] (22/61) Azure/azure-sdk-for-python@5aa70de: ok
+  [archive] (23/61) Azure/azure-sdk-for-python@4164bac: ok
+  [archive] (24/61) Azure/azure-sdk-for-python@980fe42: failed or timed out
+  [archive] (25/61) Azure/azure-sdk-for-python@b344b32: failed or timed out
+  [archive] (26/61) Azure/azure-sdk-for-python@8af967f: ok
+  [archive] (27/61) Azure/azure-sdk-for-python@0ef60fe: ok
+  [archive] (28/61) Azure/azure-sdk-for-python@5d2828f: ok

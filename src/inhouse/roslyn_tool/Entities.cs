@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace RoslynMetrics;
@@ -7,10 +8,18 @@ namespace RoslynMetrics;
 // two unrelated implementations. See py_metrics.py's module docstring for
 // why each metric is defined the way it is; the C# side follows the same
 // definitions, adapted to Roslyn's syntax model.
+//
+// StartLine/EndLine (1-based, inclusive) were added for the RQ3 entity
+// tracker (Writing/RQ3_CodeTracking.md, Phase D) - it needs a line span per
+// entity to feed the lineage matcher, on top of Phase A/B's own Loc-only
+// need. Additive only: Phase B's own aggregation (SnapshotAnalyzer.cs) never
+// reads these two fields, so this doesn't change any existing metric.
 public sealed class MethodInfo
 {
     public required string Name { get; init; }
     public required string QualifiedName { get; init; }
+    public required int StartLine { get; init; }
+    public required int EndLine { get; init; }
     public required int Loc { get; init; }
     public required int Cc { get; init; }
     public required int ParamCount { get; init; }
@@ -21,6 +30,8 @@ public sealed class ClassInfo
 {
     public required string Name { get; init; }
     public required string QualifiedName { get; init; }
+    public required int StartLine { get; init; }
+    public required int EndLine { get; init; }
     public required int Loc { get; init; }
     public required bool IsPublic { get; init; }
     public required List<string> Bases { get; init; }
@@ -36,6 +47,11 @@ public sealed class ClassInfo
     // not inferred from how the field is used anywhere in a method body.
     public required HashSet<string> FieldNameSet { get; init; }
 
+    // Excluded from JSON output (RQ3's inventory export serializes ClassInfo
+    // directly) - a raw Roslyn syntax node isn't meaningfully serializable
+    // and Phase B's own AnalyzeToJson never serializes this type directly
+    // either, so this is a no-op for existing behavior.
+    [JsonIgnore]
     public ClassDeclarationSyntax Node { get; init; } = null!;
 }
 
