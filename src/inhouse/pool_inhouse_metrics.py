@@ -161,6 +161,16 @@ def main():
         "--repo", type=str, default=None,
         help="only process rows whose full_name contains this substring",
     )
+    parser.add_argument(
+        "--exclude-repo", type=str, default=None,
+        help="skip rows whose full_name contains this substring - for "
+             "azure-sdk-for-python specifically (2026-08-13): _lcom's O(n^2) "
+             "pairwise cohesion computation is the same complexity class "
+             "that stalled py_smells.py's _tcc on this repo's 40k-line "
+             "generated files (see Writing/PySmellDetection.md's batch-run "
+             "log), same per-run scope decision, not a permanent "
+             "tooling-blocker exclusion like EXCLUDED_REPOS.",
+    )
     args = parser.parse_args()
 
     manifest_path = args.manifest or latest_manifest()
@@ -181,6 +191,10 @@ def main():
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
+    if args.exclude_repo:
+        eligible = eligible[
+            ~eligible["full_name"].str.contains(args.exclude_repo)
+        ]
     if args.limit:
         eligible = eligible.head(args.limit)
     total = len(eligible)

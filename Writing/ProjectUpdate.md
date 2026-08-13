@@ -973,3 +973,192 @@ lopsided, no in-house tool exists for the C# side yet); multiple-comparison
 correction across the growing set of significance tests this project has
 now run (flagged repeatedly since 2026-07-29, still true).
 
+## 2026-08-13 — C# smell detector, full-corpus OO metrics, reconstructed regression script, Figs 3b/4/5/6
+
+Prompted by a direct question about what "in-house tooling replaces DPy/
+Designite entirely" actually requires, and a request to get Figs 3/4/5
+covering all repos in the dataset, not just the 4-repo pilot. Answered
+the underlying question first (see `Results.md`/session record): OO
+metrics already are a validated 1:1 replacement; smells never can be a
+row-for-row one, since DPy/Designite's rule catalogs are closed and the
+raw per-smell CSVs that would show their exact rule names were deleted
+after pooling - only aggregate counts survive. What was actually missing
+for "replaces DPy/Designite" was coverage: no C# smell detector existed
+at all, and OO metrics had only been run against the 3-repo Python pilot
+despite `pool_inhouse_metrics.py` already supporting every repo.
+
+**Part 1 - C# smell detector (`src/inhouse/roslyn_tool/SmellDetector.cs`,
+new).** Direct C# port of `py_smells.py`'s four Lanza & Marinescu
+strategies (God Class, Data Class, Feature Envy, Brain Method), reusing
+the already-existing `SnapshotAnalyzer.FieldAccessSets` field-access-set
+machinery (refactored out of `ComputeLcom`, additive, no behavior change
+to the existing OO-metrics engine) rather than re-walking the AST. C# has
+real field/property declarations, so there's no `self.method()`-read-as-
+field-access heuristic bug to guard against here, unlike the Python side.
+
+**A real, pre-existing build break found and fixed along the way,
+unrelated to this work but blocking it**: the checked-in `roslyn_tool`
+didn't actually compile at HEAD - `ClassInfo`/`MethodInfo`'s `StartLine`/
+`EndLine` (added for the RQ3 entity tracker, 2026-08-11) were `required`
+members that `BuildClassInfo`/`BuildMethodInfo` never set. Confirmed via
+`git stash` that this predates any change this entry made. The compiled
+`bin/roslyn_tool.dll` had simply never been rebuilt since - `csharp_metrics.py`'s
+`ensure_built()` only rebuilds when the DLL is missing, so this had been
+silently masked. Fixed by setting both fields from the same `LineSpan`
+already computed for `Loc`.
+
+**A real bug in the new smell detector, caught by hand-validation before
+trusting it on real data** - the exact discipline `PySmellDetection.md`'s
+own build log already established: two small, fully hand-computable C#
+fixtures (one designed to trigger God Class + Data Class with predictable
+percentile math, one designed to trigger Feature Envy + Brain Method).
+First run: God Class/Data Class/Feature Envy all matched hand-computed
+expectations exactly, but Brain Method returned 0 where 1 was expected.
+Root cause: `MaxNestingLevel`'s walker was invoked as `Visit(methodNode)`
+on the method declaration itself, which immediately hit the walker's own
+`VisitMethodDeclaration` no-op boundary (there so a *nested* method's
+depth doesn't fold into its enclosing method's) and returned before ever
+descending into the body - the exact pitfall `CcWalker.Compute` already
+avoids by starting from `method.Body`, not `method`. Fixed by matching
+that pattern. Re-ran both fixtures after the fix: exact match on every
+value, including the corrected nesting depth (7, traced by hand through
+an `if/else-if/else-if` chain nested inside a `for` inside three more
+`if`s).
+
+**Re-checked, not assumed, that the Python-tuned God Class threshold
+transfers to C#**: pulled real per-class WMC/TCC pairs from Dock's largest
+snapshot (1,489 classes) and measured the same anti-correlation the Python
+side found - Spearman r=-0.743 (p≈3e-261), squarely inside Python's
+observed -0.53 to -0.82 range across sample repos. Confirms the already-
+tuned 10%/10% percentile threshold (not the paper's original 25%/25%) is
+the right call here too, not just assumed to carry over.
+
+**Real run: all 7 C# repos, 1,354 ok / 0 failed.** Dock's design-smell
+rate (3.40% of classes) and cross-language comparison (Fig 6) both landed
+in a plausible, informative range - not spot-checked further beyond the
+fixture/correlation validation above.
+
+**Part 2 - full-corpus OO metrics.** `pool_inhouse_metrics.py` already
+routed by language and had no LOC cap; it just hadn't been pointed at the
+~8 Python Phase 2 repos beyond the pilot. Ran it unscoped (full manifest,
+`--exclude-repo azure-sdk-for-python` - same O(n²) `_lcom`/`_tcc`
+cohesion-computation risk already flagged for smells, not re-litigated
+here). New: `src/inhouse/consolidate_inhouse_metrics.py` and
+`consolidate_inhouse_smells.py`, concatenating the now dozen-plus
+fragmented per-repo/per-run output files into one canonical pooled table
+each (`results/analysis/08-13-inhouse-{metrics,smells}-pooled.csv`) -
+there was previously no single "the pooled in-house table" the way
+`07-29-pooled-structural-metrics.csv` is for DPy/Designite.
+
+**A real data-hygiene bug caught before it reached the pooled files, same
+category as the one already fixed 2026-08-11 for Dock's OO metrics**: the
+unscoped full-manifest run resolves `wieslawsoltes/Dock`'s stale local
+clone to a single collapsed commit across ~94 of its 96 grid points -
+reproduced directly (94 rows, 1 unique `commit_sha`) in *both* the new
+OO-metrics run and the new smells gap-fill run. Both consolidation
+scripts now recognize an unscoped/bare-number-suffixed source file by
+its own filename convention and drop that file's Dock rows
+unconditionally (not just deduplicated) before pooling, keeping the
+older `--manifest`-overridden, verified-correct Dock data instead.
+Confirmed: both pooled files land at exactly 96 Dock rows, matching the
+already-verified count.
+
+**`browser-use/browser-use` confirmed as a genuine, separate gap while
+gap-filling smells** - Table 1 had shown 0 in-house smell rows for it
+despite an earlier build-log entry implying it landed in the full re-run;
+checked for real rather than assumed still true. All 57 of its rows fail
+with "not materialized" - Phase 1e never actually checked out its source
+trees, despite the manifest resolving real commits for it. Not fixed here
+(a different pipeline, materialize_snapshots.py) - flagged as a real,
+separate, open item.
+
+**Final pooled coverage**: 1,450 rows each in the OO-metrics and smells
+pools, 18 repos (11 Python + 7 C#) - `julep-ai/julep` (never
+materialized) and `Azure/azure-sdk-for-python` (excluded, O(n²) risk)
+are the only Phase 2 repos still without in-house data, both pre-existing,
+documented gaps, not new ones.
+
+**Part 3 - reconstructed `src/analysis/segmented_regression.py` (new).**
+`results/analysis/07-29-segmented-regression-A1.csv` (Fig 3's data) turned
+out to have no committed generating script at all - confirmed via
+`git log --diff-filter=A` on the CSV, which shows no `.py` file added in
+the same commit. Reconstructed the model from `Results.md`'s own
+methodology note (`metric ~ time + post + time_since_intervention×post`,
+the standard Wagner et al. 2002 interrupted-time-series design), closed-
+form OLS via normal equations (no `statsmodels` in this environment).
+
+**Reconstructing this faithfully took real iteration, each step checked
+against the pilot's actual stored numbers rather than assumed correct**:
+first pass (a single time variable reused for both the pre-trend and the
+post-interaction) reproduced most coefficients but left the intercept off
+by ~13-32 depending on the row; tracing it showed the pilot's intercept
+sits at the *series' own start* (2022-01), not at the intervention date,
+meaning "time" and "time since intervention" are two genuinely different
+variables in the original design, not one column serving double duty.
+Switching to two variables (a continuous month-index from the series
+start for the main/pre-trend term, the already-stored
+`months_since_intervention` column for the interaction only) closed the
+gap to ~0.03 - then tightened to ~1e-10 once the first variable was
+computed from real calendar days (`/30.436875`) instead of a plain
+integer row index, since real months aren't equal-length. p-values
+initially used a normal (z) test to match the CI's stated "normal
+approximation," which reproduced most rows but systematically undershot
+the pilot's own p-values (a z p-value never fully underflows to a literal
+`0.0` the way a t-distribution one does at extreme z, and the pilot's
+`slope_pre_p=0.0` exactly is the tell) - switched p-values to a standard
+t-test (dof degrees of freedom), keeping the CI itself on the normal
+approximation as `Results.md`'s wording specifically names. A last ~1e-5
+residual on CI bounds only, traced to the conventional rounded `1.96`
+vs. `scipy.stats.norm.ppf(0.975)`'s precise `1.959964` - switched to the
+rounded constant. Final reproduction: max absolute difference 2.3e-6
+across all 12 pilot rows and every reported column, with one named,
+understood exception (airbyte's `cyclomatic_complexity_p90`, a perfectly
+flat 3.0 for all 51 months - `Results.md`'s own "no signal available, not
+no effect" row - where both this script's and the original's p-values/CIs
+are noise-over-noise on a genuinely zero-variance fit, not comparable to
+float precision).
+
+**Full-corpus run**: 45 (repo, metric) rows fit across 15 repos (both
+languages) × 3 primary metrics, minimum-N rule `n_pre>=5 and n_post>=5`
+(matching the pilot's own thinnest cell, Dock's `n_post=6`) - 9 combos
+skipped for insufficient data (`crewAIInc/crewAI-tools`,
+`featureform/enrichmcp`, `marimo-team/marimo`, all genuinely thin on one
+side), reported in a `-skipped.csv`, not silently dropped. **20/45
+significant level changes, 17/45 significant slope changes at p<.05,
+split roughly evenly in sign** - the same "real, non-random signal, no
+consistent cross-repo direction" shape the 4-repo pilot already showed,
+now confirmed at roughly 4x the repo count.
+
+**Part 4 - figures.** `generate_track_a_figures.py`: added Fig 3b (the
+full-corpus forest plot, kept as its own figure alongside the unchanged
+pilot-scoped Fig 3, same two-tier convention as Fig 1/1b - a 45-row
+figure, scaled the same way Fig 3's height formula already handles
+arbitrary row counts); built Fig 5 for real (LOC/CC before/after, all 18
+repos - scoped in an earlier plan but never actually implemented, absent
+from `main()` until now); rewrote Fig 6 so both panels use the full
+in-house corpus instead of falling back to the pilot's Dock-only Designite
+data for panel A or staying pilot-scoped for panel B - dropped the
+"still lopsided"/"pilot only" captions since neither is true anymore, kept
+a real remaining caveat (the smell panel's narrower, differently-validated
+definition vs. DPy/Designite doesn't go away just because coverage did).
+Fig 4's in-house panel required no code change - `smells` already comes
+from the now-both-language `load_inhouse_smells()` - just an updated
+caption (11 Python + 7 C# repos, was 11 Python).
+
+**A stale-caption bug caught during visual verification, not by the
+script exiting cleanly**: Fig 1b's small-multiples grid silently expanded
+from 11 panels to 18 the moment `load_inhouse_smells()` was generalized -
+correctly rendering all 7 new C# repos' panels with real data - but its
+title still read "11 Python Phase 2 repos" until caught by actually
+looking at the rendered PNG (not just checking the script's exit code),
+this session's established verification bar. Fixed to compute the
+Python/C# repo counts dynamically rather than hardcoding them.
+
+**Not done this entry**: committing/pushing this work (a concurrent
+session was found to be using this same worktree mid-session for an
+unrelated fix, so git actions were held pending explicit direction - see
+`ProjectStatus.md`); a multiple-comparison correction across the now
+larger set of significance tests (still an open item, flagged repeatedly
+since 2026-07-29); re-materializing `browser-use/browser-use` or
+`julep-ai/julep`.
+

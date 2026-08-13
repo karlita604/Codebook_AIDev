@@ -569,3 +569,38 @@ correlation.csv`, `08-11-inhouse-smell-validation-direction.csv` -
 all now reflect the 10%/10% thresholds. Pre-fix versions of all five
 preserved under `archive_pre-godclass-fix_2026-08-11/` for anyone
 wanting the exact before/after diff.
+
+## C# port (2026-08-13) - this is no longer Python-only
+
+`src/inhouse/roslyn_tool/SmellDetector.cs` implements the same four
+strategies against Roslyn's syntax model - same fixed constants, same
+corpus-relative `HIGH`/`VERY_HIGH` percentile thresholds, same already-
+tuned God Class `TopValues(10%)`/`BottomValues(10%)` (re-checked, not
+assumed, against real C# data - see below). C# has real field/property
+declarations, so TCC/LCOM's field-access sets come directly from
+`FieldNameSet`, without the `self.method()`-read-as-field-access
+heuristic bug the Python engine had to special-case.
+
+**A real bug caught by hand-validation before trusting real data**: two
+small, fully hand-computable C# fixtures (one for God Class/Data Class,
+one for Feature Envy/Brain Method) - the first run matched every
+hand-computed value except Brain Method, which returned 0 where 1 was
+expected. Root cause: the nesting-depth walker was invoked on the method
+declaration itself, immediately hitting its own no-op
+`VisitMethodDeclaration` boundary before ever descending into the body -
+the same pitfall `CcWalker.Compute` already avoids by starting from
+`method.Body`. Fixed; both fixtures then matched exactly, including the
+corrected nesting depth traced by hand through a real `if/else-if/
+else-if` chain.
+
+**God Class's threshold re-validated on real C# data, not assumed to
+transfer**: pulled WMC/TCC pairs from Dock's largest snapshot (1,489
+classes) and confirmed the same anti-correlation the Python tuning relied
+on - Spearman r=-0.743 (p≈3e-261), inside Python's own -0.53 to -0.82
+range. Confirms 10%/10% is the right call in C# too.
+
+**Real run**: all 7 C# repos, 1,354 ok / 0 failed. Full both-language
+pooled output (via the new `consolidate_inhouse_smells.py`, which also
+fixes a real Dock stale-clone data-hygiene issue found in the process -
+see `ProjectUpdate.md`'s 2026-08-13 entry for the full account):
+`results/analysis/08-13-inhouse-smells-pooled.csv`, 1,450 rows, 18 repos.

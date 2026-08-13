@@ -18,10 +18,13 @@ Two real data-scope facts baked into the loaders below, not left implicit:
   DPy/Designite's closed catalogs - see Writing/PySmellDetection.md).
   Never blended into one series without a `source` column saying which is
   which.
-- OO metrics (LOC/CC/WMC/LCOM/DIT/Fan-In/Out) are still pilot-only
-  (4 repos) - Tool-Py hasn't been run against the other Python Phase 2
-  repos as of this build (a real, separate, not-yet-done prerequisite,
-  not something this module works around).
+- OO metrics (LOC/CC/WMC/LCOM/DIT/Fan-In/Out) now have two scopes too,
+  same split as smells: `load_pooled_metrics()`'s original 4-repo
+  DPy/Designite pilot, and `load_inhouse_metrics()`'s full-corpus in-house
+  pool (consolidate_inhouse_metrics.py) - unlike smells, OO metrics ARE a
+  validated 1:1 replacement (r=0.997-0.999 against real DPy/Designite
+  output), so the in-house side isn't a differently-defined signal the way
+  smells are, just a wider-coverage version of the same metric.
 """
 
 from pathlib import Path
@@ -140,17 +143,70 @@ def load_regression():
     return pd.read_csv(ANALYSIS_DIR / "07-29-segmented-regression-A1.csv")
 
 
+def latest_inhouse_metrics_pooled():
+    files = sorted(ANALYSIS_DIR.glob("*-inhouse-metrics-pooled.csv"))
+    if not files:
+        raise FileNotFoundError(
+            f"no *-inhouse-metrics-pooled.csv in {ANALYSIS_DIR} - run "
+            "src/inhouse/consolidate_inhouse_metrics.py first"
+        )
+    return files[-1]
+
+
+def load_inhouse_metrics():
+    """The consolidated in-house OO-metrics pool (consolidate_inhouse_metrics.py) -
+    every repo/language pool_inhouse_metrics.py has been run against, not
+    just the 3-repo Python pilot. Caller captions this as full-corpus
+    OO metrics (validated 1:1 against DPy/Designite, r=0.997-0.999 - see
+    Writing/InHouseTooling.md) - a genuinely different scope claim than
+    load_inhouse_smells()'s narrower, differently-validated smell data."""
+    df = pd.read_csv(latest_inhouse_metrics_pooled())
+    df["target_date"] = pd.to_datetime(df["target_date"], utc=True)
+    return df.sort_values("target_date").reset_index(drop=True)
+
+
+def latest_regression_full():
+    files = sorted(ANALYSIS_DIR.glob("*-segmented-regression-full-*.csv"))
+    if not files:
+        raise FileNotFoundError(
+            f"no *-segmented-regression-full-*.csv in {ANALYSIS_DIR} - run "
+            "src/analysis/segmented_regression.py's full-corpus run first"
+        )
+    return files[-1]
+
+
+def load_regression_full():
+    """The full-corpus segmented-regression output (src/analysis/
+    segmented_regression.py, run across every repo with enough pre/post
+    in-house data - see that module's docstring for the model and the
+    mandatory pilot-reproduction check that validates it). Separate from
+    load_regression()'s original 4-repo DPy/Designite-backed table, never
+    silently merged with it."""
+    return pd.read_csv(latest_regression_full())
+
+
 def load_composition():
     return pd.read_csv(ANALYSIS_DIR / "07-29-rq2-composition.csv")
 
 
+def latest_inhouse_smells_pooled():
+    files = sorted(ANALYSIS_DIR.glob("*-inhouse-smells-pooled.csv"))
+    if not files:
+        raise FileNotFoundError(
+            f"no *-inhouse-smells-pooled.csv in {ANALYSIS_DIR} - run "
+            "src/inhouse/consolidate_inhouse_smells.py first"
+        )
+    return files[-1]
+
+
 def load_inhouse_smells():
-    """py_smells.py's real output - 11 Python repos, 799 ok rows. Caller
-    is responsible for captioning this as a different, narrower smell
-    definition than the pilot's DPy data (see this module's docstring) -
-    not done automatically here, since it depends on how each figure
-    presents it."""
-    df = pd.read_csv(ANALYSIS_DIR / "08-11-inhouse-smells-python-926.csv")
+    """py_smells.py (Python) + cs_smells.py (C#) real output, consolidated
+    (consolidate_inhouse_smells.py) - now both languages, not just the
+    original 11-Python-repo run. Caller is responsible for captioning this
+    as a different, narrower smell definition than the pilot's DPy/Designite
+    data (see this module's docstring) - not done automatically here, since
+    it depends on how each figure presents it."""
+    df = pd.read_csv(latest_inhouse_smells_pooled())
     df = df[df["status"] == "ok"].copy()
     df["target_date"] = pd.to_datetime(df["target_date"], utc=True)
     return df.sort_values("target_date").reset_index(drop=True)

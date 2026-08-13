@@ -916,3 +916,95 @@ DPy/Designite (the pilot) and 11 Python repos via the in-house detector —
 OO-metric figures (5, and Fig 6's second panel) stay pilot-scoped — Tool-Py
 hasn't been run against the other 10 Python Phase 2 repos yet, a real,
 separate, not-yet-done prerequisite.
+
+## Full-corpus RQ1 regression + coverage close-out (2026-08-13)
+
+Follow-up closing the two real gaps the section above already named: a
+C# smell detector (`SmellDetector.cs`, Lanza & Marinescu ported to
+Roslyn — build/validation log in `PySmellDetection.md`'s "C# port"
+section) and OO metrics run against every repo, not just the pilot's 3
+Python ones. In-house coverage is now **18 repos, both languages**, up
+from the pilot's 4 — `julep-ai/julep` (never materialized) and
+`Azure/azure-sdk-for-python` (excluded — an O(n²) cohesion-computation
+risk shared by the smell detector's `_tcc` and the OO-metrics engine's
+own `_lcom`) are the only Phase 2 repos still without in-house data, both
+pre-existing, unrelated to this entry.
+
+### RQ1, full corpus — segmented regression (new: `src/analysis/segmented_regression.py`)
+
+The pilot's own regression script was never committed (`git log
+--diff-filter=A` on `07-29-segmented-regression-A1.csv` shows no `.py`
+file added alongside it) — reconstructed from this doc's own methodology
+note above, and **verified to reproduce the pilot's exact 12-row output**
+(max absolute difference 2.3e-6 across every coefficient/SE/p-value/CI,
+with one understood, named exception — airbyte's flat-constant CC p90
+row, where both the original and the reconstruction are noise-over-noise
+on a genuinely zero-variance fit) before it was trusted on anything new.
+
+Run against all 18 in-house-covered repos × 3 primary metrics, requiring
+at least 5 real pre- and 5 real post-intervention points (the pilot's own
+thinnest cell, Dock's `n_post=6`, set the floor) — 45 of 54 possible
+(repo, metric) combinations fit; 9 skipped for insufficient data
+(`crewAIInc/crewAI-tools`, `featureform/enrichmcp`, `marimo-team/marimo`
+— all genuinely thin on one side of their intervention date, listed in
+`results/analysis/08-13-segmented-regression-full-45-skipped.csv`, not
+silently dropped). Full table: `08-13-segmented-regression-full-45.csv`;
+Fig 3b renders it as a forest plot alongside the original pilot-scoped
+Fig 3, kept separate rather than replacing it.
+
+**Headline, same shape as the pilot, now at ~4x the repo count: 20/45
+level changes and 17/45 slope changes are significant at p<.05, and the
+sign splits close to evenly** (roughly half the significant slope changes
+run positive, half negative, across all three metrics) — real,
+non-random signal, no consistent cross-repo direction. This is the same
+"no clean before/after story" conclusion the 4-repo pilot already
+reached, now on 15 repos instead of 4, both languages, not just 3 Python
++ 1 C#. A multiple-comparison correction across this now-larger test set
+is still an open item (flagged since 2026-07-29) — the p<.05 counts above
+are unadjusted.
+
+### Figures updated
+
+- **Fig 3b** (new) — the full-corpus forest plot described above.
+- **Fig 5** (new, never actually built before despite being scoped in an
+  earlier plan) — LOC/CC before vs. after, pooled across all 18 in-house
+  repos. Unlike the smell figures, OO metrics are a validated 1:1
+  DPy/Designite replacement (r=0.997–0.999), so this isn't captioned as a
+  narrower or different signal the way Fig 1b/4/6's smell panels are.
+- **Fig 4** — the in-house composition panel is now genuinely both-
+  language (18 repos, was 11 Python) with no code change needed, since it
+  already read from the now-generalized `load_inhouse_smells()`.
+- **Fig 6** — both panels now use the full in-house corpus instead of
+  falling back to the pilot's single Dock repo (panel A) or staying
+  pilot-scoped (panel B); the "still lopsided"/"pilot only" captions are
+  gone since neither is true anymore. C# design-smell density (in-house
+  detector) runs noticeably higher than Python's in this panel — a real,
+  visible cross-language gap worth a closer look later, not investigated
+  further this entry.
+- **Fig 1b** — caption bug caught during visual verification (not by a
+  clean script exit): its repo grid silently grew from 11 to 18 panels
+  the moment the smell loader generalized, but the title still said "11
+  Python Phase 2 repos." Fixed to compute the language split dynamically.
+
+### Real bugs/gaps this entry surfaced, not smoothed over
+
+- **`MaxNestingLevel`'s walker never descended into the method body** in
+  the first version of `SmellDetector.cs` (an entry-point pitfall
+  `CcWalker.Compute` already had a fix for) — caught by hand-validating
+  against two synthetic fixtures before running on real data, not
+  discovered later on real output.
+- **The checked-in Roslyn tool didn't compile at HEAD** before this
+  entry, unrelated to this work — `StartLine`/`EndLine` were added as
+  required members 2026-08-11 but never actually set, silently masked
+  because the compiled DLL is only rebuilt when missing. Fixed as a
+  prerequisite.
+- **`wieslawsoltes/Dock`'s stale-clone commit collapse reproduced in both
+  new consolidated pools** (94 rows, 1 unique commit, in both the OO-
+  metrics and smells unscoped runs) — both new consolidation scripts now
+  drop an unscoped file's Dock rows by filename convention rather than
+  deduplicate them, keeping the verified-correct `--manifest`-overridden
+  data instead.
+- **`browser-use/browser-use` confirmed as a genuine Phase 1e
+  materialization gap**, not a smell-detector issue — all 57 of its rows
+  fail "not materialized" even after a full gap-filling run. Open, not
+  fixed this entry (a different pipeline).
