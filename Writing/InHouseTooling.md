@@ -84,6 +84,12 @@ which is the entire point.
 
 ## What's hard: smell detection
 
+**Update 2026-08-11: this is no longer just future work — v1 is built and
+partially validated for Python.** See "Smell detection: built and partially
+validated (2026-08-11)" below and `PySmellDetection.md` for the full
+build/validation log. The reasoning in this section is still why it was
+scoped out of the first build pass, and still governs the approach taken.
+
 Design/implementation/architecture smells are the harder half, and worth
 being honest about *why* before committing to reproducing them:
 
@@ -157,9 +163,10 @@ Status upgrade: this section documents the decisions made when moving from
 brainstorm to implementation. Answers to the open questions above, plus the
 concrete architecture the code will follow.
 
-**Scope: OO metrics only, both languages built in parallel** — not smells
-yet (smells stay in the "hard, separate phase" bucket above; nothing below
-changes that reasoning). Python and C# analyzers are both in scope for this
+**Scope: OO metrics only, both languages built in parallel** — smells were
+out of scope for this pass (see "What's hard: smell detection" above), but
+have since had their own build pass for Python; see "Smell detection: built
+and partially validated (2026-08-11)" below. Python and C# analyzers are both in scope for this
 build, not sequenced as two separate phases — but Python ships first in
 practice (no toolchain/project-load setup needed, and the pilot's DPy output
 is the fastest ground truth to validate against per the "Validation plan"
@@ -219,3 +226,56 @@ separate data prep.
 
 **Entity/snippet tracking (RQ3)**: superseded by decisions logged in
 `RQ3_CodeTracking.md`'s own "Design decisions" section, not duplicated here.
+
+## Smell detection: built and partially validated (2026-08-11)
+
+Status upgrade from "hard, separate phase" above: a Python v1 is built,
+run against the full available sample, and checked against the pilot's
+DPy output. Full design rationale, batch-run log, and validation numbers
+live in `PySmellDetection.md`; this is the summary.
+
+**Method**: Lanza & Marinescu's "Detection Strategies" (Marinescu, ICSM
+2004; Lanza & Marinescu, 2006) — the well-documented-literature-definition
+path this doc's "What's hard" section above called the defensible option,
+not an attempt to reverse-engineer DPy/Designite's closed rule catalogs.
+
+**Implemented (`src/inhouse/py_smells.py`), four strategies**:
+- **God Class/Blob** and **Data Class** (class-level) → pooled as
+  `design_smell_count` / `design_smell_density_per_kloc`
+- **Feature Envy** and **Brain Method** (method-level) → pooled as
+  `implementation_smell_count` / `implementation_smell_density_per_kloc`
+- **Not attempted**: Shotgun Surgery (needs multi-commit history, out of
+  scope for v1)
+
+**What was found**: first full run (926 rows, `azure-sdk-for-python`
+excluded — its `_tcc` cohesion computation is O(n²) and stalled on its
+23,744-file / 40k+-line-file monorepo shape) over-flagged God Class at
+~11.7% of classes, 5–25x the other three strategies' rate. Root cause,
+confirmed empirically: WMC and TCC are strongly anti-correlated in real
+code (Spearman r between −0.53 and −0.82 across sample repos), so ANDing
+two independent 25th-percentile filters lands far above the naive 6.25%
+independence estimate. Fixed by tightening both thresholds to 10%/10%,
+which brought God Class down to 2.46% — in line with the other three
+strategies. Re-run on the full corrected corpus: 799/926 ok.
+
+**Validation against the pilot's DPy ground truth** (264 joined rows,
+`airbyte`/`crewAI`/`mlflow` only): row-level Spearman correlation is weak
+and slightly negative — expected, since this measures a different,
+narrower smell definition than DPy's, not the same thing done wrong (see
+"What's hard" above on why exact-count agreement was never the goal).
+Pre/post-intervention *direction* agreement — the metric the validation
+plan above actually cares about — is mixed-but-leaning-positive: 2/2 on
+the pooled cross-repo signal, 4/6 per-repo-per-metric.
+`implementation_smell_density_per_kloc` (Feature Envy + Brain Method) is
+on firmer footing than `design_smell_density_per_kloc` (God Class + Data
+Class) — God Class's double-percentile-filter structure is the piece
+still flagged as needing more work.
+
+**Open**: `_tcc`'s O(n²) cost is unfixed (a method-count guard is
+proposed, not built); no C# equivalent exists yet — `csharp_metrics.py`
+covers OO metrics only; a God Class v2 (absolute WMC floor, or
+corpus-pooled rather than per-snapshot percentiles) is suggested but not
+started.
+
+Built on the (now-merged) `python-smell-detection` branch, commits
+`6084ef9f6`..`ace21ab6f`.
