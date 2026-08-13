@@ -1,0 +1,3 @@
+metric,n,spearman_r_vs_dpy
+design_smell_density_per_kloc,264,-0.201
+implementation_smell_density_per_kloc,264,-0.081

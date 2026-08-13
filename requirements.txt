@@ -2,3 +2,5 @@ pandas
 pyarrow
 huggingface_hub
 requests
+pydriller
+lizard

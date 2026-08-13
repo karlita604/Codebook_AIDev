@@ -316,6 +316,46 @@ underlying clone staleness is unresolved and needs its own fix (a
 `git fetch`/backfill re-run for Dock specifically) before the *latest*
 manifest can be trusted for Dock again — see "What's still open" below.
 
+### Phase B rolled out to every C# repo in scope (same day, after validation)
+
+Once Dock/aspire validated cleanly, ran Phase B against the remaining 5
+Phase 2 C# repos too (`dotnet/maui`, `dotnet/aspnetcore`,
+`elsa-workflows/elsa-core`, `microsoft/testfx`, `wieslawsoltes/Svg.Skia`) —
+**all 7 C# repos in the manifest now have full in-house structural data**,
+651 rows total, 100% `ok`, 0 failures:
+
+| Repo | Rows | OK |
+|---|---|---|
+| `dotnet/aspire` | 75 | 75 |
+| `dotnet/aspnetcore` | 96 | 96 |
+| `dotnet/maui` | 96 | 96 |
+| `elsa-workflows/elsa-core` | 96 | 96 |
+| `microsoft/testfx` | 96 | 96 |
+| `wieslawsoltes/Dock` | 96 | 96 |
+| `wieslawsoltes/Svg.Skia` | 96 | 96 |
+
+None of these 5 new repos existed in the pilot's original manifest, so
+there's no Designite ground truth to validate them against (Designite was
+never run on them — Phase 2's own scope decision was to skip Phase 1d
+entirely and wait for this tool). Their materialized snapshots (Phase 1e)
+didn't exist yet either — `dotnet/maui`, `elsa-workflows/elsa-core`, and
+`microsoft/testfx` had **zero** materialized commits, `Svg.Skia` had 1 —
+ran `materialize_snapshots.py --repo <name>` for each first (clones already
+existed, just hadn't been archived yet).
+
+**Checked each for the Dock-style stale-clone bug before trusting its
+numbers** — none had it: all four showed high commit diversity relative to
+their 96 grid rows (93-95 unique) and recent local-clone HEAD commits
+(late July/early August 2026), unlike Dock's January-2022-stale clone.
+Confirms the earlier finding that this bug is Dock-specific, not systemic.
+
+**One data-hygiene fix along the way**: Dock's output files still had 94
+leftover rows from the *broken*-manifest run mixed in alongside the 96
+correct ones (different `commit_sha` for the same `target_date`, so they
+didn't collide as duplicates — they just sat there as extra, wrong rows).
+Filtered both Dock output files down to exactly the 96 rows matching the
+verified-correct old-manifest resolution before calling this done.
+
 **Not yet built** (scoped, not started): Phase C (time-series + pre/post
 correlation-matrix visualization), Phase D (RQ3 entity/snippet lifetime
 tracker — "how many times was this method edited," "did it get renamed,"
@@ -350,12 +390,21 @@ Ranked by what would change the analysis most:
    `git fetch`/backfill for Dock's clone specifically (confirmed
    repo-specific, not systemic) before the latest manifest can be trusted
    for Dock again.
-4. **The in-house metrics tool, Python + C# are done; viz/RQ3 aren't.**
-   Phase A and Phase B (section 6) are both built and validated. Still
-   needed before Phase 2's raw-collected repos are *fully* analyzable:
-   Phase C (the actual time-series/correlation figures) and Phase D (RQ3
-   entity tracking). Also: `julep-ai/julep` still needs Phase 1e
-   materialization before either analyzer can run against it.
+4. **The in-house metrics tool, Python + C# are built and validated;
+   coverage is C#-complete, Python isn't yet.** Phase B now covers **all 7
+   C# repos** in the manifest (651 rows, 100% `ok` — section 6). Phase A
+   is still only run against the 3 pilot Python repos (crewAI, airbyte,
+   mlflow) for validation purposes — the other 10 Phase 2 Python repos
+   (`567-labs/instructor`, `AgentOps-AI/agentops`,
+   `Azure/azure-sdk-for-python`, `Significant-Gravitas/AutoGPT`,
+   `browser-use/browser-use`, `featureform/enrichmcp`, `ikamensh/flynt`,
+   `marimo-team/marimo`, `marin-community/levanter`, `julep-ai/julep`)
+   haven't been run through it yet - deliberately out of scope this round
+   (Python-side smell-detection work is in progress on a separate branch).
+   Also still needed regardless of language: Phase C (the actual
+   time-series/correlation figures) and Phase D (RQ3 entity tracking).
+   `julep-ai/julep` still needs Phase 1e materialization before either
+   analyzer can run against it at all.
 5. **Track B's deeper PR stats** (diff size, review detail) — needed to
    extend RQ3 beyond timestamps/comments, and specifically blocks any
    "how many rounds of review" question the RQ3 entity tracker (Phase D)
@@ -382,8 +431,8 @@ Ranked by what would change the analysis most:
   `csharp_metrics.py` (subprocess glue); shared: `pool_inhouse_metrics.py`
   (orchestrator), `validate_against_pilot.py`
 - In-house tool output: `results/analysis/08-10-inhouse-metrics-python-*.csv`
-  (Phase A, pilot validation runs), `results/analysis/08-11-inhouse-metrics-{Dock,aspire}-*.csv`
-  (Phase B)
+  (Phase A, pilot validation runs); Phase B, all 7 C# repos:
+  `results/analysis/08-11-inhouse-metrics-{Dock,aspire,dotnetmaui,dotnetaspnetcore,elsaworkflowselsacore,microsofttestfx,SvgSkia}-*.csv`
 - In-house vs. DPy/Designite agreement report: `results/analysis/08-11-inhouse-validation-report.csv`
 - Pooled structural data (pilot only): `results/analysis/07-29-pooled-structural-metrics.csv`
 - Regression / composition / process output: `results/analysis/07-29-{segmented-regression-A1,rq2-composition,rq3-process}.csv`

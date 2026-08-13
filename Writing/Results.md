@@ -674,3 +674,16 @@ also surfaced during this fixture check: because C# has real field-
 declaration syntax, Phase B's LCOM/NOF computation never needed Phase A's
 Python-specific `self.method()`-vs-`self.field` disambiguation heuristic in
 the first place - it just reads the class's actual declared fields.
+
+### Coverage extended to all 7 C# repos (2026-08-11, later)
+
+The Dock/aspire validation above used the same real analyzer that now
+covers every C# repo in the Phase 2 manifest: `dotnet/maui`,
+`dotnet/aspnetcore`, `elsa-workflows/elsa-core`, `microsoft/testfx`, and
+`wieslawsoltes/Svg.Skia` were all analyzed the same way once Dock/aspire's
+numbers checked out — **651 rows total across all 7 repos, 100% `ok`**.
+None of the 5 new repos have Designite ground truth to validate against
+(Phase 2 skipped Phase 1d entirely for them), so there's no new agreement
+table here — this is coverage, not additional validation. Full breakdown
+and the manifest-bug sanity-check methodology applied to each new repo:
+`ProjectUpdate.md`'s 2026-08-11 (later) entry.
