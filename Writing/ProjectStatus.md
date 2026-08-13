@@ -59,6 +59,9 @@ design-decisions sections).
 | Designite branch → `main` merge | **Done 2026-08-04** — Dock's Designite output now lives in this checkout, no cross-checkout reads needed |
 | Phase 2 — expand to 20-repo minimum | **Raw collection essentially done** (2026-08-10) — 21-repo manifest, 20/21 repos materialized (`julep-ai/julep` pending); structural-metric analysis is the one remaining piece |
 | In-house tool, Phase A (Python) + Phase B (C#/Roslyn) | **Both built and validated 2026-08-11** — see section 6 below. Phase C (viz)/D (RQ3 entity tracker) not started |
+| In-house Python smell detection (`py_smells.py`) | **Built and run 2026-08-11** (`python-smell-detection` branch, merged to `main`) — 799 ok rows, 11 Python repos. Weak/mixed validation vs. DPy (expected, different smell definition) — see `PySmellDetection.md` |
+| Phase D — RQ3 entity/snippet lifetime tracker | **All 6 execution-plan stages built 2026-08-11/12** (`rq3-entity-tracker` branch, not yet merged) — matcher, metrics, validation gate, Python+C# extraction, 21-repo scale-up (27,572 lineages), windowed pre/post cut, and real per-touch churn rates (584 spanning methods, 302 sped up/282 slowed down — no net signal). See `RQ3_CodeTracking.md`'s build log |
+| Track A structural-health figures (Figs 1-6, Tables 1-2) + method-churn figures (Figs 7-9, Table 3) | **Built 2026-08-12** (`rq3-entity-tracker` branch) — two-tier smell figures (4-repo DPy/Designite pilot + 11-repo in-house), forest plot, cross-language, coverage matrix, plus the churn figures above. `Writing/figures/track_a_structural_health/`, `Writing/figures/method_churn/` |
 
 ## 1. The pilot (now 4 repos, not 5)
 

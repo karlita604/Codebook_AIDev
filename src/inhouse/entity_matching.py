@@ -198,6 +198,43 @@ class EntityLineage:
         stand-in for something it doesn't measure)."""
         return None
 
+    def pre_post_touch_counts(self, intervention_date):
+        """Real per-touch split against `intervention_date`, the thing
+        Stage 6's windowed cut explicitly couldn't do (it only had each
+        lineage's first/last touch date pooled, not every individual
+        touch). Returns (pre_count, post_count, pre_window_days,
+        post_window_days).
+
+        `pre_window_days`/`post_window_days` are the REAL observed span on
+        each side - `intervention_date - first_touch` and
+        `last_touch - intervention_date`, each clipped at 0 - not a fixed
+        window. This is required, not optional, for any figure comparing
+        "churn before" vs. "churn after": the two windows are different
+        lengths for every repo (a repo whose intervention date is 3 years
+        old has a much longer post-window than one intervened last month),
+        so a raw touch-count comparison would conflate "touched more
+        often" with "observed for longer." Callers should divide by these
+        to get touches/day before comparing across entities or repos.
+
+        A touch exactly ON `intervention_date` counts as post (`>=`), same
+        convention `entity_history_windowed_cut.py`'s `classify()` already
+        uses for lineage-level bucketing - kept consistent rather than
+        picking a different boundary rule for touch-level counting."""
+        pre_count = post_count = 0
+        for touch in self.touches:
+            touch_date = _parse_date(touch.commit_date)
+            if touch_date >= intervention_date:
+                post_count += 1
+            else:
+                pre_count += 1
+
+        first_date = _parse_date(self.first_touch.commit_date)
+        last_date = _parse_date(self.last_touch.commit_date)
+        pre_window_days = max(0.0, (intervention_date - first_date).total_seconds() / 86400)
+        post_window_days = max(0.0, (last_date - intervention_date).total_seconds() / 86400)
+
+        return pre_count, post_count, pre_window_days, post_window_days
+
 
 def _greedy_fuzzy_match(unmatched_prev, unmatched_curr, threshold):
     """Pairwise Jaccard over every (prev, curr) unmatched pair, sorted

@@ -39,10 +39,12 @@ import pandas as pd
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import cs_entity_history  # noqa: E402
 import py_entity_history  # noqa: E402
+from entity_matching import _parse_date  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "results" / "analysis"
 MANIFEST_DIR = ROOT / "results" / "snapshots"
+REPO_SUMMARY_DIR = ROOT / "results" / "repos"
 
 DEFAULT_MAX_FILES_PER_REPO = 150
 
@@ -57,6 +59,29 @@ def latest_manifest():
     if not files:
         raise FileNotFoundError(f"no manifest found in {MANIFEST_DIR}")
     return files[-1]
+
+
+def load_intervention_dates(repo_summary_path=None):
+    """{repo_id: parsed intervention_date} - the same file
+    entity_history_windowed_cut.py already reads for Stage 6's lineage-
+    level bucketing. Loaded once per run, not per repo - it's one small
+    CSV, no reason to re-read it 21 times. A repo with no intervention_date
+    in this file (shouldn't happen for anything in the Phase 2 manifest,
+    but not assumed) is simply absent from the returned dict - callers
+    treat a missing key the same way `--intervention-date-required=False`
+    would, by skipping the pre/post columns for that repo rather than
+    crashing the whole run over one repo's missing metadata."""
+    if repo_summary_path is None:
+        files = sorted(REPO_SUMMARY_DIR.glob("*-repo-summary-*.csv"))
+        if not files:
+            raise FileNotFoundError(f"no repo-summary csv found in {REPO_SUMMARY_DIR}")
+        repo_summary_path = files[-1]
+    df = pd.read_csv(repo_summary_path)
+    df = df.dropna(subset=["intervention_date"])
+    return {
+        row["repo_id"]: _parse_date(row["intervention_date"])
+        for _, row in df.iterrows()
+    }
 
 
 def eligible_repos(manifest_path):
@@ -109,17 +134,22 @@ def _write_progress(progress_path, started_at, total, done, ok, failed, current)
     }))
 
 
-def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dry_run):
+def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dry_run,
+                  intervention_date=None):
     builder = LANGUAGE_BUILDER[language]
     if dry_run:
         repo_dir = py_entity_history.REPO_CACHE_DIR / py_entity_history._safe_dirname(full_name)
         row = {
             "repo_id": repo_id, "full_name": full_name, "language": language,
             "status": "dry_run", "repo_cache_exists": repo_dir.exists(),
+            "has_intervention_date": intervention_date is not None,
         }
         return {"status": "dry_run", "n_lineages": None, "n_file_errors": None}, [row]
 
-    rows = builder(full_name, limit_files=max_files_per_repo, threshold=threshold)
+    rows = builder(
+        full_name, limit_files=max_files_per_repo, threshold=threshold,
+        intervention_date=intervention_date,
+    )
     for row in rows:
         row["repo_id"] = repo_id
         row["full_name"] = full_name
@@ -147,6 +177,12 @@ def main():
     repos = eligible_repos(manifest_path)
     print(f"manifest: {manifest_path} ({len(repos)} eligible repo(s), "
           f"Python or C#)", flush=True)
+
+    intervention_dates = load_intervention_dates()
+    n_missing = (~repos["repo_id"].isin(intervention_dates.keys())).sum()
+    print(f"intervention dates loaded for {len(intervention_dates)} repo(s) "
+          f"({n_missing} of this run's repos have none - pre/post churn "
+          f"columns will be absent for those rows, not fabricated)", flush=True)
 
     if args.repo:
         repos = repos[repos["full_name"].str.contains(args.repo)]
@@ -195,6 +231,7 @@ def main():
             summary, rows = process_repo(
                 repo["repo_id"], repo["full_name"], repo["language"],
                 args.max_files_per_repo, args.threshold, args.dry_run,
+                intervention_date=intervention_dates.get(repo["repo_id"]),
             )
             _append_rows(out_path, rows)
             elapsed = time.time() - t0

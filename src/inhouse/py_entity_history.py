@@ -192,13 +192,19 @@ def build_file_lineages(repo_dir, path, threshold=None):
     )
 
 
-def build_repo_lineages(full_name, limit_files=None, threshold=None):
+def build_repo_lineages(full_name, limit_files=None, threshold=None, intervention_date=None):
     """All lineages across every current .py file in one repo. Returns a
     flat list of dicts (one per lineage) ready to serialize - each lineage
     tagged with the file it came from, so a lineage's identity in the
     output is (relpath_at_creation, lineage_id_within_that_file), not
     globally unique across the whole repo (two different files' lineage_id
-    0 are unrelated) - fine for this stage's per-file matching design."""
+    0 are unrelated) - fine for this stage's per-file matching design.
+
+    `intervention_date` (a timezone-aware datetime, already parsed - not a
+    string) is optional: when given, each row also gets
+    pre_touch_count/post_touch_count/pre_churn_rate/post_churn_rate from
+    EntityLineage.pre_post_touch_counts(). When omitted, those four columns
+    are absent - existing callers that don't pass it see no schema change."""
     repo_dir = REPO_CACHE_DIR / _safe_dirname(full_name)
     if not repo_dir.exists():
         raise FileNotFoundError(f"no repo_cache clone at {repo_dir}")
@@ -224,7 +230,7 @@ def build_repo_lineages(full_name, limit_files=None, threshold=None):
             })
             continue
         for lineage in class_lineages + callable_lineages:
-            rows.append({
+            row = {
                 "relpath": path,
                 "lineage_id": lineage.lineage_id,
                 "kind": lineage.kind,
@@ -245,7 +251,18 @@ def build_repo_lineages(full_name, limit_files=None, threshold=None):
                     t.change_type in ("renamed", "moved")
                     for t in lineage.touches
                 ),
-            })
+            }
+            if intervention_date is not None:
+                pre_n, post_n, pre_days, post_days = lineage.pre_post_touch_counts(
+                    intervention_date
+                )
+                row["pre_touch_count"] = pre_n
+                row["post_touch_count"] = post_n
+                row["pre_window_days"] = round(pre_days, 2)
+                row["post_window_days"] = round(post_days, 2)
+                row["pre_churn_rate"] = pre_n / pre_days if pre_days > 0 else None
+                row["post_churn_rate"] = post_n / post_days if post_days > 0 else None
+            rows.append(row)
     return rows
 
 

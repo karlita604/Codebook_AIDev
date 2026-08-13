@@ -118,10 +118,11 @@ def collect_file_sequences(repo_dir, path):
     return class_seq, callable_seq
 
 
-def build_repo_lineages_cs(full_name, limit_files=None, threshold=None):
+def build_repo_lineages_cs(full_name, limit_files=None, threshold=None, intervention_date=None):
     """C# counterpart to py_entity_history.build_repo_lineages - same
-    output row shape, so pool_entity_history.py (Stage 5) can call either
-    one interchangeably by language."""
+    output row shape (including the optional intervention_date columns),
+    so pool_entity_history.py (Stage 5) can call either one
+    interchangeably by language."""
     from entity_matching import match_file_history, _parse_date
 
     repo_dir = REPO_CACHE_DIR / _safe_dirname(full_name)
@@ -147,7 +148,7 @@ def build_repo_lineages_cs(full_name, limit_files=None, threshold=None):
             + match_file_history(callable_seq, **kwargs)
         )
         for lineage in lineages:
-            rows.append({
+            row = {
                 "relpath": path,
                 "lineage_id": lineage.lineage_id,
                 "kind": lineage.kind,
@@ -168,7 +169,18 @@ def build_repo_lineages_cs(full_name, limit_files=None, threshold=None):
                     t.change_type in ("renamed", "moved")
                     for t in lineage.touches
                 ),
-            })
+            }
+            if intervention_date is not None:
+                pre_n, post_n, pre_days, post_days = lineage.pre_post_touch_counts(
+                    intervention_date
+                )
+                row["pre_touch_count"] = pre_n
+                row["post_touch_count"] = post_n
+                row["pre_window_days"] = round(pre_days, 2)
+                row["post_window_days"] = round(post_days, 2)
+                row["pre_churn_rate"] = pre_n / pre_days if pre_days > 0 else None
+                row["post_churn_rate"] = post_n / post_days if post_days > 0 else None
+            rows.append(row)
     return rows
 
 

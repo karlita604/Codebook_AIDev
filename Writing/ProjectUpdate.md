@@ -873,3 +873,103 @@ over via the `--manifest` override, not fixed at the source), and
 re-running the pilot's RQ1-RQ5 analysis on any of this newly-available
 data (Phase C territory, not asked for here).
 
+## 2026-08-12 — Real per-touch churn rates (Part A), method-churn figures (Part B), Track A two-tier figure set (Part C)
+
+Prompted by a direct question about which of a proposed 8-figure/2-table
+inventory could actually be built from data already on hand (6/8 buildable,
+1 partial, 1 not directly). The approved plan was rewritten twice before
+execution, both times on real feedback: first, to stop scoping churn
+figures to the 4-repo pilot and instead show method-level churn behavior
+across all the data; second, to re-check `main` before finalizing, which
+surfaced that `python-smell-detection` (11-repo in-house Python smell
+detector, `py_smells.py`) had merged since the plan was last drafted -
+`main` was merged into this worktree first (`git merge main`, one real
+conflict in `Writing/Results.md`, resolved by keeping both sides' sections
+in sequence, not choosing one) so the final figure set could use both
+datasets rather than shipping a plan already stale on arrival.
+
+**Part A - real per-touch pre/post churn counts.** No prior branch had ever
+persisted per-touch dates, so `EntityLineage.pre_post_touch_counts
+(intervention_date)` (`src/inhouse/entity_matching.py`) is genuinely new:
+walks a lineage's touches, splits by the repo's real intervention date, and
+returns touches/day on each side using the *actual observed* pre/post
+window length (not a fixed period) so repos with different-length windows
+stay comparable. Threaded through `py_entity_history.py`/
+`cs_entity_history.py`'s builders and `pool_entity_history.py` (which now
+loads `08-04-repo-summary-235.csv` once for intervention dates) as
+additive columns (`pre_touch_count`/`post_touch_count`/`pre_churn_rate`/
+`post_churn_rate`), existing callers unaffected.
+
+**Real bug, caught by resumability's own dedup logic working too well.**
+Re-running `pool_entity_history.py` across all 21 repos to backfill the new
+columns instantly reported "resuming: 21/21 already done" - the
+`*-entity-history-*.csv` resumability glob matched not just the original
+Stage 5 output but Stage 6's own derived `-windowed-cut*.csv` files sitting
+in the same directory, so the script saw prior output and skipped the real
+work entirely. Fixed by archiving (not deleting) everything pre-dating this
+change to `results/analysis/archive_pre-churn-columns_2026-08-11/`, mirroring
+the existing `archive_pre-godclass-fix_2026-08-11/` convention from the
+smell-detector branch, then re-running for real. Output:
+`results/analysis/08-12-entity-history-21.csv` - 27,572 rows, an exact match
+to the original row count (confirms the walk itself didn't change, only the
+new columns), 21/21 repos ok, 584 spanning callables (entities with
+touches on both sides of the intervention, the only ones a before/after
+churn question can even be asked of).
+
+**Part B - method-churn figures (`src/viz/generate_churn_figures.py`),
+all 21 repos, not just the pilot.** Fig 7 (pooled before/after churn-rate
+box+strip), Fig 8 (per-repo mean churn rate, symlog x-axis - a linear scale
+made 15+ of 18 repos' bars vanish next to `browser-use/browser-use`'s
+outlier mean pre-rate of ~7.75 touches/day), Fig 9 (pooled
+post-minus-pre-rate histogram, clipped to 1st-99th percentile), Table 3
+(per-repo backing stats). **Headline finding, no net signal**: 584 spanning
+methods across 18/21 repos (3 repos had zero surviving methods to compare),
+302 sped up vs. 282 slowed down post-intervention - real spread, not a
+consistent direction. `browser-use/browser-use` alone accounts for 162 of
+the 584 (mean pre-rate 7.75 touches/day, next-highest repo 0.64) - flagged
+directly in the figures' own captions as a real outlier dominating the
+per-repo view, not smoothed into the pooled numbers silently.
+
+**Part C - Track A structural-health figures
+(`src/viz/generate_track_a_figures.py`), two-tier by design.** Figs 1/1b
+(smell-density trend), 2 (event-window), 4 (composition), 6
+(cross-language) now each carry two panels: the original 4-repo DPy/
+Designite pilot (unchanged, the "clean" comparison point) alongside a new
+~11-repo Python-only panel from `py_smells.py`'s in-house detector,
+captioned as a genuinely different smell definition rather than presented
+as equivalent, per the caveats `InHouseTooling.md` already logged.
+Fig 3 (forest plot) and Table 1/2 stay pilot- and 21-repo-scoped
+respectively, per the plan's scope table. New shared module
+`src/viz/figures_common.py` centralizes the palette, `rcParams`, and a
+`save_fig()` helper - copied from `analyze_dock_designite.py`'s established
+convention rather than inventing a new one.
+
+**Real, non-cosmetic bugs caught by reading every rendered PNG, not just
+trusting a clean script exit** - matches this project's established
+verification pattern: a suptitle placed at `y=1.05` didn't clip, it
+vanished from the canvas entirely (matplotlib doesn't extend beyond y=1.0
+without `bbox_inches='tight'`, which `save_fig` doesn't use) - fixed by
+keeping every suptitle `y<=0.99` and reserving headroom via
+`save_fig(..., top=...)`'s `tight_layout(rect=...)`; a long single-line
+caption overflowed a narrower figure's canvas and clipped at both edges
+(shortened text / widened the figure, case by case); Fig 4's in-house panel
+produced an illegible high-frequency sawtooth from grouping 11 repos by
+exact (misaligned) snapshot date - fixed by bucketing to month before
+grouping, confirmed as a real fix via a direct before/after visual
+comparison, not a cosmetic tweak; one literal syntax bug
+(`linewidth(1.3) if False else 1.3`, a leftover invalid expression) caught
+before the script even ran.
+
+Output: `Writing/figures/track_a_structural_health/` (6 PNGs + `table1_
+coverage.csv` + `table2_descriptive_stats.csv`) and `Writing/figures/
+method_churn/` (3 PNGs + `table3_churn_rate_stats.csv`). Full writeup in
+`Results.md`; plan and verification log in
+`C:\Users\kvrlv\.claude\plans\glimmering-snacking-torvalds.md`.
+
+**Not done this entry**: Fig 5 (LOC/CC before/after, still pilot-scoped -
+needs Tool-Py run wider, a separate prerequisite not part of this plan);
+a C# smell detector (Fig 6's cross-language panel stays 11 Python vs. 1 C#,
+lopsided, no in-house tool exists for the C# side yet); multiple-comparison
+correction across the growing set of significance tests this project has
+now run (flagged repeatedly since 2026-07-29, still true).
+
