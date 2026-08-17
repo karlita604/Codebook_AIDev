@@ -36,8 +36,10 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import ast
 import ast_common  # noqa: E402
 from entity_matching import (  # noqa: E402
-    EntitySnapshot, _parse_date, match_file_history, tokenize,
+    EntitySnapshot, _parse_date, match_file_history, sample_files, tokenize,
 )
+
+DEFAULT_SEED = 42
 
 ROOT = Path(__file__).resolve().parents[2]
 REPO_CACHE_DIR = ROOT / "data" / "repo_cache"
@@ -192,7 +194,8 @@ def build_file_lineages(repo_dir, path, threshold=None):
     )
 
 
-def build_repo_lineages(full_name, limit_files=None, threshold=None, intervention_date=None):
+def build_repo_lineages(full_name, limit_files=None, threshold=None,
+                         intervention_date=None, seed=DEFAULT_SEED):
     """All lineages across every current .py file in one repo. Returns a
     flat list of dicts (one per lineage) ready to serialize - each lineage
     tagged with the file it came from, so a lineage's identity in the
@@ -204,7 +207,16 @@ def build_repo_lineages(full_name, limit_files=None, threshold=None, interventio
     string) is optional: when given, each row also gets
     pre_touch_count/post_touch_count/pre_churn_rate/post_churn_rate from
     EntityLineage.pre_post_touch_counts(). When omitted, those four columns
-    are absent - existing callers that don't pass it see no schema change."""
+    are absent - existing callers that don't pass it see no schema change.
+
+    `limit_files` files are chosen by entity_matching.sample_files() - a
+    seeded random sample, not the first N in sorted-path order. Plain
+    sorted-order truncation correlates alphabetical position with a repo's
+    own directory-creation history (confirmed concretely: crewAIInc/crewAI's
+    sorted-first 150 files landed almost entirely in lib/cli/, a subtree
+    added 18 months after its intervention date) - exactly the wrong thing
+    to correlate with when the downstream question is "when was this code
+    created." `seed` makes the sample reproducible run-to-run."""
     repo_dir = REPO_CACHE_DIR / _safe_dirname(full_name)
     if not repo_dir.exists():
         raise FileNotFoundError(f"no repo_cache clone at {repo_dir}")
@@ -216,7 +228,7 @@ def build_repo_lineages(full_name, limit_files=None, threshold=None, interventio
 
     files = list_current_py_files(repo_dir)
     if limit_files:
-        files = files[:limit_files]
+        files = sample_files(files, limit_files, f"{seed}:{full_name}")
 
     rows = []
     for path in files:
@@ -272,10 +284,13 @@ def main():
     parser.add_argument("--limit-files", type=int, default=None)
     parser.add_argument("--threshold", type=float, default=None)
     parser.add_argument("--out", type=Path, default=None, help="write full row JSON here")
+    parser.add_argument("--seed", type=int, default=DEFAULT_SEED,
+                         help="seed for the random file sample when --limit-files caps the walk")
     args = parser.parse_args()
 
     rows = build_repo_lineages(
-        args.repo, limit_files=args.limit_files, threshold=args.threshold
+        args.repo, limit_files=args.limit_files, threshold=args.threshold,
+        seed=args.seed,
     )
 
     ok = [r for r in rows if r["status"] == "ok"]

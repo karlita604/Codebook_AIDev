@@ -28,6 +28,7 @@ the same fuzzy-match path as an in-file rename.
 """
 
 import math
+import random
 import re
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -65,6 +66,32 @@ def jaccard(a, b):
     if not a or not b:
         return 0.0
     return len(a & b) / len(a | b)
+
+
+def sample_files(files, limit, seed_key):
+    """Uniform random sample of `limit` files out of `files`, without
+    replacement - the fix for a real, diagnosed bias: taking the first N
+    files in plain sorted() order correlates alphabetical position with a
+    repo's own directory-creation history (confirmed concretely on
+    crewAIInc/crewAI - its sorted-first 150 files landed almost entirely in
+    lib/cli/, a subtree added 18 months after its intervention date, purely
+    because that path sorts early). Not a stratified/weighted scheme - the
+    minimal, statistically defensible fix for the mechanism actually
+    diagnosed, not an attempt to engineer a specific old/new balance.
+
+    `seed_key` (typically f"{seed}:{full_name}") makes the sample
+    reproducible run-to-run and independent repo-to-repo - the same global
+    --seed doesn't hand every repo the same relative positions. Returns the
+    sample re-sorted, so only *selection* is randomized; processing/logging
+    order stays stable and readable, same as before this fix.
+
+    `files` unchanged (returned as-is) when there's nothing to trim -
+    matches the prior `files[:limit_files]` behavior for a repo with fewer
+    files than the cap."""
+    if limit is None or len(files) <= limit:
+        return files
+    rng = random.Random(seed_key)
+    return sorted(rng.sample(files, limit))
 
 
 @dataclass
