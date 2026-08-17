@@ -44,16 +44,17 @@ side effect of not needing a project graph at all. Visualization (Phase C)
 and the RQ3 entity tracker (Phase D) are scoped but not yet built (see
 `Writing/InHouseTooling.md` and `Writing/RQ3_CodeTracking.md`'s
 design-decisions sections). **Update, 2026-08-17: the corpus is about to
-grow from ~18-21 repos toward 100, then 1000 — Phase A of a scaling plan
-just landed** (shared resumability with a stale-data safeguard, a single
-repo-exclusion registry, and a `src/pipeline/run_pipeline.py` orchestrator
-for the now-13-stage pipeline, previously run by hand). See
-`Writing/InHouseTooling.md`'s "Pipeline orchestration & scaling, Phase A"
-section and this entry's `ProjectUpdate.md` write-up. Phase B (the actual
-wall-clock levers — repo-level concurrency, the open `_tcc`/`_lcom` O(n²)
-cohesion bottleneck, entity-history git-subprocess batching — see item 7
-below) hasn't started yet — this doc's numbers above are otherwise
-unaffected, this was infrastructure, not new analysis.
+grow from ~18-21 repos toward 100, then 1000 — a scaling plan's Phase A
+and Phase B both landed the same day.** Phase A: shared resumability with
+a stale-data safeguard, a single repo-exclusion registry, and a
+`src/pipeline/run_pipeline.py` orchestrator for the now-13-stage pipeline
+(previously run by hand). Phase B: the actual wall-clock levers —
+repo-level `--workers` concurrency, the `_tcc`/`_lcom` O(n²) cohesion
+bottleneck (sampling above 300 methods), entity-history git-subprocess
+batching (38.7x measured speedup) — see item 7 below and
+`Writing/InHouseTooling.md`'s "Pipeline scaling, Phase A"/"Phase B"
+sections for the full account. This was infrastructure, not new analysis
+- this doc's numbers above are otherwise unaffected.
 
 ## Where each piece stands
 
@@ -428,18 +429,24 @@ Ranked by what would change the analysis most:
 6. **Multiple-comparison correction + a matched non-adopting comparison
    arm** — needed before any of this is a defensible general claim, not
    just a per-repo descriptive result.
-7. **Scaling Phase B (2026-08-17 plan, not started)**: the corpus is
-   moving from ~18-21 repos toward 100/1000, and the actual wall-clock
-   levers for that are still open — repo-level concurrency (currently
-   zero anywhere in `src/inhouse`/`src/analysis`, so runtime scales
-   linearly with repo count), the `_tcc`/`_lcom` O(n²) cohesion-
-   computation bottleneck (item 4's "Open" note in `InHouseTooling.md` —
-   confirmed ~20min stall on `azure-sdk-for-python`, currently worked
-   around with a per-run exclusion rather than fixed), and entity-
-   history's per-touch `git show` subprocess cost (confirmed 68min on
-   `browser-use/browser-use`). Phase A (resumability, exclusion registry,
-   orchestrator skeleton) landed first since these three block a scaled
-   run outright rather than just being slow.
+7. ~~**Scaling Phase B (2026-08-17 plan, not started)**~~ — **done, same
+   day.** Repo-level concurrency (`--workers N` on
+   `pool_inhouse_metrics.py`/`pool_inhouse_smells.py`/
+   `pool_entity_history.py`/`materialize_snapshots.py`, default still
+   sequential), the `_tcc`/`_lcom` O(n²) cohesion bottleneck (seeded
+   sampling above 300 methods — item 4's "Open" note in
+   `InHouseTooling.md` is resolved, `azure-sdk-for-python`'s per-run
+   exclusion can be retired), and entity-history's per-touch `git show`
+   cost (batched into one `git cat-file --batch` process per file,
+   measured 38.7x speedup) are all built and verified. See
+   `InHouseTooling.md`'s "Pipeline scaling, Phase B" section and this
+   date's `ProjectUpdate.md` entry for the full account, including a real
+   statistical bug (LCOM's naive sample extrapolation, ~98% error in a
+   controlled case) caught and fixed before it shipped. What's left
+   before an actual 100-repo run: growing the corpus itself
+   (`--target-total`, now parameterized) and re-running the Phase 0
+   candidate search with a wider pool (235 candidates isn't enough for
+   1000, still open, unchanged from item 7's original note).
 
 ## Where things live
 

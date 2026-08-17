@@ -271,21 +271,25 @@ on firmer footing than `design_smell_density_per_kloc` (God Class + Data
 Class) — God Class's double-percentile-filter structure is the piece
 still flagged as needing more work.
 
-**Open**: `_tcc`'s O(n²) cost is unfixed (a method-count guard is
-proposed, not built — and confirmed to affect the OO-metrics engine's own
-`_lcom`/C#'s `ComputeLcom` too, same complexity class, both currently
-worked around by excluding `azure-sdk-for-python` rather than a guard); a
-God Class v2 (absolute WMC floor, or corpus-pooled rather than
-per-snapshot percentiles) is suggested but not started. **Update
-2026-08-13: a C# equivalent now exists** (`SmellDetector.cs`, a direct
-port reusing the same field-access machinery `ComputeLcom` already had —
-see `PySmellDetection.md`'s "C# port" section for the build/validation
-log and a real bug caught before trusting it on real data). OO metrics'
-own coverage also expanded this entry from the 3-repo Python pilot to
-every repo with a materialized snapshot (18 repos, both languages,
-consolidated into `results/analysis/08-13-inhouse-metrics-pooled.csv`) —
-see `ProjectUpdate.md`'s 2026-08-13 entry for the full account, including
-a real Dock stale-clone data-hygiene bug caught and fixed in the
+~~**Open**: `_tcc`'s O(n²) cost is unfixed~~ — **fixed 2026-08-17** (the
+method-count guard proposed here is built: `ast_common.sample_field_sets()`,
+300-method threshold, same fix applied to `_lcom`/C#'s `ComputeLcom` too —
+see the "Pipeline scaling, Phase B" section below for the full account,
+including a real extrapolation bug caught and fixed along the way). The
+`azure-sdk-for-python` per-run exclusion this note originally described as
+the workaround can be retired now that the guard exists. A God Class v2
+(absolute WMC floor, or corpus-pooled rather than per-snapshot
+percentiles) is still suggested but not started - unrelated to the O(n²)
+fix, a separate methodology question. **Update 2026-08-13: a C# equivalent
+now exists** (`SmellDetector.cs`, a direct port reusing the same
+field-access machinery `ComputeLcom` already had — see
+`PySmellDetection.md`'s "C# port" section for the build/validation log and
+a real bug caught before trusting it on real data). OO metrics' own
+coverage also expanded this entry from the 3-repo Python pilot to every
+repo with a materialized snapshot (18 repos, both languages, consolidated
+into `results/analysis/08-13-inhouse-metrics-pooled.csv`) — see
+`ProjectUpdate.md`'s 2026-08-13 entry for the full account, including a
+real Dock stale-clone data-hygiene bug caught and fixed in the
 consolidation step.
 
 Built on the (now-merged) `python-smell-detection` branch, commits
@@ -382,3 +386,115 @@ changed real numbers, e.g. `wieslawsoltes/Dock` now shows real churn
 stats instead of being silently absent - not a pipeline-scaling change
 itself, just something the orchestrator's first real end-to-end run
 happened to catch.
+
+## Pipeline scaling, Phase B (2026-08-17, same day as Phase A)
+
+Status upgrade: the actual wall-clock levers for 100/1000-repo scale -
+concurrency, the two confirmed O(n) blowups - all landed the same day as
+Phase A, verified against real data before committing.
+
+**Repo-level concurrency**: new `src/common/parallel_repo.py`
+(`run_by_repo()`), a thin dispatcher shared by `pool_inhouse_metrics.py`,
+`pool_inhouse_smells.py`, `pool_entity_history.py`, and
+`materialize_snapshots.py` rather than each reimplementing it - the exact
+triplication `resumable_run.py` (Phase A) already fixed once for the
+resumability logic. `--workers N` (default 1, sequential, byte-identical
+to pre-concurrency behavior including the single unscoped output file) -
+above 1, dispatches one `ProcessPoolExecutor` worker per repo (each
+repo's analysis is independent, so this is embarrassingly parallel; not
+threads, since the per-row analyzers are CPU-bound AST/Roslyn work).
+Workers write their own repo-scoped fragment file, the same shape a
+manual `--repo <name>` invocation already produces, so parallel and
+sequential runs are structurally indistinguishable on disk. Verified:
+real multi-repo dispatch across all four scripts, correct row/repo
+counts (no duplication or loss), cross-mode resumability (a parallel
+run's fragments are correctly picked up by a subsequent sequential
+`--repo`-scoped run and vice versa), and a synthetic failing-worker case
+confirming `ProcessPoolExecutor` exceptions propagate correctly rather
+than silently vanishing.
+
+**The `_tcc`/`_lcom` O(n²) cohesion bottleneck** (the "Open" note above,
+now resolved): `ast_common.sample_field_sets()`, modeled directly on
+`entity_matching.py`'s `sample_files()` (same fix for the same class of
+problem - an O(n²)/O(n) computation exploding on an outlier-sized
+population, methods-within-a-class here instead of files-within-a-repo).
+Above 300 methods, both `_tcc` (`py_smells.py`) and `_lcom`
+(`py_metrics.py`) sample instead of computing the full pairwise scan;
+the C# mirrors (`SmellDetector.cs`'s TCC computation, `SnapshotAnalyzer.cs`'s
+`ComputeLcom`) get the identical fix, seeded via a hand-rolled FNV-1a hash
+since `string.GetHashCode()` is randomized per-process in modern .NET
+(would break run-to-run reproducibility). New `tcc_sampled`/`lcom_sampled`
+(class-level) and `n_tcc_sampled`/`n_lcom_sampled` (snapshot-level
+summary) columns flag when this fired - expected to be near-always 0
+outside pathological repos.
+
+**A real statistical bug caught during testing, not shipped**: the first
+LCOM implementation scaled the sampled P/Q counts by (true pair count /
+sampled pair count) before subtracting, mirroring how TCC's ratio-based
+estimate works. Verified directly with a controlled synthetic case (a
+600-method class split evenly across 2 fields, no field overlap): true
+P-Q=300, naively rescaled sample estimate=593 - **~98% relative error**.
+Root cause: unlike TCC (a ratio, so a subsample's own ratio is already an
+unbiased density estimate), LCOM is P-Q, a *difference* of two
+typically-large, nearly-equal counts for a reasonably cohesive class -
+the true magnitude is governed by a second-order imbalance term
+(algebraically, P-Q = N/2 - (k_a-k_b)²/2 for a 2-group split), not a
+simple density, so the quadratic pair-count ratio over/under-corrects it
+badly, and subtracting two large, sampling-noisy, highly-correlated
+estimates amplifies relative error catastrophically (classic
+catastrophic cancellation). Fixed by reporting the raw p-q computed
+directly on the sampled subset instead - smaller in absolute terms than
+an unsampled class's LCOM (expected, flagged via `lcom_sampled`, not
+silently wrong), but internally consistent across every sampled class.
+Both `py_metrics.py`'s `_lcom` and `SnapshotAnalyzer.cs`'s `ComputeLcom`
+carry the full derivation in their docstrings/comments, not just the
+conclusion.
+
+**Entity-history's per-touch `git show` cost** (confirmed 68 minutes on
+`browser-use/browser-use`, one 445-touch entity): `py_entity_history.py`'s
+new `batch_show()` replaces one `git show` subprocess per commit-touch
+with one `git cat-file --batch` process per file - reads a stream of
+`<sha>:<path>` specs from stdin, writes each blob back with a
+length-prefixed framing, all within one process instead of N. **Measured
+38.7x speedup** (4.339s → 0.112s) on an 80-commit real sample from
+`crewAIInc/crewAI`, with byte-identical content confirmed against the old
+per-commit approach. Applied to both `py_entity_history.py`'s own
+`collect_file_sequences()` and `cs_entity_history.py`'s (which shares
+`py_entity_history.py`'s git plumbing directly) - both languages hit the
+identical bottleneck, since the C# `--batch` mode built earlier
+(`EntityHistory.cs`) only ever batched the .NET side, not the git-fetch
+side; that script's own docstring said as much ("`git show` is still one
+subprocess call per commit... that part is unavoidable") until today.
+
+**Storage lifecycle, deliberately incomplete**: new
+`src/common/storage_lifecycle.py` identifies which repos'
+`data/repo_cache/` clones are safe to reclaim (entity-history done for
+that repo, not on a `results/repos/keep_cache.csv` opt-out list) and
+reports or deletes them - dry-run by default, `--confirm`-gated for real
+deletion, real numbers confirmed against this repo's own disk (9.37GB
+across 21 repos). Deliberately **not** wired into
+`materialize_snapshots.py`'s main flow or `run_pipeline.py`'s stage list,
+a real deviation from the scaling plan's original "prune automatically
+right after entity-history finishes" framing: a repo's clone may be
+needed again even after entity-history is "done" for it today (the
+manifest could later be regenerated with a wider date grid, or
+`--max-files-per-repo` raised for a fuller pass) - deleting the only
+full-history clone on the assumption that today's "done" is final would
+turn either of those into a full re-clone instead of a quick re-run. So:
+framed as a manual, deliberate action a researcher runs when *they*
+decide a repo is truly done, not something the pipeline does on its own.
+The lighter secondary policy (pruning individual
+`data/snapshots/<repo>/<sha>/` directories) from the original plan is
+documented as a real follow-up, not built - `data/snapshots/` is the
+much smaller half of the disk cost, and correctly identifying "this
+commit's snapshot is no longer needed by anything" requires checking
+every relevant consolidated output, not just one.
+
+**Not done this entry**: actually growing the corpus (`--target-total`
+is parameterized - see `ProjectUpdate.md`'s 2026-08-17 write-up - but no
+real 100-repo run has been kicked off yet); re-running the Phase 0
+candidate search with a wider pool (235 candidates is enough for 100,
+not 1000 - still an open precondition); retiring the
+`azure-sdk-for-python` per-run exclusion in `results/repos/excluded_repos.csv`
+now that the cohesion-sampling fix makes it unnecessary (safe to remove,
+just not done here).

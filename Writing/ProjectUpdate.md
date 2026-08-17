@@ -1238,3 +1238,74 @@ re-running the Phase 0 candidate search with a wider pool (235 candidates
 is enough for 100 repos, not 1000 - flagged as a precondition, not
 addressed).
 
+## 2026-08-17 (later) — Pipeline scaling, Phase B: concurrency, cohesion sampling, git batching, storage lifecycle
+
+Same day as Phase A above - the actual wall-clock levers the earlier
+entry flagged as "not done this entry": repo-level concurrency, the two
+confirmed O(n) blowups (`_tcc`/`_lcom`'s O(n²) cohesion computation,
+entity-history's per-touch `git show` cost), and a storage-reclaim tool.
+Full design rationale in `InHouseTooling.md`'s new "Pipeline scaling,
+Phase B" section; short version below.
+
+**Built**: `src/common/parallel_repo.py` (`run_by_repo()`, a shared
+repo-level dispatcher - `--workers N` on `pool_inhouse_metrics.py`,
+`pool_inhouse_smells.py`, `pool_entity_history.py`, and
+`materialize_snapshots.py`, default sequential/unchanged, `>1` dispatches
+one `ProcessPoolExecutor` worker per repo); `ast_common.sample_field_sets()`
+(seeded sampling above 300 methods, applied to `py_smells.py`'s `_tcc`,
+`py_metrics.py`'s `_lcom`, and their C# mirrors in `SmellDetector.cs`/
+`SnapshotAnalyzer.cs`, fixing the confirmed ~20-minute
+`azure-sdk-for-python` stall); `py_entity_history.py`'s `batch_show()`
+(one `git cat-file --batch` process per file instead of one `git show`
+per commit-touch, fixing the confirmed 68-minute `browser-use/browser-use`
+stall, also wired into `cs_entity_history.py` since both languages shared
+the bottleneck); `src/common/storage_lifecycle.py` (dry-run-by-default,
+`--confirm`-gated `data/repo_cache/` pruning tool, deliberately not
+auto-wired into the pipeline).
+
+**A real bug caught during verification, not shipped**: the first LCOM
+sampling implementation rescaled the sampled P/Q pair counts by (true
+pair count / sampled pair count) before subtracting - the same treatment
+that works fine for TCC. Checked directly with a controlled synthetic
+case (600 methods split evenly across 2 fields) before trusting it:
+true P-Q=300, the naively rescaled estimate=593, ~98% relative error.
+Root cause (full derivation in `InHouseTooling.md`): LCOM is a
+*difference* of two large, nearly-equal counts, not a ratio like TCC -
+subtracting two independently sampling-noisy estimates amplifies error
+catastrophically when their true difference is small relative to either
+count. Fixed by reporting the raw p-q computed on the sample directly,
+not an extrapolated guess - both the Python and C# implementations were
+already written with the (wrong) extrapolation before this was caught,
+so both got the same fix.
+
+**Verification**: real multi-repo `--workers` dispatch tested against
+all four scripts (correct row/repo counts, no duplication, cross-mode
+resumability between parallel and sequential runs); a synthetic
+failing-worker case confirming `ProcessPoolExecutor` failures propagate
+rather than vanish; `sample_field_sets()` tested for reproducibility and
+correct threshold behavior; a synthetic 2000-method class confirmed both
+`_tcc` and `_lcom` complete in ~0.02s under sampling (vs. the unbounded
+O(n²) cost before); `batch_show()` checked byte-for-byte identical
+against the old per-commit approach on a real 80-commit sample from
+`crewAIInc/crewAI` (38.7x speedup, 4.339s → 0.112s), then re-verified
+end-to-end on both the Python and C# entity-history paths against real
+repos (`crewAIInc/crewAI`, `wieslawsoltes/Dock`); `storage_lifecycle.py`
+dry-run checked against this repo's real `data/repo_cache/` (9.37GB
+across 21 repos, correctly sorted, `--repo`/`keep_cache.csv` filtering
+both confirmed) - a real performance bug in the first version (computing
+every candidate's directory size before filtering by `--repo`, making a
+single-repo query as slow as a full scan) was caught and fixed during
+this pass, not left in. All touched files `py_compile`/`dotnet build`
+clean throughout.
+
+**Not done this entry**: actually running a 100-repo (or larger) batch
+through the now-scaled pipeline - `--target-total` is parameterized and
+`--workers` is wired everywhere it matters, but no real corpus-growth run
+has started; re-running the Phase 0 candidate search with a wider
+candidate pool (235 rows caps out around 100 repos, not 1000); retiring
+`Azure/azure-sdk-for-python`'s now-unnecessary per-run exclusion in
+`results/repos/excluded_repos.csv` (the cohesion-sampling fix makes it
+safe to remove, just not done here); the lighter secondary storage-lifecycle
+policy for `data/snapshots/` (documented as a real follow-up in
+`storage_lifecycle.py`'s own module docstring, not built).
+
