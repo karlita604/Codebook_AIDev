@@ -51,6 +51,7 @@ import py_entity_history  # noqa: E402
 from entity_matching import _parse_date  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
+import parallel_repo  # noqa: E402
 import resumable_run as rr  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -148,6 +149,91 @@ def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dr
     return {"status": "ok", "n_lineages": n_ok, "n_file_errors": n_err}, rows
 
 
+def _repo_scoped_stem(out_dir, tag, full_name):
+    """Same continue-existing-or-mint-new stem convention main()'s
+    single-run logic uses below, scoped to one repo (n=1, since this
+    script's unit of work is already one whole repo) - the exact shape a
+    manual `--repo <name>` invocation already produces, reused here so
+    --workers>1's per-repo fragments are indistinguishable on disk from
+    someone having run several --repo-scoped invocations by hand."""
+    scope = re.sub(r"[^a-zA-Z0-9]+", "", full_name)[:30]
+    scope_suffix = f"{scope}-1"
+    existing = sorted(
+        out_dir.glob(f"*-{tag}-{scope_suffix}.csv"),
+        key=lambda p: p.stat().st_mtime,
+    )
+    if existing:
+        return existing[-1].stem
+    today = date.today()
+    return f"{today.month:02d}-{today.day:02d}-{tag}-{scope_suffix}"
+
+
+def _process_repo_group(
+    full_name, repo, done_repos, dry_run, max_files_per_repo, threshold,
+    seed, intervention_dates, tag,
+):
+    """Worker body for one repo under --workers > 1 - see
+    src/common/parallel_repo.py's docstring for the dispatch mechanism.
+    Must stay module-level (picklable by reference) to run in a
+    ProcessPoolExecutor worker. `repo` is a plain dict (a DataFrame row's
+    .to_dict()), unlike the sequential path below which iterates the
+    DataFrame directly - dicts pickle cleanly across the process
+    boundary."""
+    key = (repo["repo_id"], repo["full_name"])
+    stem = _repo_scoped_stem(OUT_DIR, tag, full_name)
+    out_path = OUT_DIR / f"{stem}.csv"
+    err_path = OUT_DIR / f"{stem}-errors.csv"
+    progress_path = OUT_DIR / f"{stem}-progress.json"
+    repo_summary_path = OUT_DIR / f"{stem}-repo-summary.csv"
+    rr.write_runinfo(out_path, SCHEMA_VERSION)
+
+    if key in done_repos:
+        print(f"  [skip] {full_name}: already done", flush=True)
+        return {"full_name": full_name, "ok": 1, "fail": 0, "out_path": str(out_path)}
+
+    started_at = time.time()
+    label = f"{repo['full_name']} ({repo['language']})"
+    ok_count = fail_count = 0
+    try:
+        summary, rows = process_repo(
+            repo["repo_id"], repo["full_name"], repo["language"],
+            max_files_per_repo, threshold, dry_run,
+            intervention_date=intervention_dates.get(repo["repo_id"]),
+            seed=seed,
+        )
+        rr.append_rows(out_path, rows)
+        elapsed = time.time() - started_at
+        ok_count = 1
+        print(
+            f"  [ok] {full_name}: {summary.get('n_lineages', '-')} "
+            f"lineage(s), {summary.get('n_file_errors', 0)} file "
+            f"error(s), {elapsed:.1f}s", flush=True,
+        )
+        pd.DataFrame([{
+            "repo_id": repo["repo_id"], "full_name": repo["full_name"],
+            "language": repo["language"],
+            "n_lineages": summary.get("n_lineages"),
+            "n_file_errors": summary.get("n_file_errors"),
+            "elapsed_seconds": round(elapsed, 1),
+        }]).to_csv(repo_summary_path, index=False)
+    except Exception as e:
+        fail_count = 1
+        rr.append_rows(err_path, [{
+            "repo_id": repo["repo_id"], "full_name": repo["full_name"],
+            "language": repo["language"], "error": str(e),
+        }])
+        print(f"  [FAIL] {full_name}: {e}", flush=True)
+
+    rr.write_progress(
+        progress_path, started_at, 1, ok_count + fail_count, ok_count,
+        fail_count, label,
+    )
+    return {
+        "full_name": full_name, "ok": ok_count, "fail": fail_count,
+        "out_path": str(out_path),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--manifest", type=Path, default=None)
@@ -171,6 +257,20 @@ def main():
         help="report done-repo bookkeeping (file count, oldest/newest, any "
              "stale schema_version exclusions) and exit without running "
              "anything - sanity-check before a real run.",
+    )
+    parser.add_argument(
+        "--workers", type=int, default=1,
+        help="repos to process in parallel (default 1 = sequential, "
+             "byte-identical to pre-concurrency behavior including the "
+             "single unscoped output file). >1 dispatches one process per "
+             "repo via ProcessPoolExecutor and writes one fragment file "
+             "PER REPO instead - a different on-disk shape than an "
+             "unscoped sequential run, though _load_done_keys() already "
+             "handles either shape transparently. Doesn't fix the "
+             "browser-use-style per-touch git-show hotspot (that's within "
+             "one repo, not across repos - see the entity-history git-"
+             "batching item in the scaling plan) but does mean one slow "
+             "repo no longer blocks every other repo behind it.",
     )
     args = parser.parse_args()
 
@@ -203,6 +303,40 @@ def main():
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     tag = "dryrun-entity-history" if args.dry_run else "entity-history"
+
+    if args.workers > 1:
+        done_repos = rr.load_done_keys(
+            OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION,
+            exclude_suffixes=_ENTITY_HISTORY_EXCLUDE_SUFFIXES,
+        )
+        items_by_repo = {
+            row["full_name"]: row.to_dict()
+            for _, row in repos.iterrows()
+        }
+        print(
+            f"dispatching {len(items_by_repo)} repo(s) across "
+            f"{args.workers} worker(s)", flush=True,
+        )
+        ok_total = fail_total = 0
+        for full_name, summary in parallel_repo.run_by_repo(
+            items_by_repo, _process_repo_group, workers=args.workers,
+            worker_args=(
+                done_repos, args.dry_run, args.max_files_per_repo,
+                args.threshold, args.seed, intervention_dates, tag,
+            ),
+        ):
+            ok_total += summary["ok"]
+            fail_total += summary["fail"]
+            print(
+                f"[repo done] {full_name}: {summary['ok']} ok, "
+                f"{summary['fail']} failed -> {summary['out_path']}",
+                flush=True,
+            )
+        print(
+            f"\ndone: {ok_total} ok, {fail_total} failed across "
+            f"{len(items_by_repo)} repo(s)", flush=True,
+        )
+        return
 
     scope = re.sub(r"[^a-zA-Z0-9]+", "", args.repo)[:30] if args.repo else None
     scope_suffix = f"{scope}-{total}" if scope else str(total)

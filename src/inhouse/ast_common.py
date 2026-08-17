@@ -17,9 +17,47 @@ three.
 """
 
 import ast
+import random
 from dataclasses import dataclass, field
 
 FUNC_TYPES = (ast.FunctionDef, ast.AsyncFunctionDef)
+
+# Above this many methods, py_metrics.py's _lcom and py_smells.py's _tcc
+# sample instead of computing the full O(n^2) pairwise comparison - see
+# sample_field_sets() below. Chosen so the worst confirmed case
+# (azure-sdk-for-python's largest generated-file classes, which drove a
+# ~20-minute stall under the full O(n^2) computation) finishes in well
+# under a second: 300 methods is 44,850 pairs, negligible; a class this
+# large has no real precedent below the confirmed outlier repo (see
+# Writing/PySmellDetection.md's batch-run log), so this is deliberately
+# generous rather than tuned tight to azure-sdk-for-python specifically -
+# it should almost never fire on an ordinary repo.
+COHESION_SAMPLE_THRESHOLD = 300
+
+
+def sample_field_sets(field_sets, seed_key, threshold=COHESION_SAMPLE_THRESHOLD):
+    """If a class has more methods than `threshold`, return a seeded
+    random subsample of that size instead of the full set - the fix for
+    _lcom's (py_metrics.py) and _tcc's (py_smells.py) shared O(n^2)
+    pairwise-comparison cost, which blows up on exceptionally large
+    classes. Modeled directly on entity_matching.py's sample_files() -
+    same fix for the same class of problem (an O(n^2)/O(n) computation
+    exploding on an outlier-sized population), scoped to methods within
+    one class instead of files within one repo.
+
+    `seed_key` should identify the class uniquely (its qualified name is
+    enough - reproducible run-to-run, and naturally independent class-to-
+    class since different classes have different names) so the sample is
+    deterministic rather than different on every run.
+
+    Returns (sampled_field_sets, was_sampled) - the caller needs
+    was_sampled to know whether to report an exact value or an estimate
+    (see each caller's own docstring for how it uses this)."""
+    n = len(field_sets)
+    if n <= threshold:
+        return field_sets, False
+    rng = random.Random(seed_key)
+    return rng.sample(field_sets, threshold), True
 
 
 def _span_loc(node):

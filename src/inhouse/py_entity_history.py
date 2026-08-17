@@ -127,21 +127,66 @@ def _entity_snapshot(entity, kind, file_lines):
     )
 
 
-def entities_at(repo_dir, commit_sha, path):
-    """One commit's entity inventory for one file, split into the two
-    granularity passes match_file_history operates on separately: "class"
-    and "callable" (methods + module-level functions pooled, matching
-    ast_common's own module-level function/method split - a method and a
-    same-named top-level function are never in the same qualified_name
-    namespace anyway, so pooling them into one matching pass is safe).
-    Returns (class_inventory, callable_inventory), either {} if the blob
-    fails to parse (real syntax errors turn up in old commits, same
-    py_metrics.py already documents) - an empty inventory just means no
-    entities matched at this commit, not a crash."""
+def batch_show(repo_dir, commit_path_pairs, timeout=300):
+    """Fetch many (commit_sha, path) -> blob-content pairs in ONE git
+    subprocess instead of one `git show` per pair - the fix for a
+    confirmed 68-minute stall on browser-use/browser-use (one 445-touch
+    entity, previously one `git show` process per touch; see
+    Writing/RQ3_CodeTracking.md). Uses `git cat-file --batch`, which
+    reads a stream of `<object>` specs from stdin (here, `<sha>:<path>` -
+    the same revision:path syntax `git show <sha>:<path>` already uses to
+    resolve a blob) and writes each blob's raw bytes to stdout with a
+    length-prefixed framing (`<sha> blob <size>\\n<size bytes>\\n`, or
+    `<input> missing\\n` for an unresolvable pair), all within one
+    long-lived process instead of one process per commit.
+
+    Returns {(commit_sha, path): text_or_None} - None for a pair git
+    reports missing (a path that didn't exist at that commit - shouldn't
+    happen given these pairs come from follow_history's own rename-
+    tracked output, but not assumed impossible, same as the single-
+    `git show`-per-commit code this replaces already didn't assume)."""
+    if not commit_path_pairs:
+        return {}
+    proc = subprocess.run(
+        ["git", "-C", str(repo_dir), "cat-file", "--batch"],
+        input="".join(
+            f"{sha}:{path}\n" for sha, path in commit_path_pairs
+        ).encode("utf-8"),
+        capture_output=True, text=False, timeout=timeout,
+    )
+    if proc.returncode != 0:
+        raise RuntimeError(
+            f"git cat-file --batch failed in {repo_dir}: "
+            f"{proc.stderr.decode('utf-8', 'replace')}"
+        )
+
+    data = proc.stdout
+    results = {}
+    offset = 0
+    for pair in commit_path_pairs:
+        newline_idx = data.index(b"\n", offset)
+        header = data[offset:newline_idx].decode("utf-8", "replace")
+        offset = newline_idx + 1
+        if header.endswith(" missing"):
+            results[pair] = None
+            continue
+        # "<sha> blob <size>"
+        size = int(header.rsplit(" ", 1)[-1])
+        results[pair] = data[offset:offset + size].decode("utf-8", "replace")
+        offset += size + 1  # +1 for the trailing newline after content
+    return results
+
+
+def _entities_from_text(text, path):
+    """Entity-extraction half of what entities_at() used to do in one
+    shot after its own git show call - split out so batch_show()'s
+    pre-fetched text can feed straight in, with no per-commit subprocess
+    call left in this step. Returns (class_inventory, callable_inventory)
+    - see entities_at()'s docstring for the granularity split; {} for
+    either half means a real parse error, not a crash (same convention)."""
     try:
-        text = _run_git(repo_dir, ["show", f"{commit_sha}:{path}"])
         tree = ast.parse(text)
-    except (RuntimeError, SyntaxError):
+    except SyntaxError:
         return {}, {}
 
     file_lines = text.splitlines()
@@ -165,19 +210,45 @@ def entities_at(repo_dir, commit_sha, path):
     return class_inv, callable_inv
 
 
+def entities_at(repo_dir, commit_sha, path):
+    """One commit's entity inventory for one file - single-commit
+    convenience wrapper around _entities_from_text(), fetching that one
+    blob via its own `git show` call. Kept for callers that only need one
+    commit (e.g. ad hoc debugging); collect_file_sequences() below uses
+    the batched batch_show() path instead, not this function, for its
+    real per-file work. Returns (class_inventory, callable_inventory),
+    both {} if the git show itself fails or the blob fails to parse (real
+    syntax errors turn up in old commits, same py_metrics.py already
+    documents) - not a crash."""
+    try:
+        text = _run_git(repo_dir, ["show", f"{commit_sha}:{path}"])
+    except RuntimeError:
+        return {}, {}
+    return _entities_from_text(text, path)
+
+
 def collect_file_sequences(repo_dir, path):
     """The expensive, threshold-independent half of building a file's
-    lineages: every git subprocess call and every AST parse. Split out from
-    build_file_lineages so a caller that wants to try several similarity
-    thresholds (validate_entity_matching.py's Stage 3 sweep) can pay this
-    cost once per file and re-run the cheap in-memory matching step
-    per threshold, instead of re-walking git history each time. Returns
-    (class_seq, callable_seq), each a chronological list of
-    (commit_sha, commit_date, {qualified_name: EntitySnapshot})."""
+    lineages: one batched git fetch (batch_show(), see its docstring for
+    why this isn't one `git show` per commit anymore) plus every AST
+    parse. Split out from build_file_lineages so a caller that wants to
+    try several similarity thresholds (validate_entity_matching.py's
+    Stage 3 sweep) can pay this cost once per file and re-run the cheap
+    in-memory matching step per threshold, instead of re-walking git
+    history each time. Returns (class_seq, callable_seq), each a
+    chronological list of (commit_sha, commit_date,
+    {qualified_name: EntitySnapshot})."""
     history = follow_history(repo_dir, path)
+    pairs = [(sha, path_at_commit) for sha, _date, path_at_commit in history]
+    blobs = batch_show(repo_dir, pairs)
+
     class_seq, callable_seq = [], []
     for sha, date, path_at_commit in history:
-        class_inv, callable_inv = entities_at(repo_dir, sha, path_at_commit)
+        text = blobs.get((sha, path_at_commit))
+        if text is None:
+            class_inv, callable_inv = {}, {}
+        else:
+            class_inv, callable_inv = _entities_from_text(text, path_at_commit)
         class_seq.append((sha, date, class_inv))
         callable_seq.append((sha, date, callable_inv))
     return class_seq, callable_seq

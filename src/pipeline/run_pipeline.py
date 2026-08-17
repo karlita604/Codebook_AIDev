@@ -77,10 +77,10 @@ def _entity_history_extra_args(args):
 
 
 # Ordered dependency chain. `supports` lists which of the orchestrator's
-# shared flags (--dry-run/--limit/--repo/--target-total/--stale-check)
-# this stage's own argparse actually accepts - passing an unsupported
-# flag to a stage is a silent no-op waiting to happen, so we only forward
-# what each script has really defined.
+# shared flags (--dry-run/--limit/--repo/--target-total/--stale-check/
+# --workers) this stage's own argparse actually accepts - passing an
+# unsupported flag to a stage is a silent no-op waiting to happen, so we
+# only forward what each script has really defined.
 STAGES = [
     {
         "name": "select",
@@ -95,22 +95,22 @@ STAGES = [
     {
         "name": "materialize",
         "script": "src/phase0/materialize_snapshots.py",
-        "supports": {"repo"},
+        "supports": {"repo", "workers"},
     },
     {
         "name": "metrics",
         "script": "src/inhouse/pool_inhouse_metrics.py",
-        "supports": {"dry_run", "limit", "repo", "stale_check"},
+        "supports": {"dry_run", "limit", "repo", "stale_check", "workers"},
     },
     {
         "name": "smells",
         "script": "src/inhouse/pool_inhouse_smells.py",
-        "supports": {"dry_run", "limit", "repo", "stale_check"},
+        "supports": {"dry_run", "limit", "repo", "stale_check", "workers"},
     },
     {
         "name": "entity-history",
         "script": "src/inhouse/pool_entity_history.py",
-        "supports": {"dry_run", "limit", "repo", "stale_check"},
+        "supports": {"dry_run", "limit", "repo", "stale_check", "workers"},
     },
     {
         "name": "consolidate-metrics",
@@ -174,9 +174,11 @@ def build_command(spec, args):
     if args.repo and "repo" in supports:
         cmd += ["--repo", args.repo]
     if args.target_total is not None and "target_total" in supports:
-        cmd += ["--pilot-size", str(args.target_total)]
+        cmd += ["--target-total", str(args.target_total)]
     if args.stale_check and "stale_check" in supports:
         cmd.append("--stale-check")
+    if args.workers is not None and "workers" in supports:
+        cmd += ["--workers", str(args.workers)]
     if "extra_args" in spec:
         cmd += spec["extra_args"](args)
     return cmd
@@ -282,12 +284,20 @@ def main():
     run_parser.add_argument("--repo", type=str, default=None)
     run_parser.add_argument(
         "--target-total", type=int, default=None,
-        help="corpus size target, forwarded as --pilot-size to the "
-             "select/snapshot-manifest stages (renamed once repo "
-             "selection is parameterized for scale - see the pipeline "
-             "scaling plan's B1)",
+        help="corpus size target, forwarded as --target-total to the "
+             "select/snapshot-manifest stages (both accept the deprecated "
+             "--pilot-size name too, but the orchestrator always passes "
+             "the current one)",
     )
     run_parser.add_argument("--stale-check", action="store_true")
+    run_parser.add_argument(
+        "--workers", type=int, default=None,
+        help="repos to process in parallel, forwarded to whichever "
+             "stages support it (materialize/metrics/smells/entity-"
+             "history) - see each stage's own --help for what changes "
+             "on-disk under >1. Omit for sequential (each stage's "
+             "default).",
+    )
     run_parser.set_defaults(func=cmd_run)
 
     status_parser = sub.add_parser("status", help="report the latest pipeline run")

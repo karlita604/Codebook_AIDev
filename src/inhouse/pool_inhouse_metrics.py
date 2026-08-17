@@ -49,6 +49,7 @@ from materialize_snapshots import (  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
 import exclusions  # noqa: E402
+import parallel_repo  # noqa: E402
 import resumable_run as rr  # noqa: E402
 
 LANGUAGE_ANALYZER = {
@@ -111,6 +112,79 @@ def process_row(row, dry_run):
     return {**_snapshot_key(row), **metrics}
 
 
+def _repo_scoped_stem(out_dir, tag, full_name, n_rows):
+    """Same continue-existing-or-mint-new stem convention main()'s
+    single-run logic uses below, scoped to one repo - the exact shape a
+    manual `--repo <name>` invocation already produces, reused here so
+    --workers>1's per-repo fragments are indistinguishable on disk from
+    someone having run several --repo-scoped invocations by hand."""
+    scope = re.sub(r"[^a-zA-Z0-9]+", "", full_name)[:30]
+    scope_suffix = f"{scope}-{n_rows}"
+    existing = sorted(
+        out_dir.glob(f"*-{tag}-{scope_suffix}.csv"),
+        key=lambda p: p.stat().st_mtime,
+    )
+    if existing:
+        return existing[-1].stem
+    today = date.today()
+    return f"{today.month:02d}-{today.day:02d}-{tag}-{scope_suffix}"
+
+
+def _process_repo_group(full_name, rows, done_keys, dry_run, tag):
+    """Worker body for one repo's row-set under --workers > 1 - see
+    src/common/parallel_repo.py's docstring for the dispatch mechanism.
+    Must stay module-level (picklable by reference) to run in a
+    ProcessPoolExecutor worker. `rows` is a list of dicts (not a
+    DataFrame slice - plain dicts pickle cleanly across the process
+    boundary and process_row()/_snapshot_key() only ever do dict-style
+    `row[...]` access, so this is a drop-in for the row objects the
+    sequential path below iterates directly from the DataFrame)."""
+    total = len(rows)
+    stem = _repo_scoped_stem(OUT_DIR, tag, full_name, total)
+    out_path = OUT_DIR / f"{stem}.csv"
+    err_path = OUT_DIR / f"{stem}-errors.csv"
+    progress_path = OUT_DIR / f"{stem}-progress.json"
+    rr.write_runinfo(out_path, SCHEMA_VERSION)
+
+    started_at = time.time()
+    # Scoped to this repo's own rows, unlike the sequential path's
+    # ok_count seed below (which starts at the GLOBAL done_keys count,
+    # a pre-existing quirk kept as-is there for behavioral parity) -
+    # summing len(done_keys) globally per worker would inflate every
+    # repo's summary by every OTHER repo's done count too.
+    ok_count = sum(
+        1 for row in rows if rr.row_key_tuple(row, KEY_COLS) in done_keys
+    )
+    fail_count = 0
+    for i, row in enumerate(rows, start=1):
+        label = (
+            f"{row['full_name']} {row['track']} {row['target_date'][:10]} "
+            f"@{row['commit_sha'][:8]}"
+        )
+        if rr.row_key_tuple(row, KEY_COLS) in done_keys:
+            continue
+
+        try:
+            result = process_row(row, dry_run)
+            rr.append_row(out_path, result)
+            ok_count += 1
+            print(f"  [ok] {full_name} ({i}/{total}) {label}", flush=True)
+        except Exception as e:
+            fail_count += 1
+            rr.append_row(err_path, {**_snapshot_key(row), "error": str(e)})
+            print(f"  [FAIL] {full_name} ({i}/{total}) {label}: {e}", flush=True)
+
+        rr.write_progress(
+            progress_path, started_at, total,
+            ok_count + fail_count, ok_count, fail_count, label,
+        )
+
+    return {
+        "full_name": full_name, "ok": ok_count, "fail": fail_count,
+        "out_path": str(out_path),
+    }
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -145,6 +219,19 @@ def main():
         help="report done-key bookkeeping (file count, oldest/newest, any "
              "stale schema_version exclusions) and exit without running "
              "anything - sanity-check before a real run.",
+    )
+    parser.add_argument(
+        "--workers", type=int, default=1,
+        help="repos to analyze in parallel (default 1 = sequential, "
+             "byte-identical to pre-concurrency behavior including the "
+             "single unscoped output file). >1 dispatches one process per "
+             "repo via ProcessPoolExecutor and writes one fragment file "
+             "PER REPO instead - a different on-disk shape than an "
+             "unscoped sequential run, though consolidate_inhouse_metrics.py "
+             "and _load_done_keys() already handle either shape "
+             "transparently. git/dotnet subprocess calls have real "
+             "startup cost - start low (4-6) on a single workstation, not "
+             "os.cpu_count().",
     )
     args = parser.parse_args()
 
@@ -209,6 +296,36 @@ def main():
     # validation runs, so _load_done_keys() still sees those rows as done
     # and won't reprocess them under the new tag.
     tag = "dryrun-inhouse" if args.dry_run else "inhouse-metrics"
+
+    if args.workers > 1:
+        done_keys = rr.load_done_keys(
+            OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION
+        )
+        items_by_repo = {
+            full_name: group.to_dict("records")
+            for full_name, group in eligible.groupby("full_name", sort=False)
+        }
+        print(
+            f"dispatching {len(items_by_repo)} repo(s) across "
+            f"{args.workers} worker(s)", flush=True,
+        )
+        ok_total = fail_total = 0
+        for full_name, summary in parallel_repo.run_by_repo(
+            items_by_repo, _process_repo_group, workers=args.workers,
+            worker_args=(done_keys, args.dry_run, tag),
+        ):
+            ok_total += summary["ok"]
+            fail_total += summary["fail"]
+            print(
+                f"[repo done] {full_name}: {summary['ok']} ok, "
+                f"{summary['fail']} failed -> {summary['out_path']}",
+                flush=True,
+            )
+        print(
+            f"\ndone: {ok_total} ok, {fail_total} failed across "
+            f"{len(items_by_repo)} repo(s)", flush=True,
+        )
+        return
 
     scope = re.sub(r"[^a-zA-Z0-9]+", "", args.repo)[:30] if args.repo else None
     scope_suffix = f"{scope}-{total}" if scope else str(total)

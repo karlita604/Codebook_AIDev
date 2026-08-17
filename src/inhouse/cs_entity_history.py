@@ -9,13 +9,18 @@ touching commit's class/method inventory via the extended Roslyn tool's
 the sequence through entity_matching.py exactly the way the Python side
 does.
 
-Batched per file, not per commit: every blob in one file's touching-commit
-history is sent to the Roslyn tool in ONE subprocess call
+Batched per file, not per commit, on BOTH sides: every blob in one file's
+touching-commit history is sent to the Roslyn tool in ONE subprocess call
 (`roslyn_tool.exe --batch`), not one call per commit - checked empirically
 (see the build log) that .NET process-startup cost makes per-commit
-invocation impractical across a file with dozens of commits. `git show` is
-still one subprocess call per commit (that part is unavoidable - it's how
-git exposes historical blob content) - only the Roslyn side is batched.
+invocation impractical across a file with dozens of commits. The blob
+fetches themselves were also one `git show` subprocess call per commit
+until 2026-08-17 - fixed the same way py_entity_history.py's Python path
+was (batch_show(), one `git cat-file --batch` process per file instead;
+see that function's docstring for the confirmed 68-minute
+browser-use/browser-use stall this closes, measured at a 38.7x speedup on
+an 80-commit sample) - reused here rather than re-solved, since both
+languages hit the identical bottleneck for the identical reason.
 """
 
 import json
@@ -27,7 +32,8 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 import csharp_metrics  # noqa: E402
 from entity_matching import EntitySnapshot, sample_files, tokenize  # noqa: E402
 from py_entity_history import (  # noqa: E402
-    DEFAULT_SEED, REPO_CACHE_DIR, _run_git, _safe_dirname, follow_history,
+    DEFAULT_SEED, REPO_CACHE_DIR, _run_git, _safe_dirname, batch_show,
+    follow_history,
 )
 
 
@@ -83,11 +89,13 @@ def collect_file_sequences(repo_dir, path):
     if not history:
         return [], []
 
+    pairs = [(sha, path_at_commit) for sha, _date, path_at_commit in history]
+    fetched = batch_show(repo_dir, pairs)
+
     blobs, meta = [], []
     for sha, date, path_at_commit in history:
-        try:
-            text = _run_git(repo_dir, ["show", f"{sha}:{path_at_commit}"])
-        except RuntimeError:
+        text = fetched.get((sha, path_at_commit))
+        if text is None:
             continue
         blobs.append({"relpath": path_at_commit, "text": text})
         meta.append((sha, date))

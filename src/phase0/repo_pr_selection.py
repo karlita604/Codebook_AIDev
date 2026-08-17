@@ -81,7 +81,21 @@ def build_repo_summary(pr_table):
 
 def suggest_pilot(repo_summary, n=5):
     """Stratified pick: mix of languages, prefer repos with more agent-PR signal
-    (more agent PRs = easier to sanity-check the intervention-detection logic)."""
+    (more agent PRs = easier to sanity-check the intervention-detection logic).
+
+    Growth property this function relies on for --target-total (see main()):
+    the per-language sort order doesn't depend on n, so a larger n's pick is
+    expected to be a superset of a smaller n's - verified empirically for
+    every n in 1..len(repo_summary) against the real 235-row candidate pool
+    (0 violations; see check_monotonic_growth() below), not proven in
+    general. round()'s banker's-rounding could in principle produce a
+    non-superset pick at some n for a different repo_summary shape (e.g.
+    once the candidate pool is widened for a 1000-repo run, or if a third
+    language is added to the ["Python", "C#"] loop below) - re-run
+    check_monotonic_growth() against the actual repo_summary being used
+    before relying on this property at a new scale, rather than assuming it
+    still holds. Not changed here - this is a research-methodology call
+    (the stratification algorithm itself), not a scaling-infrastructure one."""
     picks = []
     for lang in ["Python", "C#"]:
         subset = repo_summary[repo_summary["language"] == lang].sort_values(
@@ -93,16 +107,67 @@ def suggest_pilot(repo_summary, n=5):
     return combined
 
 
+def check_monotonic_growth(repo_summary, verbose=True):
+    """Empirical check of suggest_pilot()'s growth property (see its
+    docstring): for every consecutive n, does the larger pick contain the
+    smaller one? Returns the list of (n, missing_repos) violations, if any
+    - empty means the property held for every n against this repo_summary.
+    Cheap (linear in len(repo_summary)) - safe to re-run whenever the
+    candidate pool changes size, e.g. before scaling to --target-total 1000."""
+    picks = {
+        n: set(suggest_pilot(repo_summary, n=n)["full_name"])
+        for n in range(1, len(repo_summary) + 1)
+    }
+    violations = []
+    for n in range(1, len(repo_summary)):
+        missing = picks[n] - picks[n + 1]
+        if missing:
+            violations.append((n, missing))
+            if verbose:
+                print(
+                    f"  [violation] n={n}->{n + 1}: {len(missing)} repo(s) "
+                    f"dropped: {missing}", flush=True,
+                )
+    if verbose:
+        print(
+            f"check_monotonic_growth: {len(violations)} violation(s) across "
+            f"{len(repo_summary) - 1} consecutive n pair(s)", flush=True,
+        )
+    return violations
+
+
 def main():
+    candidates = load_candidate_repos()
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pilot-size", type=int, default=5)
+    parser.add_argument(
+        "--target-total", "--pilot-size", dest="target_total", type=int,
+        default=5,
+        help=f"how many repos to select (--pilot-size is a deprecated "
+             "alias, kept so old invocations don't silently break). Draws "
+             f"from the {len(candidates)} candidate repos in the pool file "
+             "(see load_candidate_repos()) - can't return more than that "
+             "regardless of what's asked for; re-run this project's Phase 0 "
+             "candidate search with wider parameters first if you need a "
+             "bigger pool (e.g. before a --target-total 1000 run).",
+    )
+    parser.add_argument(
+        "--verify-monotonic-growth", action="store_true",
+        help="run check_monotonic_growth() against the current candidate "
+             "pool and exit, instead of actually selecting repos",
+    )
     args = parser.parse_args()
 
-    candidates = load_candidate_repos()
+    if args.verify_monotonic_growth:
+        aidev_prs = load_aidev_prs_for_repos(candidates["id"])
+        pr_table = build_pr_table(candidates, aidev_prs)
+        repo_summary = build_repo_summary(pr_table)
+        check_monotonic_growth(repo_summary)
+        return
+
     aidev_prs = load_aidev_prs_for_repos(candidates["id"])
     pr_table = build_pr_table(candidates, aidev_prs)
     repo_summary = build_repo_summary(pr_table)
-    pilot = suggest_pilot(repo_summary, n=args.pilot_size)
+    pilot = suggest_pilot(repo_summary, n=args.target_total)
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     today = date.today()

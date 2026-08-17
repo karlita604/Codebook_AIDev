@@ -147,10 +147,17 @@ def get_pilot_repos(pilot_size=5):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pilot-size", type=int, default=5)
+    parser.add_argument(
+        "--target-total", "--pilot-size", dest="target_total", type=int,
+        default=5,
+        help="how many repos to select (--pilot-size is a deprecated "
+             "alias). Same growth-property caveat as "
+             "repo_pr_selection.py's suggest_pilot() - see that module's "
+             "docstring.",
+    )
     args = parser.parse_args()
 
-    pilot = get_pilot_repos(pilot_size=args.pilot_size)
+    pilot = get_pilot_repos(pilot_size=args.target_total)
     print(f"Pilot set: {len(pilot)} repos")
 
     all_rows = []

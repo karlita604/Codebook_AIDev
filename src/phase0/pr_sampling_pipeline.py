@@ -26,8 +26,16 @@ Uses the Search API (GET /search/issues?q=repo:...+is:pr+created:...),
 which has its own tighter rate limit (30 req/min authenticated) independent
 of the 5000/hr core limit - SEARCH_PAUSE_SECONDS paces requests under that.
 
-Estimated cost: (51 B1 windows + 2 B2 queries) x 5 pilot repos = 265 search
-requests, ~11 minutes at the default pace.
+Estimated cost: (51 B1 windows + 2 B2 queries) x N repos = search requests,
+at ~24/min per token. That's ~11 minutes at 5 repos, but scales linearly -
+~3.5 hours at --target-total 100 on a single token. Set GITHUB_TOKENS_FILE
+to a local file (one token per line, blank lines/#-comments ignored, kept
+out of git - see .gitignore) with additional tokens to round-robin
+requests across; each token still sees its own traffic paced under 24/min
+(TokenPool below halves/thirds/etc. the pause between requests as tokens
+are added, since each token gets its own independent rate-limit bucket),
+so aggregate throughput scales with token count - 2 tokens roughly halves
+the wall-clock estimate above.
 
 Resumable by design (same shape as long_analysis.py's Phase 1d run): each
 unit of work is one search query - a B1 month-window or a B2 before/after
@@ -42,6 +50,7 @@ in your own terminal to watch it live.
 """
 
 import argparse
+import itertools
 import json
 import os
 import sys
@@ -67,6 +76,49 @@ B2_PRS_PER_SIDE = 10
 SEARCH_PAUSE_SECONDS = 2.5  # ~24 req/min, under the 30/min search-API cap
 
 
+def _make_session(token):
+    session = requests.Session()
+    session.headers.update({
+        "Authorization": f"Bearer {token}",
+        "Accept": "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+    })
+    return session
+
+
+def _load_extra_tokens(path):
+    """One token per line; blank lines and #-comment lines skipped. Kept
+    as a local file (path given via GITHUB_TOKENS_FILE, gitignored - see
+    .gitignore) rather than a comma-separated env var, since that's the
+    natural place to drop additional personal tokens without fussing with
+    shell quoting/escaping for each one."""
+    lines = Path(path).read_text().splitlines()
+    return [
+        line.strip() for line in lines
+        if line.strip() and not line.strip().startswith("#")
+    ]
+
+
+class TokenPool:
+    """Round-robins requests.Session objects, one per GITHUB_TOKEN, so
+    aggregate Search API throughput scales with token count while each
+    individual token's own request rate stays under its 30/min cap - see
+    module docstring. A single-token pool behaves identically to the old
+    plain requests.Session (len() == 1, no rate-limit change)."""
+
+    def __init__(self, tokens):
+        if not tokens:
+            raise ValueError("TokenPool needs at least one token")
+        self._sessions = [_make_session(t) for t in tokens]
+        self._cycle = itertools.cycle(self._sessions)
+
+    def get(self, *args, **kwargs):
+        return next(self._cycle).get(*args, **kwargs)
+
+    def __len__(self):
+        return len(self._sessions)
+
+
 def get_session():
     token = os.environ.get("GITHUB_TOKEN")
     if not token:
@@ -77,18 +129,27 @@ def get_session():
             '            setx GITHUB_TOKEN "ghp_..."     (persisted, new terminal needed)\n'
             "then rerun this script."
         )
-    session = requests.Session()
-    session.headers.update({
-        "Authorization": f"Bearer {token}",
-        "Accept": "application/vnd.github+json",
-        "X-GitHub-Api-Version": "2022-11-28",
-    })
-    return session
+    tokens = [token]
+    tokens_file = os.environ.get("GITHUB_TOKENS_FILE")
+    if tokens_file:
+        extra = _load_extra_tokens(tokens_file)
+        tokens += extra
+        print(
+            f"GITHUB_TOKENS_FILE: {len(extra)} additional token(s) loaded "
+            f"from {tokens_file} ({len(tokens)} total - requests round-"
+            "robin across them, pacing scaled accordingly)",
+            flush=True,
+        )
+    return TokenPool(tokens)
 
 
 def _search_prs(session, full_name, query_extra, sort="created", order="asc", per_page=10):
     """One page (<=per_page) of the Search API's issues/PRs endpoint.
-    Retries on primary/secondary rate limiting. Returns (items, total_count)."""
+    Retries on primary/secondary rate limiting. Returns (items, total_count).
+    `session` is a TokenPool (possibly wrapping just one token) - the pause
+    between requests is divided by the token count, since round-robining
+    means each individual token only receives 1/N of the aggregate request
+    rate."""
     q = f"repo:{full_name} is:pr {query_extra}"
     while True:
         resp = session.get(
@@ -107,7 +168,7 @@ def _search_prs(session, full_name, query_extra, sort="created", order="asc", pe
             continue
         resp.raise_for_status()
         break
-    time.sleep(SEARCH_PAUSE_SECONDS)
+    time.sleep(SEARCH_PAUSE_SECONDS / len(session))
     data = resp.json()
     return data.get("items", []), data.get("total_count", 0)
 
@@ -268,14 +329,23 @@ def get_pilot_repos(pilot_size=5):
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--pilot-size", type=int, default=5)
+    parser.add_argument(
+        "--target-total", "--pilot-size", dest="target_total", type=int,
+        default=5,
+        help="how many repos to select (--pilot-size is a deprecated "
+             "alias). Same growth-property caveat as "
+             "repo_pr_selection.py's suggest_pilot() - see that module's "
+             "docstring. Cost scales linearly with this - see the "
+             "--dry-run grid-size estimate below before running a large "
+             "value for real.",
+    )
     parser.add_argument("--repo", help="Only sample this one full_name (owner/repo), for smoke-testing")
     parser.add_argument("--tracks", default="B1,B2", help="Comma-separated subset of tracks to run")
     parser.add_argument("--dry-run", action="store_true",
                          help="Print grid sizes only, no API calls (no GITHUB_TOKEN needed)")
     args = parser.parse_args()
 
-    pilot = get_pilot_repos(pilot_size=args.pilot_size)
+    pilot = get_pilot_repos(pilot_size=args.target_total)
     if args.repo:
         pilot = pilot[pilot["full_name"] == args.repo]
         if pilot.empty:
@@ -301,7 +371,7 @@ def main():
     # this exact scope (tag + total units) if present, so a rerun after a
     # crash appends to what's already there instead of starting a fresh,
     # empty file under today's date. Only mint a new dated stem for a
-    # genuinely new scope (different --pilot-size/--tracks/--repo).
+    # genuinely new scope (different --target-total/--tracks/--repo).
     tag = "pr-sample"
     existing = sorted(OUT_DIR.glob(f"*-{tag}-{total}.csv"), key=lambda p: p.stat().st_mtime)
     if existing:

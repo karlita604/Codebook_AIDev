@@ -44,6 +44,7 @@ import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
 import exclusions  # noqa: E402
+import parallel_repo  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 CLONE_CACHE_DIR = ROOT / "data" / "repo_cache"
@@ -206,10 +207,66 @@ def archive_commit(full_name, commit_sha, pathspec, dest):
     return ok
 
 
+def _process_one_repo(full_name, item):
+    """Worker body for one repo's backfill+archive - runs inline
+    (--workers<=1) or in a ProcessPoolExecutor worker (--workers>1, see
+    src/common/parallel_repo.py). Must stay module-level (picklable by
+    reference) for the latter. No output-file-shape concern here unlike
+    the pool_inhouse_*.py scripts' --workers - this produces
+    data/snapshots/ directories, not appendable CSV fragments, so there's
+    no "unscoped run's on-disk shape" to preserve identically between
+    modes; resumability is just `_is_materialized()` checking each
+    destination directory directly, already safe for concurrent workers
+    to check independently (a repo either has its own already-materialized
+    commits skipped, or doesn't - no shared file for two workers to race
+    on, since each worker only ever touches its own repo's directories)."""
+    language, commit_shas = item
+    pathspec = LANGUAGE_PATHSPEC.get(language)
+    if pathspec is None:
+        print(f"=== {full_name}: skipping, no pathspec mapped for language {language!r}")
+        return {"full_name": full_name, "done": 0, "failed": 0}
+
+    repo_dest_root = SNAPSHOT_DIR / _safe_dirname(full_name)
+    todo = [sha for sha in commit_shas if not _is_materialized(repo_dest_root / sha)]
+    print(f"\n=== {full_name} ({language}) - {len(commit_shas)} unique commits, {len(todo)} not yet materialized ===")
+    if not todo:
+        print("  nothing to do")
+        return {"full_name": full_name, "done": 0, "failed": 0}
+
+    backfill_repo(full_name, pathspec)
+
+    done = failed = 0
+    for i, sha in enumerate(todo, start=1):
+        try:
+            ok = archive_commit(full_name, sha, pathspec, repo_dest_root / sha)
+        except OSError as e:
+            print(f"  [archive] {full_name}@{sha[:7]}: OS error - {e} - rerun to retry")
+            ok = False
+        if ok:
+            done += 1
+            print(f"  [archive] {full_name} ({i}/{len(todo)}) @{sha[:7]}: ok", flush=True)
+        else:
+            failed += 1
+            print(f"  [archive] {full_name} ({i}/{len(todo)}) @{sha[:7]}: failed or timed out", flush=True)
+    print(f"  materialized {done}/{len(todo)} for {full_name} ({failed} failed - rerun to retry, backfill/archives are idempotent)")
+    return {"full_name": full_name, "done": done, "failed": failed}
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--repo", type=str, default=None,
                          help="only process this full_name (e.g. crewAIInc/crewAI); default: all repos in the manifest")
+    parser.add_argument(
+        "--workers", type=int, default=1,
+        help="repos to backfill/archive in parallel (default 1 = "
+             "sequential). >1 dispatches one process per repo via "
+             "ProcessPoolExecutor - each repo's git operations are "
+             "already fully independent (own clone directory in "
+             "data/repo_cache/), so this is safe with no output-shape "
+             "change, unlike the pool_inhouse_*.py scripts' --workers. "
+             "git subprocess calls (backfill/archive) have real startup "
+             "and network cost - start low (4-6) on a single workstation.",
+    )
     args = parser.parse_args()
 
     commits = unique_commits()
@@ -219,36 +276,26 @@ def main():
             print(f"no rows for --repo {args.repo}")
             return
 
-    for full_name, group in commits.groupby("full_name"):
-        language = group["language"].iloc[0]
-        pathspec = LANGUAGE_PATHSPEC.get(language)
-        if pathspec is None:
-            print(f"=== {full_name}: skipping, no pathspec mapped for language {language!r}")
-            continue
+    items_by_repo = {
+        full_name: (group["language"].iloc[0], list(group["commit_sha"]))
+        for full_name, group in commits.groupby("full_name")
+    }
 
-        repo_dest_root = SNAPSHOT_DIR / _safe_dirname(full_name)
-        todo = [sha for sha in group["commit_sha"] if not _is_materialized(repo_dest_root / sha)]
-        print(f"\n=== {full_name} ({language}) - {len(group)} unique commits, {len(todo)} not yet materialized ===")
-        if not todo:
-            print("  nothing to do")
-            continue
-
-        backfill_repo(full_name, pathspec)
-
-        done = failed = 0
-        for i, sha in enumerate(todo, start=1):
-            try:
-                ok = archive_commit(full_name, sha, pathspec, repo_dest_root / sha)
-            except OSError as e:
-                print(f"  [archive] {full_name}@{sha[:7]}: OS error - {e} - rerun to retry")
-                ok = False
-            if ok:
-                done += 1
-                print(f"  [archive] ({i}/{len(todo)}) {full_name}@{sha[:7]}: ok", flush=True)
-            else:
-                failed += 1
-                print(f"  [archive] ({i}/{len(todo)}) {full_name}@{sha[:7]}: failed or timed out", flush=True)
-        print(f"  materialized {done}/{len(todo)} ({failed} failed - rerun to retry, backfill/archives are idempotent)")
+    if args.workers > 1:
+        print(
+            f"dispatching {len(items_by_repo)} repo(s) across "
+            f"{args.workers} worker(s)", flush=True,
+        )
+    total_done = total_failed = 0
+    for full_name, summary in parallel_repo.run_by_repo(
+        items_by_repo, _process_one_repo, workers=args.workers,
+    ):
+        total_done += summary["done"]
+        total_failed += summary["failed"]
+    print(
+        f"\ndone: {total_done} materialized, {total_failed} failed "
+        f"across {len(items_by_repo)} repo(s)", flush=True,
+    )
 
 
 if __name__ == "__main__":

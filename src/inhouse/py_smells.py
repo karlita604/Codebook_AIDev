@@ -68,14 +68,31 @@ def _tcc(cls):
     access to >=1 of the class's own fields. Fewer than 2 methods has no
     pairs to share anything - treated as maximally cohesive (1.0), which
     keeps a 0/1-method class out of God Class's low-TCC filter rather than
-    dividing by zero."""
+    dividing by zero.
+
+    Above ast_common.COHESION_SAMPLE_THRESHOLD methods, computed over a
+    seeded random subsample instead of the full O(n^2) pairwise scan -
+    see ast_common.sample_field_sets()'s docstring for why (a confirmed
+    ~20-minute stall on azure-sdk-for-python's largest generated-file
+    classes). TCC is already a ratio (shared pairs / total pairs), so the
+    subsample's own ratio is a direct, unbiased estimate of the true
+    value - unlike py_metrics.py's _lcom (a difference of two large
+    counts, where the equivalent rescale-and-subtract approach was tried
+    and rejected - see that function's docstring for the ~98%-error case
+    that ruled it out), TCC needs no such treatment; the sample ratio IS
+    the estimate. Returns (tcc, sampled) -
+    callers that pool this into a row should record `sampled` alongside
+    it (see analyze_snapshot()'s n_tcc_sampled column)."""
     field_sets = _field_sets(cls)
+    field_sets, sampled = ast_common.sample_field_sets(
+        field_sets, seed_key=cls.qualified_name
+    )
     n = len(field_sets)
     if n < 2:
-        return 1.0
+        return 1.0, sampled
     total_pairs = n * (n - 1) / 2
     shared = sum(1 for a, b in combinations(field_sets, 2) if a & b)
-    return shared / total_pairs
+    return shared / total_pairs, sampled
 
 
 def _class_atfd(cls, known_field_names):
@@ -109,11 +126,13 @@ def _noam(cls):
 
 
 def _class_smell_metrics(cls, known_field_names):
+    tcc, tcc_sampled = _tcc(cls)
     return {
         "class_name": cls.qualified_name,
         "loc": cls.loc,
         "wmc": sum(m.cc for m in cls.methods),
-        "tcc": _tcc(cls),
+        "tcc": tcc,
+        "tcc_sampled": tcc_sampled,
         "atfd": _class_atfd(cls, known_field_names),
         "woc": _woc(cls),
         "nopa": sum(1 for f in cls.field_names if not f.startswith("_")),
@@ -259,6 +278,7 @@ def analyze_snapshot(snapshot_dir):
     n_data_class = sum(1 for r in class_rows if r["is_data_class"])
     n_feature_envy = sum(1 for r in method_rows if r["is_feature_envy"])
     n_brain_method = sum(1 for r in method_rows if r["is_brain_method"])
+    n_tcc_sampled = sum(1 for r in class_rows if r["tcc_sampled"])
     design_smell_count = n_god_class + n_data_class
     implementation_smell_count = n_feature_envy + n_brain_method
     kloc = total_loc / 1000 if total_loc else None
@@ -273,6 +293,12 @@ def analyze_snapshot(snapshot_dir):
         "n_data_class": n_data_class,
         "n_feature_envy": n_feature_envy,
         "n_brain_method": n_brain_method,
+        # How many classes' TCC (God Class's cohesion filter) was
+        # estimated from a seeded sample instead of the full pairwise
+        # computation - see ast_common.sample_field_sets(). Near-always 0;
+        # >0 flags a snapshot with an exceptionally large class, worth a
+        # second look rather than trusting God Class's flag rate blindly.
+        "n_tcc_sampled": n_tcc_sampled,
         "design_smell_count": design_smell_count,
         "design_smell_density_per_kloc": (
             design_smell_count / kloc if kloc else None

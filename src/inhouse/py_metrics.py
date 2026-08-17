@@ -163,15 +163,49 @@ def _lcom(cls):
     ast_common.self_attribute_names(), excluding the class's own method
     names so a call like `self.speak()` isn't mistaken for a shared field
     - the same exclusion _collect_self_field_names uses, applied per-method
-    here instead of per-class."""
+    here instead of per-class.
+
+    Above ast_common.COHESION_SAMPLE_THRESHOLD methods, computed over a
+    seeded random subsample instead of the full O(n^2) pairwise scan -
+    see ast_common.sample_field_sets()'s docstring for why (a confirmed
+    ~20-minute stall on azure-sdk-for-python's largest generated-file
+    classes, same complexity class as py_smells.py's _tcc).
+
+    Unlike TCC (a ratio - shared_pairs/total_pairs - so a subsample's own
+    ratio is a standard unbiased density estimate), LCOM is P-Q, a
+    DIFFERENCE of two typically-large, nearly-equal counts for a
+    reasonably cohesive class. Scaling P and Q independently by (true
+    pair count / sampled pair count) and then subtracting was tried and
+    rejected - verified directly with a controlled synthetic case (a
+    600-method class split evenly across 2 fields: true P-Q=300, naively
+    rescaled sample estimate=593, ~98% relative error). The reason: for a
+    balanced/cohesive class, P-Q's true magnitude is governed by a
+    second-order imbalance term (algebraically, P-Q = N/2 - (k_a-k_b)^2/2
+    for a 2-group split), not a simple density - the quadratic pair-count
+    ratio this fix uses everywhere else over/under-corrects it badly.
+    Subtracting two large, sampling-noisy, highly-correlated estimates
+    amplifies relative error catastrophically when the true difference is
+    small relative to either count - classic catastrophic cancellation.
+
+    So: reported as the RAW p-q computed directly on the sampled subset,
+    NOT rescaled to estimate the full class's magnitude. This is smaller
+    in absolute terms than an unsampled class's LCOM would be (expected
+    and flagged via the returned `sampled` bool, not silently wrong) -
+    but every sampled class is computed over the same threshold-sized
+    subsample, so sampled LCOM values stay comparable to each other, and
+    this doesn't risk reporting a confidently-wrong extrapolated number
+    the way the rejected scaling approach did. Returns (lcom, sampled)."""
     methods = cls.methods
     if len(methods) < 2:
-        return 0
+        return 0, False
     method_names = {m.name for m in methods}
     field_sets = [
         ast_common.self_attribute_names(m.node, exclude=method_names)
         for m in methods
     ]
+    field_sets, sampled = ast_common.sample_field_sets(
+        field_sets, seed_key=cls.qualified_name
+    )
 
     p = q = 0
     for i in range(len(field_sets)):
@@ -180,7 +214,7 @@ def _lcom(cls):
                 q += 1
             else:
                 p += 1
-    return max(0, p - q)
+    return max(0, p - q), sampled
 
 
 def class_detail_rows(modules, class_index, fan_out, fan_in):
@@ -194,6 +228,7 @@ def class_detail_rows(modules, class_index, fan_out, fan_in):
     for mod in modules:
         for cls in mod["classes"]:
             wmc = sum(m.cc for m in cls.methods)
+            lcom, lcom_sampled = _lcom(cls)
             rows.append({
                 "module": mod["qualname"],
                 "class_name": cls.qualified_name,
@@ -205,7 +240,8 @@ def class_detail_rows(modules, class_index, fan_out, fan_in):
                     1 for f in cls.field_names if not f.startswith("_")
                 ),
                 "wmc": wmc,
-                "lcom": _lcom(cls),
+                "lcom": lcom,
+                "lcom_sampled": lcom_sampled,
                 "dit": _dit(cls, class_index),
                 "fan_in": fan_in.get(cls.name, 0),
                 "fan_out": fan_out.get(cls.name, 0),
@@ -243,7 +279,9 @@ def analyze_snapshot(snapshot_dir):
     callable_cc = _series([c.cc for c in all_callables])
     callable_pc = _series([c.param_count for c in all_callables])
     class_wmc = _series([sum(m.cc for m in c.methods) for c in all_classes])
-    class_lcom = _series([_lcom(c) for c in all_classes])
+    lcom_results = [_lcom(c) for c in all_classes]
+    class_lcom = _series([r[0] for r in lcom_results])
+    n_lcom_sampled = sum(1 for r in lcom_results if r[1])
     class_dit = _series([_dit(c, class_index) for c in all_classes])
     class_fan_in = _series([fan_in.get(c.name, 0) for c in all_classes])
     class_fan_out = _series([fan_out.get(c.name, 0) for c in all_classes])
@@ -257,6 +295,11 @@ def analyze_snapshot(snapshot_dir):
         "n_parse_errors": n_parse_errors,
         "n_classes": len(all_classes),
         "n_methods": len(all_callables),
+        # How many classes' LCOM was estimated from a seeded sample
+        # instead of the full O(n^2) pairwise computation - see
+        # ast_common.sample_field_sets(). Near-always 0; >0 flags a
+        # snapshot with an exceptionally large class.
+        "n_lcom_sampled": n_lcom_sampled,
         "class_loc_p50": _pctl(class_loc, 0.5),
         "class_loc_p90": _pctl(class_loc, 0.9),
         "method_loc_p50": _pctl(callable_loc, 0.5),

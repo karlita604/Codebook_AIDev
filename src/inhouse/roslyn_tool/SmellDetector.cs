@@ -66,6 +66,12 @@ public static class SmellDetector
             ["n_data_class"] = nDataClass,
             ["n_feature_envy"] = nFeatureEnvy,
             ["n_brain_method"] = nBrainMethod,
+            // How many classes' TCC (God Class's cohesion filter) was
+            // estimated from a seeded sample instead of the full pairwise
+            // computation - see SnapshotAnalyzer.SampleFieldSets(). Near-
+            // always 0; >0 flags a snapshot with an exceptionally large
+            // class.
+            ["n_tcc_sampled"] = classRows.Count(r => r.TccSampled),
             ["design_smell_count"] = designSmellCount,
             ["design_smell_density_per_kloc"] = kloc is null ? null : designSmellCount / kloc,
             ["implementation_smell_count"] = implSmellCount,
@@ -80,6 +86,7 @@ public static class SmellDetector
         public required double Loc;
         public required double Wmc;
         public required double Tcc;
+        public required bool TccSampled;
         public required double Atfd;
         public required double Woc;
         public required double Nopa;
@@ -252,9 +259,17 @@ public static class SmellDetector
         return ((double)functional / totalPublic, noam);
     }
 
+    // Above SnapshotAnalyzer.CohesionSampleThreshold methods, computed
+    // over a seeded random subsample instead of the full O(n^2) pairwise
+    // scan - see SnapshotAnalyzer.SampleFieldSets(). TCC is already a
+    // ratio (shared pairs / total pairs), so the subsample's own ratio is
+    // a direct, unbiased estimate of the true value - no extrapolation
+    // needed, unlike ComputeLcom's absolute-count version of this same
+    // fix (SnapshotAnalyzer.cs).
     private static ClassSmellRow ClassSmellMetrics(ClassInfo cls, HashSet<string> knownFieldNames)
     {
-        var fieldSets = SnapshotAnalyzer.FieldAccessSets(cls);
+        var full = SnapshotAnalyzer.FieldAccessSets(cls);
+        var (fieldSets, tccSampled) = SnapshotAnalyzer.SampleFieldSets(full, cls.QualifiedName);
         var n = fieldSets.Count;
         double tcc;
         if (n < 2)
@@ -284,6 +299,7 @@ public static class SmellDetector
             Loc = cls.Loc,
             Wmc = cls.Methods.Sum(m => m.Cc),
             Tcc = tcc,
+            TccSampled = tccSampled,
             Atfd = atfdSet.Count,
             Woc = woc,
             Nopa = cls.PublicFieldNames.Count,

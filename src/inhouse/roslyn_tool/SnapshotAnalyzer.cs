@@ -37,7 +37,9 @@ public static class SnapshotAnalyzer
         var methodCc = allMethods.Select(m => (double)m.Cc).ToList();
         var methodPc = allMethods.Select(m => (double)m.ParamCount).ToList();
         var classWmc = allClasses.Select(c => (double)c.Methods.Sum(m => m.Cc)).ToList();
-        var classLcom = allClasses.Select(c => (double)ComputeLcom(c)).ToList();
+        var lcomResults = allClasses.Select(ComputeLcom).ToList();
+        var classLcom = lcomResults.Select(r => (double)r.lcom).ToList();
+        var nLcomSampled = lcomResults.Count(r => r.sampled);
         var classDit = allClasses.Select(c => (double)ComputeDit(c, classIndex, new HashSet<string>())).ToList();
         var classFanIn = allClasses.Select(c => (double)fanIn.GetValueOrDefault(c.Name, 0)).ToList();
         var classFanOut = allClasses.Select(c => (double)fanOut.GetValueOrDefault(c.Name, 0)).ToList();
@@ -49,6 +51,11 @@ public static class SnapshotAnalyzer
             ["n_parse_errors"] = nParseErrors,
             ["n_classes"] = allClasses.Count,
             ["n_methods"] = allMethods.Count,
+            // How many classes' LCOM was estimated from a seeded sample
+            // instead of the full O(n^2) pairwise computation - see
+            // SampleFieldSets(). Near-always 0; >0 flags a snapshot with
+            // an exceptionally large class.
+            ["n_lcom_sampled"] = nLcomSampled,
             ["class_loc_p50"] = Percentile(classLoc, 0.5),
             ["class_loc_p90"] = Percentile(classLoc, 0.9),
             ["method_loc_p50"] = Percentile(methodLoc, 0.5),
@@ -366,6 +373,52 @@ public static class SnapshotAnalyzer
     // same inputs, two different aggregations (LCOM's max(0,p-q) vs. TCC's
     // (pairs sharing >=1 field) / (total pairs)), no reason to walk the AST
     // twice for the same underlying fact.
+    // Above this many methods, ComputeLcom (below) and SmellDetector.cs's
+    // TCC computation sample instead of the full O(n^2) pairwise scan -
+    // C# mirror of ast_common.py's identical fix (same threshold, same
+    // reasoning: py_smells.py's Python-side _tcc confirmed a ~20-minute
+    // stall on azure-sdk-for-python's largest generated-file classes; no
+    // single confirmed C# stall case exists yet, but the complexity class
+    // and the fix are identical, so this closes the gap pre-emptively
+    // rather than waiting for a specific repo to hit it).
+    internal const int CohesionSampleThreshold = 300;
+
+    // string.GetHashCode() is randomized per-process in modern .NET
+    // (hash-flooding hardening) - NOT usable for a seed that needs to be
+    // reproducible run-to-run the way ast_common.py's sample_field_sets()
+    // (seeded off Python's stable hash() via random.Random(str)) is.
+    // FNV-1a over UTF-8 bytes instead: deterministic across runs,
+    // processes, and machines.
+    private static int StableSeed(string key)
+    {
+        unchecked
+        {
+            const uint fnvPrime = 16777619;
+            uint hash = 2166136261;
+            foreach (var b in System.Text.Encoding.UTF8.GetBytes(key))
+            {
+                hash ^= b;
+                hash *= fnvPrime;
+            }
+            return (int)hash;
+        }
+    }
+
+    // C# mirror of ast_common.py's sample_field_sets() - same fix, same
+    // reasoning (see CohesionSampleThreshold above), scoped to methods
+    // within one class instead of files within one repo. `seedKey` should
+    // identify the class uniquely (QualifiedName is enough) so the sample
+    // is deterministic rather than different on every run.
+    internal static (List<HashSet<string>> sample, bool sampled) SampleFieldSets(
+        List<HashSet<string>> fieldSets, string seedKey,
+        int threshold = CohesionSampleThreshold)
+    {
+        if (fieldSets.Count <= threshold) return (fieldSets, false);
+        var rng = new Random(StableSeed(seedKey));
+        var sample = fieldSets.OrderBy(_ => rng.Next()).Take(threshold).ToList();
+        return (sample, true);
+    }
+
     internal static List<HashSet<string>> FieldAccessSets(ClassInfo cls)
     {
         var methods = cls.Node.Members.OfType<BaseMethodDeclarationSyntax>().ToList();
@@ -387,10 +440,39 @@ public static class SnapshotAnalyzer
         }).ToList();
     }
 
-    private static int ComputeLcom(ClassInfo cls)
+    // Above CohesionSampleThreshold methods, computed over a seeded
+    // random subsample instead of the full O(n^2) pairwise scan - see
+    // SampleFieldSets() above.
+    //
+    // Unlike SmellDetector.cs's TCC (a ratio - shared/total - so a
+    // subsample's own ratio is a standard unbiased density estimate),
+    // LCOM is P-Q, a difference of two typically-large, nearly-equal
+    // counts for a reasonably cohesive class. Scaling P and Q
+    // independently by (true pair count / sampled pair count) and then
+    // subtracting was tried and rejected in the Python mirror of this fix
+    // (py_metrics.py's _lcom) - verified there with a controlled
+    // synthetic case (a 600-method class split evenly across 2 fields:
+    // true P-Q=300, naively rescaled sample estimate=593, ~98% relative
+    // error). The reason: for a balanced/cohesive class, P-Q's true
+    // magnitude is governed by a second-order imbalance term
+    // (algebraically, P-Q = N/2 - (k_a-k_b)^2/2 for a 2-group split), not
+    // a simple density - the quadratic pair-count ratio over/under-
+    // corrects it badly, and subtracting two large, sampling-noisy,
+    // highly-correlated estimates amplifies relative error
+    // catastrophically when the true difference is small relative to
+    // either count (catastrophic cancellation).
+    //
+    // So: returned as the RAW p-q computed directly on the sampled
+    // subset, NOT rescaled to estimate the full class's magnitude -
+    // smaller in absolute terms than an unsampled class's LCOM would be
+    // (expected and flagged via `sampled`, not silently wrong), but every
+    // sampled class is computed over the same threshold-sized subsample,
+    // so sampled LCOM values stay comparable to each other.
+    private static (int lcom, bool sampled) ComputeLcom(ClassInfo cls)
     {
-        var fieldSets = FieldAccessSets(cls);
-        if (fieldSets.Count < 2) return 0;
+        var full = FieldAccessSets(cls);
+        if (full.Count < 2) return (0, false);
+        var (fieldSets, sampled) = SampleFieldSets(full, cls.QualifiedName);
 
         int p = 0, q = 0;
         for (var i = 0; i < fieldSets.Count; i++)
@@ -401,7 +483,7 @@ public static class SnapshotAnalyzer
                 else p++;
             }
         }
-        return Math.Max(0, p - q);
+        return (Math.Max(0, p - q), sampled);
     }
 
     // Linear-interpolation percentile - matches pandas' default
