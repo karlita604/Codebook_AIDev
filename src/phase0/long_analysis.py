@@ -74,6 +74,12 @@ OUT_DIR = ROOT / "results" / "analysis"
 
 TOOL_TIMEOUT_SECONDS = 900
 
+# See main()'s --force guard below: this tool is for pilot recalibration
+# against the licensed DPy/Designite baseline (originally a 4-5 repo
+# pilot), not scaled runs - 25 gives headroom for a somewhat larger
+# recalibration pass without being anywhere near 100/1000-repo scale.
+PILOT_SIZE_CEILING = 25
+
 # DPy Trial rejects CSV export at >=10,000 LOC (see run_dpy). Cap chunks
 # below that with headroom, since our line count (naive readlines()) won't
 # exactly match whatever DPy counts internally (blank lines, encoding, etc).
@@ -756,6 +762,13 @@ def main():
              "can be 100-300+ chunks and otherwise prints nothing until the "
              "whole row finishes, which can be 15-20+ minutes of silence",
     )
+    parser.add_argument(
+        "--force", action="store_true",
+        help="override the pilot-size guard below - only pass this if you "
+             "really mean to run the licensed DPy/Designite trial tools "
+             "(with their LOC-cap chunking) against more than "
+             f"{PILOT_SIZE_CEILING} eligible rows",
+    )
     args = parser.parse_args()
 
     manifest_path = args.manifest or latest_manifest()
@@ -772,6 +785,26 @@ def main():
         eligible = eligible.head(args.limit)
     total = len(eligible)
     print(f"{total} eligible row(s) (have a resolved commit)", flush=True)
+
+    # This tool exists for pilot recalibration against the licensed
+    # baseline (DPy/Designite), not for scaled runs - one mlflow snapshot
+    # alone took ~29 hours under its LOC-cap chunking (304 chunks x
+    # ~3.4s, see Writing/InHouseTooling.md). At 100/1000-repo scale this
+    # tool must never run by accident (e.g. as part of an orchestrator's
+    # default stage list) - src/pipeline/run_pipeline.py excludes it from
+    # its default --stages for the same reason. --dry-run is exempt (pure
+    # bookkeeping, no chunking/subprocess cost) so smoke tests aren't
+    # blocked by this guard.
+    if not args.dry_run and total > PILOT_SIZE_CEILING and not args.force:
+        raise SystemExit(
+            f"refusing to run: {total} eligible rows exceeds the "
+            f"pilot-size ceiling ({PILOT_SIZE_CEILING}) for the legacy "
+            "DPy/Designite path. This tool is for pilot recalibration "
+            "against the licensed baseline, not scaled runs - use "
+            "pool_inhouse_metrics.py/pool_inhouse_smells.py instead, or "
+            "pass --force if you really mean to run this at scale "
+            "(expect multi-day wall time - see the docstring above)."
+        )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
     tag = "dryrun" if args.dry_run else "smell-metrics"

@@ -5,14 +5,20 @@ file conventions as pool_inhouse_metrics.py (which this mirrors
 deliberately - same pipeline, same manifest/snapshot inputs, just the
 smell-detection engines instead of the OO-metrics ones). See
 Writing/PySmellDetection.md for the detection strategies themselves and
-Writing/InHouseTooling.md for why an in-house tool exists at all.
+Writing/InHouseTooling.md for why an in-house tool exists at all. The
+resumability/progress plumbing itself now lives in
+src/common/resumable_run.py (2026-08-17 extraction - this file,
+pool_inhouse_metrics.py, and pool_entity_history.py had independently
+reimplemented the same done-keys/progress/error-file pattern) - see that
+module's docstring for the schema_version/staleness behavior added at the
+same time.
 
 Use --dry-run to smoke-test snapshot lookup/bookkeeping without running the
-analyzer. Use --limit/--repo to test on a handful of rows first.
+analyzer. Use --limit/--repo to test on a handful of rows first. Use
+--stale-check to report done-key bookkeeping without running anything.
 """
 
 import argparse
-import json
 import re
 import sys
 import time
@@ -30,6 +36,10 @@ from materialize_snapshots import (  # noqa: E402
     SNAPSHOT_DIR, _is_materialized, _safe_dirname, latest_manifest,
 )
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
+import exclusions  # noqa: E402
+import resumable_run as rr  # noqa: E402
+
 LANGUAGE_ANALYZER = {
     "Python": py_smells.analyze_snapshot,
     "C#": cs_smells.analyze_snapshot,
@@ -38,6 +48,16 @@ LANGUAGE_GLOB = {"Python": "*.py", "C#": "*.cs"}
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "results" / "analysis"
+
+KEY_COLS = ["repo_id", "track", "target_date", "commit_sha"]
+
+# Bump when a fix changes what "done" should mean for existing rows (e.g.
+# a smell-detection engine bug fix) - see resumable_run.py's docstring.
+# Rows written under a prior schema_version are excluded from the
+# done-set and reprocessed rather than trusted as-is; rows from before
+# this tracking existed (no .runinfo.json sidecar) are still trusted,
+# unaffected by this constant.
+SCHEMA_VERSION = 1
 
 
 def _snapshot_key(row):
@@ -49,56 +69,6 @@ def _snapshot_key(row):
         "target_date": row["target_date"],
         "commit_sha": row["commit_sha"],
     }
-
-
-def _row_key_tuple(row):
-    return (
-        row["repo_id"], row["track"], row["target_date"], row["commit_sha"],
-    )
-
-
-def _load_done_keys(tag):
-    """Same convention as pool_inhouse_metrics.py's _load_done_keys():
-    global across every prior real-output file matching this tag, not
-    just this invocation's own, so parallel --repo-scoped runs never redo
-    each other's work. Only successes count as done."""
-    done = set()
-    key_cols = ["repo_id", "track", "target_date", "commit_sha"]
-    for path in OUT_DIR.glob(f"*-{tag}-*.csv"):
-        if path.name.endswith("-errors.csv"):
-            continue
-        df = pd.read_csv(path)
-        if not set(key_cols).issubset(df.columns):
-            continue
-        done.update(df[key_cols].itertuples(index=False, name=None))
-    return done
-
-
-def _append_row(path, row_dict):
-    write_header = not path.exists()
-    pd.DataFrame([row_dict]).to_csv(
-        path, mode="a", header=write_header, index=False
-    )
-
-
-def _write_progress(
-    progress_path, started_at, total, done, ok, failed, current
-):
-    elapsed = time.time() - started_at
-    rate = done / elapsed if elapsed > 0 else 0
-    eta_seconds = (total - done) / rate if rate > 0 else None
-    progress_path.write_text(json.dumps({
-        "started_at": started_at,
-        "total": total,
-        "done": done,
-        "ok": ok,
-        "failed": failed,
-        "elapsed_seconds": round(elapsed, 1),
-        "eta_seconds": (
-            round(eta_seconds, 1) if eta_seconds is not None else None
-        ),
-        "current": current,
-    }))
 
 
 def process_row(row, dry_run):
@@ -157,7 +127,20 @@ def main():
              "2026-08-11), distinct from EXCLUDED_REPOS's permanent, "
              "tooling-blocker exclusions (materialize_snapshots.py)",
     )
+    parser.add_argument(
+        "--stale-check", action="store_true",
+        help="report done-key bookkeeping (file count, oldest/newest, any "
+             "stale schema_version exclusions) and exit without running "
+             "anything - sanity-check before a real run.",
+    )
     args = parser.parse_args()
+
+    if args.stale_check:
+        tag = "dryrun-inhouse-smells" if args.dry_run else "inhouse-smells"
+        rr.stale_check_report(
+            OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION
+        )
+        return
 
     manifest_path = args.manifest or latest_manifest()
     manifest = pd.read_csv(manifest_path)
@@ -177,10 +160,24 @@ def main():
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
+    # Auto-apply the registry's scope="per-run" exclusions (e.g.
+    # azure-sdk-for-python's O(n^2) _tcc stall) - but NOT scope="permanent"
+    # ones: those (dotnet/aspire) are Designite-project-graph-specific and
+    # deliberately don't apply here, per the comment above.
+    per_run_excluded = exclusions.load_exclusions(scope="per-run")
+    if per_run_excluded:
+        eligible = eligible[~eligible["full_name"].isin(per_run_excluded)]
     if args.exclude_repo:
         eligible = eligible[
             ~eligible["full_name"].str.contains(args.exclude_repo)
         ]
+        print(
+            f"  (--exclude-repo is a one-off filter for this invocation - "
+            f"if {args.exclude_repo!r} should be excluded persistently, "
+            "add it to results/repos/excluded_repos.csv via "
+            "src/common/exclusions.py's record_exclusion())",
+            flush=True,
+        )
     if args.limit:
         eligible = eligible.head(args.limit)
     total = len(eligible)
@@ -214,8 +211,11 @@ def main():
     out_path = OUT_DIR / f"{stem}.csv"
     err_path = OUT_DIR / f"{stem}-errors.csv"
     progress_path = OUT_DIR / f"{stem}-progress.json"
+    rr.write_runinfo(out_path, SCHEMA_VERSION)
 
-    done_keys = _load_done_keys(tag)
+    done_keys = rr.load_done_keys(
+        OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION
+    )
     if done_keys:
         print(
             f"resuming: {len(done_keys)} row(s) already done in {out_path}, "
@@ -230,20 +230,20 @@ def main():
             f"{row['full_name']} {row['track']} {row['target_date'][:10]} "
             f"@{row['commit_sha'][:8]}"
         )
-        if _row_key_tuple(row) in done_keys:
+        if rr.row_key_tuple(row, KEY_COLS) in done_keys:
             continue
 
         try:
             result = process_row(row, args.dry_run)
-            _append_row(out_path, result)
+            rr.append_row(out_path, result)
             ok_count += 1
             print(f"  [ok] ({i}/{total}) {label}", flush=True)
         except Exception as e:
             fail_count += 1
-            _append_row(err_path, {**_snapshot_key(row), "error": str(e)})
+            rr.append_row(err_path, {**_snapshot_key(row), "error": str(e)})
             print(f"  [FAIL] ({i}/{total}) {label}: {e}", flush=True)
 
-        _write_progress(
+        rr.write_progress(
             progress_path, started_at, total,
             ok_count + fail_count, ok_count, fail_count, label,
         )

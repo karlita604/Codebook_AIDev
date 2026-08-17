@@ -21,7 +21,11 @@ repo_cache clone to a single collapsed commit across ~94 of its 96 grid
 points. Confirmed again on the 2026-08-13 gap-fill run
 (08-13-inhouse-smells-1577.csv: 94 Dock rows, 1 unique commit_sha) - the
 correct Dock smell data (96 rows, from the --manifest-overridden
-08-13-inhouse-smells-Dock-96.csv run) is kept instead.
+08-13-inhouse-smells-Dock-96.csv run) is kept instead. Same reasoning as
+consolidate_inhouse_metrics.py for why this isn't in
+results/repos/excluded_repos.csv (src/common/exclusions.py): a row-level
+fix for already-stale data from a fixed bug, not a repo-selection
+decision.
 
 Run: python consolidate_inhouse_smells.py
 Output: results/analysis/<date>-inhouse-smells-pooled.csv
@@ -98,5 +102,12 @@ def consolidate():
     return out_path, combined
 
 
+# Stable, predictable entry point for src/pipeline/run_pipeline.py (this
+# script has no argparse - see module docstring's "Run: python
+# consolidate_inhouse_smells.py" - so the orchestrator calls run()
+# directly rather than shelling out with flags it doesn't have).
+run = consolidate
+
+
 if __name__ == "__main__":
-    consolidate()
+    run()

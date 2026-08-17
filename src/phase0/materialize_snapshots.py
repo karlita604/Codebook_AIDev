@@ -36,10 +36,14 @@ import argparse
 import fnmatch
 import shutil
 import subprocess
+import sys
 import time
 from pathlib import Path
 
 import pandas as pd
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
+import exclusions  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
 CLONE_CACHE_DIR = ROOT / "data" / "repo_cache"
@@ -61,17 +65,17 @@ LANGUAGE_PATHSPEC = {
     ],
 }
 
-# Repos temporarily out of scope for materialization/analysis, keyed by
+# Repos permanently out of scope for materialization/analysis, keyed by
 # full_name. Not a manifest edit - the manifest reflects real repo selection
 # history and shouldn't be silently changed; this is a pipeline-level scope
-# decision. dotnet/aspire (2026-07-28): MSBuildWorkspace can't evaluate its
-# projects without Arcade's own restore bootstrap (pinned prerelease SDKs,
-# private feeds) in its early history, and needs an uninstalled preview SDK
-# plus .slnx support this Designite build lacks in its recent history - see
-# Writing/Longitudinal.md "Open decisions". Revisit once that's resolved;
-# until then the C# arm is Dock only. Meant to be reusable for any future
-# repo found to need similar exclusion, not aspire-specific machinery.
-EXCLUDED_REPOS = {"dotnet/aspire"}
+# decision. Loaded from results/repos/excluded_repos.csv (scope=permanent
+# rows only - "permanent" here means "this tool can never handle this
+# repo", not "excluded forever"; see src/common/exclusions.py's docstring)
+# rather than hardcoded, so a new permanently-blocked repo found at
+# 100/1000-repo scale is a registry edit, not a code change in three
+# different files. dotnet/aspire is the seed case (see the registry) -
+# Designite's MSBuildWorkspace can't evaluate its project graph.
+EXCLUDED_REPOS = exclusions.load_exclusions(scope="permanent")
 GIT_HTTP_OVERRIDE = ["-c", "http.version=HTTP/1.1"]
 ARCHIVE_TIMEOUT_SECONDS = 120
 BACKFILL_TIMEOUT_SECONDS = 570  # leave headroom under a 600s call budget

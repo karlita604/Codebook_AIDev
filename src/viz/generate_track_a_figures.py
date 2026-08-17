@@ -450,5 +450,14 @@ def main():
     print("Table 2:", t2_path, f"({len(t2)} rows)")
 
 
+# Stable, predictable entry point for src/pipeline/run_pipeline.py (this
+# script has no argparse - see module docstring's "Run: python
+# generate_track_a_figures.py" - every figure/table runs unconditionally,
+# which is fine: cheap, idempotent operations over already-pooled data,
+# not scale-sensitive - see the pipeline scaling plan's "explicitly not
+# changing" section for why this isn't being parameterized further).
+run = main
+
+
 if __name__ == "__main__":
-    main()
+    run()

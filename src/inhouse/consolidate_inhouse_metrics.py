@@ -30,6 +30,14 @@ is kept; the new bad-manifest rows are excluded by full_name before the
 dedup step even runs, so a "last-seen wins" tiebreak can never
 accidentally prefer the bad ones.
 
+This is deliberately NOT migrated to results/repos/excluded_repos.csv
+(src/common/exclusions.py) - that registry is for repo-selection
+decisions ("don't process this repo"), while this is a row-level patch
+for already-stale data left behind by a fixed bug (the Dock repo_cache
+clone being frozen in the past, since fixed). Dock itself is not
+excluded from anything going forward; only the specific old rows
+produced under the bug are dropped here.
+
 Run: python consolidate_inhouse_metrics.py
 Output: results/analysis/<date>-inhouse-metrics-pooled.csv
 """
@@ -110,5 +118,12 @@ def consolidate():
     return out_path, combined
 
 
+# Stable, predictable entry point for src/pipeline/run_pipeline.py (this
+# script has no argparse - see module docstring's "Run: python
+# consolidate_inhouse_metrics.py" - so the orchestrator calls run()
+# directly rather than shelling out with flags it doesn't have).
+run = consolidate
+
+
 if __name__ == "__main__":
-    consolidate()
+    run()

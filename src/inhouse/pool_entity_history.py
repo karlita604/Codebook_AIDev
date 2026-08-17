@@ -23,11 +23,20 @@ not randomized, so a low cap is biased toward alphabetically-early paths;
 documented here, not hidden.
 
 Use --dry-run to check repo_cache coverage without running any analysis.
-Use --limit/--repo to test on a handful of repos first.
+Use --limit/--repo to test on a handful of repos first. Use --stale-check
+to report done-repo bookkeeping without running anything.
+
+The resumability/progress plumbing itself now lives in
+src/common/resumable_run.py (2026-08-17 extraction - this file,
+pool_inhouse_metrics.py, and pool_inhouse_smells.py had independently
+reimplemented the same done-keys/progress/error-file pattern) - see that
+module's docstring for the schema_version/staleness behavior added at the
+same time. This file's unit of "done" is one repo (repo_id, full_name),
+not one snapshot-grid row, so it uses resumable_run's generic key_cols
+support rather than the other two scripts' 4-column snapshot key.
 """
 
 import argparse
-import json
 import re
 import sys
 import time
@@ -41,12 +50,25 @@ import cs_entity_history  # noqa: E402
 import py_entity_history  # noqa: E402
 from entity_matching import _parse_date  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "common"))
+import resumable_run as rr  # noqa: E402
+
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "results" / "analysis"
 MANIFEST_DIR = ROOT / "results" / "snapshots"
 REPO_SUMMARY_DIR = ROOT / "results" / "repos"
 
 DEFAULT_MAX_FILES_PER_REPO = 150
+
+KEY_COLS = ["repo_id", "full_name"]
+
+# Bump when a fix changes what "done" should mean for existing rows (e.g.
+# the 2026-08-13 sorted-path sampling-bias fix or a future entity-matching
+# change) - see resumable_run.py's docstring. Rows written under a prior
+# schema_version are excluded from the done-set and reprocessed rather
+# than trusted as-is; rows from before this tracking existed (no
+# .runinfo.json sidecar) are still trusted, unaffected by this constant.
+SCHEMA_VERSION = 1
 
 LANGUAGE_BUILDER = {
     "Python": py_entity_history.build_repo_lineages,
@@ -94,44 +116,11 @@ def eligible_repos(manifest_path):
     return repos[repos["language"].isin(LANGUAGE_BUILDER.keys())]
 
 
-def _load_done_repos(tag):
-    """Global across every prior real-output file matching this tag, same
-    convention as pool_inhouse_metrics.py's _load_done_keys - a repo counts
-    as done if it appears in ANY prior same-tag output (including a
-    previous --repo-scoped run), so parallel/resumed runs never redo work."""
-    done = set()
-    for path in OUT_DIR.glob(f"*-{tag}-*.csv"):
-        if path.name.endswith("-errors.csv"):
-            continue
-        try:
-            df = pd.read_csv(path, usecols=["repo_id", "full_name"])
-        except (ValueError, pd.errors.EmptyDataError):
-            continue
-        done.update(df[["repo_id", "full_name"]].itertuples(index=False, name=None))
-    return done
-
-
-def _append_rows(path, rows):
-    if not rows:
-        return
-    write_header = not path.exists()
-    pd.DataFrame(rows).to_csv(path, mode="a", header=write_header, index=False)
-
-
-def _write_progress(progress_path, started_at, total, done, ok, failed, current):
-    elapsed = time.time() - started_at
-    rate = done / elapsed if elapsed > 0 else 0
-    eta_seconds = (total - done) / rate if rate > 0 else None
-    progress_path.write_text(json.dumps({
-        "started_at": started_at,
-        "total": total,
-        "done": done,
-        "ok": ok,
-        "failed": failed,
-        "elapsed_seconds": round(elapsed, 1),
-        "eta_seconds": round(eta_seconds, 1) if eta_seconds is not None else None,
-        "current": current,
-    }))
+# repo-summary is a derived per-repo aggregate written alongside the real
+# output (see main()) - it matches the same tag glob but isn't an
+# independent output, so it's excluded from done-key loading (see
+# resumable_run.load_done_keys's docstring).
+_ENTITY_HISTORY_EXCLUDE_SUFFIXES = ("-errors.csv", "-repo-summary.csv")
 
 
 def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dry_run,
@@ -177,7 +166,21 @@ def main():
              "(replaces plain sorted-order truncation, which correlated "
              "alphabetical path order with directory-creation history)",
     )
+    parser.add_argument(
+        "--stale-check", action="store_true",
+        help="report done-repo bookkeeping (file count, oldest/newest, any "
+             "stale schema_version exclusions) and exit without running "
+             "anything - sanity-check before a real run.",
+    )
     args = parser.parse_args()
+
+    if args.stale_check:
+        tag = "dryrun-entity-history" if args.dry_run else "entity-history"
+        rr.stale_check_report(
+            OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION,
+            exclude_suffixes=_ENTITY_HISTORY_EXCLUDE_SUFFIXES,
+        )
+        return
 
     manifest_path = args.manifest or latest_manifest()
     repos = eligible_repos(manifest_path)
@@ -218,8 +221,12 @@ def main():
     err_path = OUT_DIR / f"{stem}-errors.csv"
     progress_path = OUT_DIR / f"{stem}-progress.json"
     repo_summary_path = OUT_DIR / f"{stem}-repo-summary.csv"
+    rr.write_runinfo(out_path, SCHEMA_VERSION)
 
-    done_repos = _load_done_repos(tag)
+    done_repos = rr.load_done_keys(
+        OUT_DIR, tag, KEY_COLS, schema_version=SCHEMA_VERSION,
+        exclude_suffixes=_ENTITY_HISTORY_EXCLUDE_SUFFIXES,
+    )
     if done_repos:
         print(f"resuming: {len(done_repos)} repo(s) already done, skipping", flush=True)
 
@@ -227,7 +234,7 @@ def main():
     ok_count, fail_count = len(done_repos), 0
     repo_summaries = []
     for i, (_, repo) in enumerate(repos.iterrows(), start=1):
-        key = (repo["repo_id"], repo["full_name"])
+        key = rr.row_key_tuple(repo, KEY_COLS)
         label = f"{repo['full_name']} ({repo['language']})"
         if key in done_repos:
             continue
@@ -240,7 +247,7 @@ def main():
                 intervention_date=intervention_dates.get(repo["repo_id"]),
                 seed=args.seed,
             )
-            _append_rows(out_path, rows)
+            rr.append_rows(out_path, rows)
             elapsed = time.time() - t0
             ok_count += 1
             print(
@@ -257,13 +264,13 @@ def main():
             })
         except Exception as e:
             fail_count += 1
-            _append_rows(err_path, [{
+            rr.append_rows(err_path, [{
                 "repo_id": repo["repo_id"], "full_name": repo["full_name"],
                 "language": repo["language"], "error": str(e),
             }])
             print(f"  [FAIL] ({i}/{total}) {label}: {e}", flush=True)
 
-        _write_progress(progress_path, started_at, total, ok_count + fail_count, ok_count, fail_count, label)
+        rr.write_progress(progress_path, started_at, total, ok_count + fail_count, ok_count, fail_count, label)
 
     if repo_summaries:
         pd.DataFrame(repo_summaries).to_csv(repo_summary_path, index=False)
