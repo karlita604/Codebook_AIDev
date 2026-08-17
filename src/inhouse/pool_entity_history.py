@@ -135,7 +135,7 @@ def _write_progress(progress_path, started_at, total, done, ok, failed, current)
 
 
 def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dry_run,
-                  intervention_date=None):
+                  intervention_date=None, seed=py_entity_history.DEFAULT_SEED):
     builder = LANGUAGE_BUILDER[language]
     if dry_run:
         repo_dir = py_entity_history.REPO_CACHE_DIR / py_entity_history._safe_dirname(full_name)
@@ -148,7 +148,7 @@ def process_repo(repo_id, full_name, language, max_files_per_repo, threshold, dr
 
     rows = builder(
         full_name, limit_files=max_files_per_repo, threshold=threshold,
-        intervention_date=intervention_date,
+        intervention_date=intervention_date, seed=seed,
     )
     for row in rows:
         row["repo_id"] = repo_id
@@ -171,6 +171,12 @@ def main():
              "- see module docstring for why this exists",
     )
     parser.add_argument("--threshold", type=float, default=None)
+    parser.add_argument(
+        "--seed", type=int, default=py_entity_history.DEFAULT_SEED,
+        help="seed for the random file sample --max-files-per-repo takes "
+             "(replaces plain sorted-order truncation, which correlated "
+             "alphabetical path order with directory-creation history)",
+    )
     args = parser.parse_args()
 
     manifest_path = args.manifest or latest_manifest()
@@ -232,6 +238,7 @@ def main():
                 repo["repo_id"], repo["full_name"], repo["language"],
                 args.max_files_per_repo, args.threshold, args.dry_run,
                 intervention_date=intervention_dates.get(repo["repo_id"]),
+                seed=args.seed,
             )
             _append_rows(out_path, rows)
             elapsed = time.time() - t0

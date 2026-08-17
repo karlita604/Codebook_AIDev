@@ -545,3 +545,67 @@ off the saved canvas (confirmed directly - text vanished, not shrank);
 and pooling the 11-repo in-house smell data by exact `target_date` instead
 of by month produced an illegible sawtooth from repos' snapshot dates not
 aligning, fixed by bucketing to month before pooling.
+
+## Build log (2026-08-13 — fix: sorted-path sampling bias + Dock's stale clone)
+
+Both root causes flagged when explaining the tool (Findings 1-2 in
+`Results.md`) are fixed:
+
+- **`entity_matching.sample_files(files, limit, seed_key)`** - uniform
+  random sample without replacement, `random.Random(seed_key)` for
+  reproducibility (`seed_key = f"{seed}:{full_name}"`, default seed 42),
+  replacing plain `files[:limit_files]` sorted-order truncation in
+  `py_entity_history.build_repo_lineages()` and
+  `cs_entity_history.build_repo_lineages_cs()`. `pool_entity_history.py`
+  gets a `--seed` CLI arg threaded through. `validate_entity_matching.py`'s
+  own `--stride` sampling deliberately left untouched (one-off Stage 3
+  script, not the production data path).
+- **Dock's `repo_cache` clone**: confirmed the real cause directly - HEAD
+  was **detached** at a January 2022 commit, not a fetch problem. A local
+  `master` branch already existed and tracked `origin/master` (current,
+  2026-08-11); nobody had ever checked it out. `git checkout -B master
+  origin/master`. Checked all 23 `repo_cache` clones for the same pattern
+  first - confirmed isolated to Dock, not systemic.
+
+**Real re-run, real before/after comparison** - hit a real snag first:
+`pool_entity_history.py`'s own resumability logic (by design, scans every
+prior same-tag output file globally) found the already-committed
+`08-12-entity-history-21.csv` and skipped all 21 repos as "already done,"
+so the first re-run attempt silently produced nothing new. Caught by
+checking the actual output file's row count, not trusting "21 ok" in the
+console log - moved the pre-fix files aside, re-ran for real, moved them
+back afterward so the before/after comparison stays on disk
+(`08-12-...` vs `08-13-...`).
+
+**Fix 1 confirmed working cleanly**: Dock's `pre_only` share dropped
+100% → 9.1%, exactly as expected once its clone reflects real history.
+
+**Fix 2 confirmed working broadly, but with a real, honest limit**: most
+repos show substantial, real composition shifts (`567-labs/instructor`
+61.2%→11.8% pre_only, `microsoft/testfx` 98.6%→89.8%, etc.) -
+`featureform/enrichmcp` correctly unchanged (fewer than 150 files total,
+so sampling never touched it). **crewAI and julep-ai/julep stayed at
+0%/100% even under true random sampling** - checked directly, not assumed:
+crewAI's randomly-sampled files' earliest `first_date` was 2025-10-20, ten
+months *after* its intervention date, because the sample (correctly,
+randomly) still landed in `lib/cli/`/`lib/crewai-core/`/`lib/crewai-files/`
+- a package split that itself postdates the intervention. No file
+currently at HEAD has trackable pre-intervention history at all for this
+repo; no sampling strategy can put a pre-intervention file into a sample
+drawn from a population that doesn't contain one. This is the tool's own
+documented "only files present at HEAD... cross-file moves not tracked as
+continuous" limitation compounding with a real repo restructuring, not a
+sampling bug. julep shows the identical signature (earliest sampled
+`first_date` over a year after its own intervention date) - treated as the
+same class of cause, not independently re-confirmed to the same depth.
+
+**A real correction to this project's own record**: `Results.md`'s
+original Finding 2 write-up claimed crewAI's `conftest.py` history "reaches
+back to 2025-11-29" as evidence of pre-intervention code surviving -
+2025-11-29 is *after* crewAI's 2024-12-27 intervention date, not before.
+Misread at the time; caught and corrected in `Results.md` directly rather
+than left standing now that the real mechanism is understood.
+
+**Not done this entry**: regenerating Figs 7-9/Table 3 from the corrected
+data (Dock now has real `spans` entities where it had none) - flagged as
+real follow-up, not bundled into this fix.

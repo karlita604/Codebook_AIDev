@@ -810,20 +810,21 @@ added by a real commit (`93e786d26`, "extract CLI into standalone
 crewai-cli package") dated **2026-06-14** — a year and a half *after*
 crewAI's 2024-12-27 intervention date. `lib/cli/` sorts early
 alphabetically among crewAI's top-level dirs, so the file cap over-sampled
-a genuinely newer subtree; crewAI obviously has plenty of pre-intervention
-code (`conftest.py`'s own history, walked in Stage 1's prototype, reaches
-back to 2025-11-29) — it just isn't in *this specific 150-file slice*.
-julep-ai/julep's cause wasn't independently confirmed the same way (its
-Stage 5 mean entity age was already the youngest in the sample, 20 days,
-consistent with either a genuinely fast-churning codebase or the same
-sampling effect) — flagged as unconfirmed, not asserted.
+a genuinely newer subtree.
 
-**Methodology implication**: the sorted-path file cap (`pool_entity_history.py`'s
-own documented scoping decision) interacts with a repo's own directory-
-creation history in a way that can produce a misleadingly extreme bucket
-split for an individual repo. A future deeper run should sample files by
-some other strategy (e.g. weighted by file age, or a true random sample)
-if per-repo bucket proportions specifically are going to be relied on.
+**Correction (2026-08-13), see "Fix applied" below**: the claim that
+followed here — "crewAI obviously has plenty of pre-intervention code
+(`conftest.py`'s own history... reaches back to 2025-11-29)" — was wrong.
+2025-11-29 is *after* crewAI's 2024-12-27 intervention date, not before it;
+misread at the time. Fixing the sampling bias (below) proved this out
+directly: crewAI stayed at 0%/100% even under a true random sample, because
+the real cause isn't sampling order at all - see "Fix applied."
+
+**Methodology implication (superseded, kept for the record)**: the original
+guess was that the sorted-path file cap alone explained this and that
+random sampling would fix it. It fixed the *general* mechanism (see below)
+but not crewAI/julep specifically - a second, deeper cause was still
+there.
 
 ### Finding 3 — `spans` entities have a much higher mean modification count than either `pre_only` or `post_created`, in nearly every repo — and this is very likely selection bias, not a signal
 
@@ -879,6 +880,63 @@ repo: 0.64). Fig 8 needed a symlog x-axis specifically because of this —
 confirmed directly that a linear scale made 15 of the other 17 repos'
 bars visually disappear. Not excluded from the pooled figures (Fig 7/9) —
 a real, if extreme, data point, not an artifact to filter out.
+
+## Fix applied: sorted-path sampling bias + Dock's stale clone (2026-08-13)
+
+Both root causes named in Findings 1-2 above are now fixed in code
+(`src/inhouse/entity_matching.py`'s new `sample_files()`, Dock's
+`repo_cache` clone checked out onto `master`) - see `RQ3_CodeTracking.md`'s
+2026-08-13 build log for the fix itself. This section is the real
+before/after comparison, run through the exact same pipeline
+(`08-12-entity-history-21*` = before, `08-13-entity-history-21*` = after,
+both still on disk for direct inspection).
+
+**Fix 1 (Dock) worked cleanly, as expected.** `pre_only` share:
+100% → **9.1%**. Real, dramatic, and sane given Dock's `repo_cache` HEAD
+moved from a commit frozen 3.5 years before its intervention date to one
+matching real current history.
+
+**Fix 2 (random sampling) worked broadly, but not for the two repos it was
+named after.** Real, substantial composition shifts across most of the 21
+repos - `567-labs/instructor` 61.2%→11.8% pre_only, `marimo-team/marimo`
+43.0%→11.7%, `microsoft/testfx` 98.6%→89.8%, and so on (full comparison:
+diff `08-12-entity-history-21-windowed-cut-per-repo.csv` against
+`08-13-...`). `featureform/enrichmcp` is unchanged (23.4%→23.4%) for a
+good reason, not a failure: it has fewer than 150 `.py` files total, so
+`sample_files()` correctly returns the full set unsampled either way.
+
+**crewAI and julep-ai/julep are unchanged at 0% pre_only, 100%
+post_created - checked directly, and it's a real, different, deeper cause
+than sampling order.** For crewAI: even under a genuinely random 150-file
+sample this run, the *earliest* `first_date` across every sampled file was
+**2025-10-20** - ten months after crewAI's 2024-12-27 intervention date.
+This isn't a slice-of-the-sample problem; essentially no file currently at
+HEAD has `git log --follow`-trackable history reaching back before the
+intervention date at all. The sample itself points at why: it's dominated
+by `lib/cli/`, `lib/crewai-core/`, `lib/crewai-files/` - a package split
+that didn't exist pre-intervention. This is the tool's own documented
+"only files present at HEAD are walked... cross-file moves are not tracked
+as continuous" limitation (`py_entity_history.py`'s module docstring)
+compounding with a real, large-scale repo restructuring - not something a
+different sampling strategy can fix, since there's no old-identity file
+left in the population to sample into `pre_only`. julep-ai/julep shows the
+identical pattern (earliest sampled `first_date` 2026-06-03, over a year
+after its 2025-05-17 intervention date, at 149/150 of its cap) - not
+independently root-caused the same way, but consistent enough with
+crewAI's confirmed mechanism to treat as the same class of issue, not a
+new unknown.
+
+**Net**: both fixes did what they were supposed to do. The general
+sampling-bias mechanism is fixed. Dock's data is now usable. crewAI and
+julep's 100%-post_created result turns out to be closer to real (or at
+least not an artifact of *this* tool's sampling) than originally assumed -
+a more honest, if less tidy, conclusion than "two bugs, both fixed."
+
+**Not done here**: regenerating Figs 7-9/Table 3 (`src/viz/
+generate_churn_figures.py`) from the corrected data - Dock now has real
+`spans` entities where it had none before, which would change the "584
+spanning methods across 18 of 21 repos" figure directly. Real follow-up
+work, not bundled into this fix.
 
 ## Track A structural-health figures, two-tier (2026-08-12)
 

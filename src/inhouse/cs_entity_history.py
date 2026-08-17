@@ -25,9 +25,9 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 import csharp_metrics  # noqa: E402
-from entity_matching import EntitySnapshot, tokenize  # noqa: E402
+from entity_matching import EntitySnapshot, sample_files, tokenize  # noqa: E402
 from py_entity_history import (  # noqa: E402
-    REPO_CACHE_DIR, _run_git, _safe_dirname, follow_history,
+    DEFAULT_SEED, REPO_CACHE_DIR, _run_git, _safe_dirname, follow_history,
 )
 
 
@@ -118,11 +118,14 @@ def collect_file_sequences(repo_dir, path):
     return class_seq, callable_seq
 
 
-def build_repo_lineages_cs(full_name, limit_files=None, threshold=None, intervention_date=None):
+def build_repo_lineages_cs(full_name, limit_files=None, threshold=None,
+                            intervention_date=None, seed=DEFAULT_SEED):
     """C# counterpart to py_entity_history.build_repo_lineages - same
-    output row shape (including the optional intervention_date columns),
-    so pool_entity_history.py (Stage 5) can call either one
-    interchangeably by language."""
+    output row shape (including the optional intervention_date columns) and
+    same seeded-random file sampling (entity_matching.sample_files(), not
+    sorted-order truncation - see that function's docstring for why), so
+    pool_entity_history.py (Stage 5) can call either one interchangeably by
+    language."""
     from entity_matching import match_file_history, _parse_date
 
     repo_dir = REPO_CACHE_DIR / _safe_dirname(full_name)
@@ -133,7 +136,7 @@ def build_repo_lineages_cs(full_name, limit_files=None, threshold=None, interven
 
     files = list_current_cs_files(repo_dir)
     if limit_files:
-        files = files[:limit_files]
+        files = sample_files(files, limit_files, f"{seed}:{full_name}")
 
     kwargs = {} if threshold is None else {"threshold": threshold}
     rows = []
@@ -191,10 +194,13 @@ def main():
     parser.add_argument("--limit-files", type=int, default=None)
     parser.add_argument("--threshold", type=float, default=None)
     parser.add_argument("--out", type=Path, default=None)
+    parser.add_argument("--seed", type=int, default=DEFAULT_SEED,
+                         help="seed for the random file sample when --limit-files caps the walk")
     args = parser.parse_args()
 
     rows = build_repo_lineages_cs(
-        args.repo, limit_files=args.limit_files, threshold=args.threshold
+        args.repo, limit_files=args.limit_files, threshold=args.threshold,
+        seed=args.seed,
     )
     ok = [r for r in rows if r["status"] == "ok"]
     errors = [r for r in rows if r["status"] == "error"]
