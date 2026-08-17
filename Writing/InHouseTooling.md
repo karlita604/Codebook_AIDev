@@ -272,10 +272,21 @@ Class) — God Class's double-percentile-filter structure is the piece
 still flagged as needing more work.
 
 **Open**: `_tcc`'s O(n²) cost is unfixed (a method-count guard is
-proposed, not built); no C# equivalent exists yet — `csharp_metrics.py`
-covers OO metrics only; a God Class v2 (absolute WMC floor, or
-corpus-pooled rather than per-snapshot percentiles) is suggested but not
-started.
+proposed, not built — and confirmed to affect the OO-metrics engine's own
+`_lcom`/C#'s `ComputeLcom` too, same complexity class, both currently
+worked around by excluding `azure-sdk-for-python` rather than a guard); a
+God Class v2 (absolute WMC floor, or corpus-pooled rather than
+per-snapshot percentiles) is suggested but not started. **Update
+2026-08-13: a C# equivalent now exists** (`SmellDetector.cs`, a direct
+port reusing the same field-access machinery `ComputeLcom` already had —
+see `PySmellDetection.md`'s "C# port" section for the build/validation
+log and a real bug caught before trusting it on real data). OO metrics'
+own coverage also expanded this entry from the 3-repo Python pilot to
+every repo with a materialized snapshot (18 repos, both languages,
+consolidated into `results/analysis/08-13-inhouse-metrics-pooled.csv`) —
+see `ProjectUpdate.md`'s 2026-08-13 entry for the full account, including
+a real Dock stale-clone data-hygiene bug caught and fixed in the
+consolidation step.
 
 Built on the (now-merged) `python-smell-detection` branch, commits
 `6084ef9f6`..`ace21ab6f`.

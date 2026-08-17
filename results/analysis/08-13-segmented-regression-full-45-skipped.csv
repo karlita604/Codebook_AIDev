@@ -1,0 +1,10 @@
+full_name,track,metric,n_pre,n_post,reason
+crewAIInc/crewAI-tools,A1,design_smell_density_per_kloc,1,15,below min_pre=5/min_post=5
+crewAIInc/crewAI-tools,A1,implementation_smell_density_per_kloc,1,15,below min_pre=5/min_post=5
+crewAIInc/crewAI-tools,A1,cyclomatic_complexity_p90,1,15,below min_pre=5/min_post=5
+featureform/enrichmcp,A1,design_smell_density_per_kloc,0,4,below min_pre=5/min_post=5
+featureform/enrichmcp,A1,implementation_smell_density_per_kloc,0,4,below min_pre=5/min_post=5
+featureform/enrichmcp,A1,cyclomatic_complexity_p90,0,4,below min_pre=5/min_post=5
+marimo-team/marimo,A1,design_smell_density_per_kloc,16,2,below min_pre=5/min_post=5
+marimo-team/marimo,A1,implementation_smell_density_per_kloc,16,2,below min_pre=5/min_post=5
+marimo-team/marimo,A1,cyclomatic_complexity_p90,16,2,below min_pre=5/min_post=5

@@ -1,8 +1,9 @@
 """
-Batch runner for py_smells.py - same CLI shape, resumability, and
-progress/error-file conventions as pool_inhouse_metrics.py (which this
-mirrors deliberately - same pipeline, same manifest/snapshot inputs, just
-the smell-detection engine instead of the OO-metrics one). See
+Batch runner for py_smells.py (Python) and cs_smells.py (C#, the Roslyn
+SmellDetector.cs port) - same CLI shape, resumability, and progress/error-
+file conventions as pool_inhouse_metrics.py (which this mirrors
+deliberately - same pipeline, same manifest/snapshot inputs, just the
+smell-detection engines instead of the OO-metrics ones). See
 Writing/PySmellDetection.md for the detection strategies themselves and
 Writing/InHouseTooling.md for why an in-house tool exists at all.
 
@@ -21,13 +22,19 @@ from pathlib import Path
 import pandas as pd
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
+import cs_smells  # noqa: E402
 import py_smells  # noqa: E402
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "phase0"))
 from materialize_snapshots import (  # noqa: E402
-    EXCLUDED_REPOS, SNAPSHOT_DIR, _is_materialized, _safe_dirname,
-    latest_manifest,
+    SNAPSHOT_DIR, _is_materialized, _safe_dirname, latest_manifest,
 )
+
+LANGUAGE_ANALYZER = {
+    "Python": py_smells.analyze_snapshot,
+    "C#": cs_smells.analyze_snapshot,
+}
+LANGUAGE_GLOB = {"Python": "*.py", "C#": "*.cs"}
 
 ROOT = Path(__file__).resolve().parents[2]
 OUT_DIR = ROOT / "results" / "analysis"
@@ -104,13 +111,22 @@ def process_row(row, dry_run):
             f"{snapshot_dir} - run materialize_snapshots.py (Phase 1e) first"
         )
 
+    language = row["language"]
+    analyze = LANGUAGE_ANALYZER.get(language)
+    if analyze is None:
+        raise ValueError(
+            f"no in-house smell analyzer mapped for language={language!r}"
+        )
+
     if dry_run:
-        n_files = sum(1 for p in snapshot_dir.rglob("*.py") if p.is_file())
+        glob = LANGUAGE_GLOB[language]
+        n_files = sum(1 for p in snapshot_dir.rglob(glob) if p.is_file())
         return {
-            **_snapshot_key(row), "n_py_files": n_files, "status": "dry_run",
+            **_snapshot_key(row), "n_source_files": n_files,
+            "status": "dry_run",
         }
 
-    smells = py_smells.analyze_snapshot(snapshot_dir)
+    smells = analyze(snapshot_dir)
     return {**_snapshot_key(row), **smells}
 
 
@@ -147,10 +163,17 @@ def main():
     manifest = pd.read_csv(manifest_path)
     print(f"manifest: {manifest_path} ({len(manifest)} rows)", flush=True)
 
+    # Deliberately NOT filtering out materialize_snapshots.py's
+    # EXCLUDED_REPOS ({"dotnet/aspire"}) here - same call
+    # pool_inhouse_metrics.py already made for OO metrics, and the same
+    # reasoning applies: that exclusion is specific to MSBuildWorkspace not
+    # being able to evaluate aspire's project graph (Designite's blocker),
+    # and neither py_smells.py nor cs_smells.py ever loads a .sln/.csproj -
+    # both are syntax-only. Inheriting it here would silently reproduce a
+    # limitation this tool exists specifically to not have.
     eligible = manifest[
         manifest["commit_sha"].notna()
-        & (manifest["language"] == "Python")
-        & ~manifest["full_name"].isin(EXCLUDED_REPOS)
+        & manifest["language"].isin(LANGUAGE_ANALYZER.keys())
     ].sort_values("full_name")
     if args.repo:
         eligible = eligible[eligible["full_name"].str.contains(args.repo)]
@@ -162,12 +185,18 @@ def main():
         eligible = eligible.head(args.limit)
     total = len(eligible)
     print(
-        f"{total} eligible Python row(s) (have a resolved commit)",
+        f"{total} eligible row(s) (have a resolved commit, Python or C#)",
         flush=True,
     )
 
     OUT_DIR.mkdir(parents=True, exist_ok=True)
-    tag = "dryrun-inhouse-smells" if args.dry_run else "inhouse-smells-python"
+    # Not "-python" anymore - covers both languages now that a C# smell
+    # analyzer (cs_smells.py) exists. "inhouse-smells" is still a
+    # glob-prefix match against the older "inhouse-smells-python-*.csv"
+    # files from before this change, so _load_done_keys() still sees those
+    # rows as done and won't reprocess them under the new tag (same
+    # mechanism pool_inhouse_metrics.py's own "-python" tag drop relies on).
+    tag = "dryrun-inhouse-smells" if args.dry_run else "inhouse-smells"
 
     scope = re.sub(r"[^a-zA-Z0-9]+", "", args.repo)[:30] if args.repo else None
     scope_suffix = f"{scope}-{total}" if scope else str(total)

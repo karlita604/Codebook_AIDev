@@ -687,3 +687,324 @@ None of the 5 new repos have Designite ground truth to validate against
 table here — this is coverage, not additional validation. Full breakdown
 and the manifest-bug sanity-check methodology applied to each new repo:
 `ProjectUpdate.md`'s 2026-08-11 (later) entry.
+
+## RQ3 entity-history — Stage 5 cross-repo results (2026-08-11, `rq3-entity-tracker` branch)
+
+Tool-RQ3's execution plan (`Writing/RQ3_CodeTracking.md`'s build log) reached
+Stage 5: run the validated entity-lineage tracker (Stages 1-4, matcher +
+Python + C# extraction, validated on crewAI and Dock) across every repo in
+the Phase 2 manifest, not just the pilot. **Real output, not a projection**:
+`results/analysis/08-11-entity-history-21.csv`, 27,572 rows, 21/21 repos
+`ok`, 0 file errors. Interactive dashboard (bar chart + full table + top
+hotspots, hover for exact values):
+https://claude.ai/code/artifact/09608b47-67a6-44a1-be85-0360d6f325fd
+
+**Scope, stated plainly**: capped at the first 150 tracked source files
+(sorted-path order) per repo — several Phase 2 repos are far too large for
+an exhaustive per-file, full-history walk in one run
+(`Azure/azure-sdk-for-python` alone has 44,112 Python files at HEAD,
+confirmed by direct count). This is breadth-over-completeness by design
+(every repo gets real coverage now, rather than fully covering a handful and
+never reaching the rest), not an oversight — documented in
+`pool_entity_history.py`'s own module docstring. Numbers below describe
+*this sample*, not each repo's full history.
+
+### Headline numbers
+
+- **27,572 entity lineages** reconstructed across 21 repos (15 Python, 6
+  C#), 0 file errors.
+- **238 renames/moves detected (0.86% overall)** — 1.3% of Python entities,
+  0.1% of C#. `marimo-team/marimo` is the outlier at 7.72%.
+- **Median modification count is 1** across the whole sample — most tracked
+  entities were touched exactly once in their recorded history and never
+  again. Only 7.5% of lineages have the ≥3 touches needed for
+  `change_entropy` to be computable at all. This is a real, first-look
+  confirmation of the long-tailed "most code doesn't change much, a few
+  hotspots change constantly" pattern the churn literature
+  (`codeaging.md` Theme 3, Nagappan & Ball) predicts — not assumed, measured.
+- **The busiest single entity**: `browser_use.browser.session.BrowserSession`
+  (browser-use/browser-use) — **445 touches in 424 days**, roughly one
+  real modification per day. Its own file
+  (`browser_use/browser/session.py`) is a large share of why that repo's
+  walk took ~68 minutes (4095s) — the one clear runtime outlier among the 21
+  repos (next-slowest: `Azure/azure-sdk-for-python` at 196s). A concrete,
+  named example of exactly the kind of hotspot codeaging.md's Theme 3
+  literature (Nagappan & Ball, Hassan) is about.
+- **C# entities show consistently lower rename rates and lower mean
+  modification counts than Python** in this sample (C# mean 1.14 vs. Python
+  mean 1.67 touches/entity) — plausibly a mix of real difference (the C#
+  repos sampled skew toward more mature/stable frameworks, e.g.
+  `dotnet/aspnetcore` at 2,064 days mean entity age vs. `julep-ai/julep`'s
+  20 days) and a same-shape effect as the Python-side matcher: not yet
+  independently confirmed which.
+
+### Per-repo table
+
+Full 21-repo breakdown (lineages, mean modification count, rename rate,
+mean age): see the dashboard's table view, or
+`results/analysis/08-11-entity-history-21-repo-summary.csv` for per-repo
+runtime and error counts.
+
+### What this is not yet
+
+These are unconditional, whole-history numbers, not evidence about
+agent-adoption effects on their own — see the windowed cut immediately
+below for the pre/post view. Not run against every file in every repo (see
+scope note above). Not yet linked to review data (`review_count` is a
+documented `null` placeholder throughout, per Stage 2's design — blocked on
+Track B).
+
+## RQ3 entity-history — Stage 6 windowed pre/post cut (2026-08-11, `rq3-entity-tracker` branch)
+
+`src/inhouse/entity_history_windowed_cut.py` joins Stage 5's output against
+each repo's `intervention_date`
+(`results/repos/08-04-repo-summary-235.csv`, the same column Track A/B's
+own pre/post split already uses) and classifies every lineage as
+`pre_only` (all activity before the intervention), `post_created` (didn't
+exist before it), or `spans` (existed before, touched again at or after —
+the group an adoption effect on *existing* code would show up in). Output:
+`results/analysis/08-11-entity-history-21-windowed-cut.csv` (per-lineage)
+and `-per-repo.csv` (aggregated). **Real numbers, including two findings
+worth reading before anything else here.**
+
+### Overall: 47.1% pre_only, 2.9% spans, 50.1% post_created — but that average hides a real spectrum, not a binary split
+
+Across all 21 repos: 12,975 pre_only, 794 spans, 13,803 post_created (of
+27,572). Sorting repos by their own `pct_pre` reveals a **continuous
+spectrum from 0% to 100% pre-only**, not a cluster around the overall
+average — `wieslawsoltes/Dock` sits at 100% pre-only, `microsoft/testfx` at
+98.6%, `dotnet/maui` at 90.3%, sliding smoothly down through
+`marimo-team/marimo` at 43% to `mlflow/mlflow` at 1.2% and
+`crewAIInc/crewAI`/`julep-ai/julep` at 0%. Full per-repo composition:
+[interactive dashboard](https://claude.ai/code/artifact/09608b47-67a6-44a1-be85-0360d6f325fd)'s
+new spectrum chart, or `results/analysis/08-11-entity-history-21-windowed-cut-per-repo.csv`.
+
+**This is mostly a recency spectrum, not noise**: a repo's position on it
+plausibly tracks how long ago its intervention date was relative to "now,"
+crossed with how much of its own commit activity happened before vs. after
+that point — the two repos flagged below just happen to sit at the extreme
+ends, which is what makes them easy to spot and explain, not evidence that
+the other 19 repos' positions are equally artifactual. Read this as a
+property of *this 150-file sample plus each repo's real commit cadence over
+an often-multi-year post-intervention window*, not a universal split.
+
+### Finding 1 — `wieslawsoltes/Dock` is 100% `pre_only` (458/458), and this independently confirms an already-known bug
+
+Checked directly: `data/repo_cache/wieslawsoltes__Dock`'s HEAD commit is
+dated **2022-01-27** — three and a half years before Dock's own
+intervention date (2025-06-25). Since this tool walks history starting from
+each repo's current `repo_cache` HEAD, a stale clone frozen before the
+intervention date means *every* entity it can see necessarily predates it.
+This is not a new Stage 6 bug — it's the **same stale-clone issue already
+flagged in `ProjectStatus.md` §7 item 3** ("Dock's local `repo_cache` clone
+is stale... needs a fresh `git fetch`/backfill"), independently rediscovered
+here through a completely different tool hitting the same root cause. A
+second, unplanned confirmation that this is real and repo-wide, not
+specific to the manifest-resolution context it was first found in.
+
+### Finding 2 — `crewAIInc/crewAI` and `julep-ai/julep` are 100% `post_created`, and at least crewAI's cause is a sampling artifact, not "no old code"
+
+Both show 0 `pre_only` and 0 `spans` lineages. For crewAI, checked directly:
+the first 150 sorted-path `.py` files include the whole `lib/cli/` package,
+added by a real commit (`93e786d26`, "extract CLI into standalone
+crewai-cli package") dated **2026-06-14** — a year and a half *after*
+crewAI's 2024-12-27 intervention date. `lib/cli/` sorts early
+alphabetically among crewAI's top-level dirs, so the file cap over-sampled
+a genuinely newer subtree; crewAI obviously has plenty of pre-intervention
+code (`conftest.py`'s own history, walked in Stage 1's prototype, reaches
+back to 2025-11-29) — it just isn't in *this specific 150-file slice*.
+julep-ai/julep's cause wasn't independently confirmed the same way (its
+Stage 5 mean entity age was already the youngest in the sample, 20 days,
+consistent with either a genuinely fast-churning codebase or the same
+sampling effect) — flagged as unconfirmed, not asserted.
+
+**Methodology implication**: the sorted-path file cap (`pool_entity_history.py`'s
+own documented scoping decision) interacts with a repo's own directory-
+creation history in a way that can produce a misleadingly extreme bucket
+split for an individual repo. A future deeper run should sample files by
+some other strategy (e.g. weighted by file age, or a true random sample)
+if per-repo bucket proportions specifically are going to be relied on.
+
+### Finding 3 — `spans` entities have a much higher mean modification count than either `pre_only` or `post_created`, in nearly every repo — and this is very likely selection bias, not a signal
+
+Pattern holds across almost all 19 repos with a nonzero `spans` group (see
+`results/analysis/08-11-entity-history-21-windowed-cut-per-repo.csv`):
+browser-use 1.87 (pre_only) → **12.78** (spans) → 2.08 (post_created);
+mlflow 1.22 → **7.98** → 1.86; AgentOps-AI 2.00 → **8.33** → 1.34. This is
+very likely **survivorship/selection bias built into the bucket
+definition, not a discovered effect**: an entity can only land in `spans`
+by being touched on *both* sides of the intervention date, which
+mechanically requires it to already be a longer-lived, more-frequently-
+touched entity — the same selection effect that makes "customers who
+renewed" look more engaged than the general customer base. This is exactly
+why the execution plan scoped real RQ1-style statistical comparison (a
+proper segmented regression, not a raw bucket-mean comparison) as separate,
+not-yet-done follow-up work, not part of this stage.
+
+### What this is not yet
+
+Not a per-touch pre/post split — `spans` entities' `modification_count`
+can't be divided into "N before, M after" without the underlying
+per-touch dates, which Stage 5's pooled CSV doesn't carry (see the script's
+own docstring). Not a statistical test of anything — bucket means above are
+descriptive, and Finding 3 explains directly why a naive reading of them
+would be wrong. Not corrected for the Finding 1/2 sampling artifacts in the
+overall 47/3/50 split. **Update 2026-08-12: the per-touch split this
+section says is missing now exists** — see the next section.
+
+## Method-level churn, real per-touch pre/post rates (2026-08-12)
+
+Answers "for methods that existed both before and after the intervention,
+did they get touched more or less often afterward" directly, using real
+per-touch dates (not the lineage-level approximation above). Built on
+`EntityLineage.pre_post_touch_counts()` — see `RQ3_CodeTracking.md`'s
+2026-08-12 build log for how it works and what it caught along the way.
+Figures: `Writing/figures/method_churn/` (Figs 7-9, Table 3).
+
+**584 spanning methods across 18 of 21 repos** — the 3 missing
+(`crewAIInc/crewAI`, `julep-ai/julep`, `wieslawsoltes/Dock`) are exactly
+the repos already flagged above (Findings 1-2) as 100% one-sided, now
+confirmed at the per-touch level too, not just the coarser bucket view.
+
+**Headline: 302 sped up, 282 slowed down (of 584) — essentially an even
+split.** No net directional signal in churn rate after the intervention,
+pooled across everything measurable. Consistent with this project's
+running theme across every metric tested so far (RQ1's segmented
+regression, Stage 6's bucket means): real, non-random signal shows up
+per-repo, but there's no consistent cross-repo direction.
+
+**`browser-use/browser-use` dominates by far** — 162 of the 584 spanning
+methods (28%), mean pre-intervention rate 7.75 touches/day (next highest
+repo: 0.64). Fig 8 needed a symlog x-axis specifically because of this —
+confirmed directly that a linear scale made 15 of the other 17 repos'
+bars visually disappear. Not excluded from the pooled figures (Fig 7/9) —
+a real, if extreme, data point, not an artifact to filter out.
+
+## Track A structural-health figures, two-tier (2026-08-12)
+
+The pilot's smell-density figures (Figs 1-6, Tables 1-2, originally speced
+2026-07-28) built for real, plus a genuine scope upgrade the
+`python-smell-detection` branch's merge made possible mid-session. Script:
+`src/viz/generate_track_a_figures.py`. Output: `Writing/figures/
+track_a_structural_health/`. Two data tiers throughout, never blended:
+
+- **Pilot (4 repos, DPy/Designite)** — Figs 1, 2, 3, and one panel each of
+  4 and 6. Unchanged scope from the original plan, now actually rendered.
+- **In-house (11 Python repos, `py_smells.py`)** — Fig 1b and a second
+  panel on Figs 4/6. A real, substantial scope upgrade (11 repos vs. 4),
+  but a different, narrower, more weakly-validated smell definition
+  (Lanza & Marinescu, not DPy/Designite — see `PySmellDetection.md`) —
+  captioned directly on every figure that uses it, not just here.
+
+**Real bugs caught by actually looking at the rendered PNGs** (not
+assumed correct from a successful script exit):
+1. `fig.suptitle()` placed above `y=1.0` isn't clipped, it's entirely
+   absent from the saved file — confirmed directly on Fig 1b's original
+   version, where the whole title vanished. Fixed everywhere in both
+   figure scripts, not just where first found.
+2. Fig 4's in-house panel (11 repos pooled by exact `target_date`)
+   rendered as an illegible sawtooth — repos' snapshot dates aren't
+   aligned to the same day, so pooling by raw date interleaves them.
+   Fixed by bucketing to month before pooling; the pilot panel didn't
+   need this (A1's fixed calendar grid already aligns all 4 repos exactly).
+3. A legend placed inside Fig 1b's first subplot overlapped real data
+   lines — moved to a shared figure-level legend.
+
+**Coverage** (Table 1, all 21 repos): smell data exists for 4 repos via
+DPy/Designite (the pilot) and 11 Python repos via the in-house detector —
+15 of 21 repos have *some* smell data, 6 (all C#, minus Dock) have none.
+OO-metric figures (5, and Fig 6's second panel) stay pilot-scoped — Tool-Py
+hasn't been run against the other 10 Python Phase 2 repos yet, a real,
+separate, not-yet-done prerequisite.
+
+## Full-corpus RQ1 regression + coverage close-out (2026-08-13)
+
+Follow-up closing the two real gaps the section above already named: a
+C# smell detector (`SmellDetector.cs`, Lanza & Marinescu ported to
+Roslyn — build/validation log in `PySmellDetection.md`'s "C# port"
+section) and OO metrics run against every repo, not just the pilot's 3
+Python ones. In-house coverage is now **18 repos, both languages**, up
+from the pilot's 4 — `julep-ai/julep` (never materialized) and
+`Azure/azure-sdk-for-python` (excluded — an O(n²) cohesion-computation
+risk shared by the smell detector's `_tcc` and the OO-metrics engine's
+own `_lcom`) are the only Phase 2 repos still without in-house data, both
+pre-existing, unrelated to this entry.
+
+### RQ1, full corpus — segmented regression (new: `src/analysis/segmented_regression.py`)
+
+The pilot's own regression script was never committed (`git log
+--diff-filter=A` on `07-29-segmented-regression-A1.csv` shows no `.py`
+file added alongside it) — reconstructed from this doc's own methodology
+note above, and **verified to reproduce the pilot's exact 12-row output**
+(max absolute difference 2.3e-6 across every coefficient/SE/p-value/CI,
+with one understood, named exception — airbyte's flat-constant CC p90
+row, where both the original and the reconstruction are noise-over-noise
+on a genuinely zero-variance fit) before it was trusted on anything new.
+
+Run against all 18 in-house-covered repos × 3 primary metrics, requiring
+at least 5 real pre- and 5 real post-intervention points (the pilot's own
+thinnest cell, Dock's `n_post=6`, set the floor) — 45 of 54 possible
+(repo, metric) combinations fit; 9 skipped for insufficient data
+(`crewAIInc/crewAI-tools`, `featureform/enrichmcp`, `marimo-team/marimo`
+— all genuinely thin on one side of their intervention date, listed in
+`results/analysis/08-13-segmented-regression-full-45-skipped.csv`, not
+silently dropped). Full table: `08-13-segmented-regression-full-45.csv`;
+Fig 3b renders it as a forest plot alongside the original pilot-scoped
+Fig 3, kept separate rather than replacing it.
+
+**Headline, same shape as the pilot, now at ~4x the repo count: 20/45
+level changes and 17/45 slope changes are significant at p<.05, and the
+sign splits close to evenly** (roughly half the significant slope changes
+run positive, half negative, across all three metrics) — real,
+non-random signal, no consistent cross-repo direction. This is the same
+"no clean before/after story" conclusion the 4-repo pilot already
+reached, now on 15 repos instead of 4, both languages, not just 3 Python
++ 1 C#. A multiple-comparison correction across this now-larger test set
+is still an open item (flagged since 2026-07-29) — the p<.05 counts above
+are unadjusted.
+
+### Figures updated
+
+- **Fig 3b** (new) — the full-corpus forest plot described above.
+- **Fig 5** (new, never actually built before despite being scoped in an
+  earlier plan) — LOC/CC before vs. after, pooled across all 18 in-house
+  repos. Unlike the smell figures, OO metrics are a validated 1:1
+  DPy/Designite replacement (r=0.997–0.999), so this isn't captioned as a
+  narrower or different signal the way Fig 1b/4/6's smell panels are.
+- **Fig 4** — the in-house composition panel is now genuinely both-
+  language (18 repos, was 11 Python) with no code change needed, since it
+  already read from the now-generalized `load_inhouse_smells()`.
+- **Fig 6** — both panels now use the full in-house corpus instead of
+  falling back to the pilot's single Dock repo (panel A) or staying
+  pilot-scoped (panel B); the "still lopsided"/"pilot only" captions are
+  gone since neither is true anymore. C# design-smell density (in-house
+  detector) runs noticeably higher than Python's in this panel — a real,
+  visible cross-language gap worth a closer look later, not investigated
+  further this entry.
+- **Fig 1b** — caption bug caught during visual verification (not by a
+  clean script exit): its repo grid silently grew from 11 to 18 panels
+  the moment the smell loader generalized, but the title still said "11
+  Python Phase 2 repos." Fixed to compute the language split dynamically.
+
+### Real bugs/gaps this entry surfaced, not smoothed over
+
+- **`MaxNestingLevel`'s walker never descended into the method body** in
+  the first version of `SmellDetector.cs` (an entry-point pitfall
+  `CcWalker.Compute` already had a fix for) — caught by hand-validating
+  against two synthetic fixtures before running on real data, not
+  discovered later on real output.
+- **The checked-in Roslyn tool didn't compile at HEAD** before this
+  entry, unrelated to this work — `StartLine`/`EndLine` were added as
+  required members 2026-08-11 but never actually set, silently masked
+  because the compiled DLL is only rebuilt when missing. Fixed as a
+  prerequisite.
+- **`wieslawsoltes/Dock`'s stale-clone commit collapse reproduced in both
+  new consolidated pools** (94 rows, 1 unique commit, in both the OO-
+  metrics and smells unscoped runs) — both new consolidation scripts now
+  drop an unscoped file's Dock rows by filename convention rather than
+  deduplicate them, keeping the verified-correct `--manifest`-overridden
+  data instead.
+- **`browser-use/browser-use` confirmed as a genuine Phase 1e
+  materialization gap**, not a smell-detector issue — all 57 of its rows
+  fail "not materialized" even after a full gap-filling run. Open, not
+  fixed this entry (a different pipeline).

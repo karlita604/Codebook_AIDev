@@ -73,7 +73,10 @@ public static class SnapshotAnalyzer
         return System.Text.Json.JsonSerializer.Serialize(result);
     }
 
-    private static List<ModuleInfo> ParseSnapshot(string snapshotDir)
+    // Internal, not private - SmellDetector.cs reuses this directly rather
+    // than re-walking the snapshot a second time (same rationale as reusing
+    // FieldAccessSets below).
+    internal static List<ModuleInfo> ParseSnapshot(string snapshotDir)
     {
         var modules = new List<ModuleInfo>();
         var files = Directory.EnumerateFiles(snapshotDir, "*.cs", SearchOption.AllDirectories).OrderBy(f => f);
@@ -175,6 +178,8 @@ public static class SnapshotAnalyzer
         {
             Name = node.Identifier.Text,
             QualifiedName = qualifiedName,
+            StartLine = span.StartLinePosition.Line + 1,
+            EndLine = span.EndLinePosition.Line + 1,
             Loc = loc,
             IsPublic = node.Modifiers.Any(SyntaxKind.PublicKeyword),
             Bases = bases,
@@ -195,6 +200,8 @@ public static class SnapshotAnalyzer
         {
             Name = name,
             QualifiedName = $"{classQualifiedName}.{name}",
+            StartLine = span.StartLinePosition.Line + 1,
+            EndLine = span.EndLinePosition.Line + 1,
             Loc = loc,
             Cc = CcWalker.Compute(node),
             ParamCount = node.ParameterList.Parameters.Count,
@@ -258,7 +265,8 @@ public static class SnapshotAnalyzer
     // keeps whichever is encountered first (files walked in sorted-path
     // order). Same documented approximation as py_metrics.py's
     // _build_class_index.
-    private static Dictionary<string, ClassInfo> BuildClassIndex(List<ClassInfo> classes)
+    // Internal, not private - SmellDetector.cs reuses this (see ParseSnapshot's note).
+    internal static Dictionary<string, ClassInfo> BuildClassIndex(List<ClassInfo> classes)
     {
         var index = new Dictionary<string, ClassInfo>();
         foreach (var c in classes)
@@ -352,12 +360,16 @@ public static class SnapshotAnalyzer
     // name only ever ends up in this set if it ALSO happens to be a real
     // declared field name, which a lookup against FieldNameSet already
     // guards against structurally.
-    private static int ComputeLcom(ClassInfo cls)
+    // Own-class field-access set per method - real declared fields (+ auto-
+    // properties, via cls.FieldNameSet) referenced bare or via `this.`.
+    // Shared by ComputeLcom (below) and SmellDetector.cs's TCC computation -
+    // same inputs, two different aggregations (LCOM's max(0,p-q) vs. TCC's
+    // (pairs sharing >=1 field) / (total pairs)), no reason to walk the AST
+    // twice for the same underlying fact.
+    internal static List<HashSet<string>> FieldAccessSets(ClassInfo cls)
     {
         var methods = cls.Node.Members.OfType<BaseMethodDeclarationSyntax>().ToList();
-        if (methods.Count < 2) return 0;
-
-        var fieldSets = methods.Select(m =>
+        return methods.Select(m =>
         {
             var fields = new HashSet<string>();
             foreach (var id in m.DescendantNodes().OfType<IdentifierNameSyntax>())
@@ -373,6 +385,12 @@ public static class SnapshotAnalyzer
             }
             return fields;
         }).ToList();
+    }
+
+    private static int ComputeLcom(ClassInfo cls)
+    {
+        var fieldSets = FieldAccessSets(cls);
+        if (fieldSets.Count < 2) return 0;
 
         int p = 0, q = 0;
         for (var i = 0; i < fieldSets.Count; i++)
@@ -390,7 +408,10 @@ public static class SnapshotAnalyzer
     // .quantile(q), which is what both the DPy/Designite pooling
     // (long_analysis.py's _pctl helper) and py_metrics.py already use, so
     // percentiles are directly comparable across all three.
-    private static double? Percentile(List<double> values, double q)
+    // Internal, not private - SmellDetector.cs's percentile-relative
+    // thresholds (HIGH=p75, VERY_HIGH=p90) reuse this rather than a second
+    // implementation that could drift from the OO-metrics engine's own.
+    internal static double? Percentile(List<double> values, double q)
     {
         if (values.Count == 0) return null;
         var sorted = values.OrderBy(v => v).ToList();
