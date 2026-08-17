@@ -290,3 +290,95 @@ consolidation step.
 
 Built on the (now-merged) `python-smell-detection` branch, commits
 `6084ef9f6`..`ace21ab6f`.
+
+## Pipeline orchestration & scaling, Phase A (2026-08-17)
+
+Status upgrade: with the corpus about to grow from ~18-21 repos toward
+100 then 1000, three cross-cutting gaps got fixed before touching repo
+count at all — see the session's scaling plan for the full phased design
+(Phase A here; Phase B covers repo-level concurrency, the `_tcc`/`_lcom`
+O(n²) cohesion bottleneck above, and entity-history git-subprocess
+batching — none of that is built yet).
+
+**`src/common/resumable_run.py`** extracts the done-keys/progress/error-
+file convention that `pool_inhouse_metrics.py`, `pool_inhouse_smells.py`,
+and `pool_entity_history.py` had each independently reimplemented
+(`long_analysis.py` keeps its own copy — see below for why it wasn't
+migrated). Same behavior as before (a fragment file counts as done if it
+matches `*-<tag>-*.csv`, globally across every prior run with that tag,
+which is what lets parallel `--repo`-scoped invocations share progress),
+plus a `schema_version` sidecar (`<stem>.runinfo.json`) that lets a fix
+which changes what "done" should mean for existing rows invalidate the
+old ones by bumping a `SCHEMA_VERSION` constant, rather than relying on
+someone remembering to move stale files into an `archive_*/` folder by
+hand — the exact footgun that bit the 2026-08-12/13 entity-history
+sampling-bias re-run (`RQ3_CodeTracking.md`) and an earlier
+`PySmellDetection.md` full re-run. Files predating this tracking (no
+`.runinfo.json`) are still trusted, so nothing already in
+`results/analysis/` needed re-validating. All three pool scripts also get
+a `--stale-check` flag: reports done-key count/file count/oldest-newest
+without running anything, so drift is visible before a real run starts
+instead of only discoverable after the fact via a suspiciously-instant
+resume.
+
+**`results/repos/excluded_repos.csv` + `src/common/exclusions.py`**
+replace three previously uncoordinated exclusion mechanisms: a hardcoded
+`EXCLUDED_REPOS` set (`materialize_snapshots.py`), ad hoc `--exclude-repo`
+CLI flags per invocation, and no single place recording *why*.
+`full_name, excluded_at, reason, scope` — `scope=permanent` (the tool can
+never handle this repo, e.g. `dotnet/aspire`'s MSBuildWorkspace/PAT
+issues) or `scope=per-run` (a scale workaround expected to be retired by
+a real fix, e.g. `azure-sdk-for-python`'s O(n²) cohesion stall, still
+open above). `materialize_snapshots.py` now loads `EXCLUDED_REPOS` from
+the registry's permanent rows; `pool_inhouse_metrics.py`/
+`pool_inhouse_smells.py` auto-apply the per-run rows (deliberately *not*
+the permanent ones — dotnet/aspire's exclusion is Designite-project-graph-
+specific and doesn't apply to the syntax-only in-house tools, per the
+"C# approach" design decision above) and print a reminder to register a
+`--exclude-repo` filter persistently if it's meant to outlive one
+invocation. `consolidate_inhouse_metrics.py`'s Dock stale-clone row-drop
+rule is deliberately *not* in this registry — it's a row-level patch for
+already-produced bad data, not a repo-selection decision.
+
+**`src/pipeline/run_pipeline.py`** is a thin subprocess sequencer for the
+now-13-stage pipeline (`select → snapshot-manifest → materialize →
+metrics/smells/entity-history → consolidate-metrics/consolidate-smells →
+regression → viz-track-a/viz-churn → validate-metrics/validate-smells`),
+previously run stage-by-stage by hand in the order documented only in
+prose in `ProjectStatus.md`/this file. `python -m
+src.pipeline.run_pipeline run --stages metrics,smells --dry-run --limit 3`
+or no `--stages` for the full default sequence; writes a rolled-up
+`results/pipeline-run-<timestamp>.json` per invocation and stops (non-zero
+exit) on the first stage failure rather than continuing past it. It
+doesn't reimplement any stage - each one keeps its own argparse flags,
+resumability, and output conventions; the orchestrator only knows which
+of its own shared flags (`--dry-run`/`--limit`/`--repo`/`--target-total`/
+`--stale-check`) each stage's argparse actually accepts, and forwards
+accordingly. `consolidate_inhouse_metrics.py`, `consolidate_inhouse_smells.py`,
+and `generate_track_a_figures.py` (none of which had a CLI before this)
+each got a stable `run()` alias to their existing `consolidate()`/`main()`
+body so they're callable consistently, though the orchestrator still
+shells out to all stages uniformly rather than importing some directly.
+
+**`legacy-dpy-designite` (`long_analysis.py`) is deliberately excluded
+from the orchestrator's default stage list**, and now hard-gated inside
+`long_analysis.py` itself: refuses to run (non-`--dry-run`) against more
+than `PILOT_SIZE_CEILING=25` eligible rows without an explicit `--force`.
+This tool remains the pilot-recalibration path against the licensed
+DPy/Designite baseline — not retired, since that comparison still
+matters — but must never run by accident at 100/1000-repo scale, given
+one `mlflow` snapshot alone took ~29 hours under its LOC-cap chunking
+(see "What's hard: smell detection" above). This is also why
+`long_analysis.py` wasn't migrated to `resumable_run.py`: low value
+relative to the risk of touching a path being deliberately scoped down,
+not scaled up.
+
+**Side effect worth flagging**: testing the `viz-churn` stage end-to-end
+against real data surfaced that `Writing/figures/method_churn/`'s
+`fig7`/`fig8`/`fig9`/`table3` were stale — last generated before the
+2026-08-13 entity-history sampling-bias fix (`RQ3_CodeTracking.md`)
+landed on `main`. Regenerating them (now part of this same commit)
+changed real numbers, e.g. `wieslawsoltes/Dock` now shows real churn
+stats instead of being silently absent - not a pipeline-scaling change
+itself, just something the orchestrator's first real end-to-end run
+happened to catch.

@@ -1162,3 +1162,79 @@ larger set of significance tests (still an open item, flagged repeatedly
 since 2026-07-29); re-materializing `browser-use/browser-use` or
 `julep-ai/julep`.
 
+## 2026-08-17 — Pipeline scaling, Phase A: shared resumability, exclusion registry, orchestrator
+
+Prompted by the next real target: growing the corpus from ~18-21 repos to
+100, then eventually 1000, "as pain-free as possible." Before touching
+repo count at all, a research pass across the whole pipeline (repo
+selection through consolidation/regression/viz) turned up the actual
+blockers: no single orchestrator (every stage run by hand, in an order
+documented only in prose, `README.md` empty); the same done-keys/progress/
+error-file resumability logic reimplemented three times, with a stale-file
+footgun that had already bitten twice (`PySmellDetection.md`'s and
+`RQ3_CodeTracking.md`'s full re-runs, both worked around by manually
+moving files into `archive_*/` folders); three uncoordinated exclusion
+mechanisms with no shared record of *why* a repo was excluded; zero
+concurrency anywhere in `src/inhouse`/`src/analysis` (wall-clock scales
+linearly with repo count); and two already-documented O(n)-blowup
+bottlenecks (`_tcc`/`_lcom`'s O(n²) cohesion computation, confirmed
+~20min on `azure-sdk-for-python`; entity-history's per-touch `git show`
+subprocess cost, confirmed 68min on `browser-use/browser-use`). A phased
+plan (Phase A: foundational fixes / Phase B: repo-level concurrency +
+bottleneck fixes / Phase C: 1000-repo validation) was written up and
+approved before any code changed - full detail in `InHouseTooling.md`'s
+new "Pipeline orchestration & scaling, Phase A" section rather than
+duplicated here; short version below.
+
+**Built**: `src/common/resumable_run.py` (extracted, shared
+done-keys/progress/error logic + a `schema_version`/`.runinfo.json`
+staleness check + `--stale-check` on all three pool scripts);
+`results/repos/excluded_repos.csv` + `src/common/exclusions.py` (single
+exclusion registry, `scope=permanent`/`per-run`, replacing the hardcoded
+`EXCLUDED_REPOS` set and undocumented `--exclude-repo` one-offs);
+`src/pipeline/run_pipeline.py` (a thin subprocess sequencer for the
+13-stage pipeline, `--stages`/`--target-total`/`--dry-run`/`--limit`/
+`--repo`/`--stale-check`, stops on first failure, writes a rolled-up
+`results/pipeline-run-<timestamp>.json`); a corpus-size gate
+(`PILOT_SIZE_CEILING=25`, `--force` override) added directly to
+`long_analysis.py` so the licensed DPy/Designite path - ~29 hours for one
+large snapshot under its LOC-cap chunking - can never run by accident at
+scale, and is excluded from the orchestrator's default stage list
+entirely (name it explicitly via `--stages legacy-dpy-designite` to run
+it at all). `consolidate_inhouse_metrics.py`, `consolidate_inhouse_smells.py`,
+and `generate_track_a_figures.py` (none had a CLI before) each got a
+stable `run()` entry point.
+
+**Verification**: no formal test suite exists in this repo (hand-
+validation against known-good numbers is the established pattern - see
+every tool's own build-log entry above), so this was checked the same
+way: isolated unit-style tests for the new staleness/registry logic (12
+assertions, all passing - schema-version trust/exclusion, legacy-file
+backward compatibility, idempotent registry writes, scope filtering),
+dry-run smoke tests of all three pool scripts through both their own CLI
+and the orchestrator (resumability/skip-on-resume/stale-check all
+reconfirmed working identically to pre-refactor behavior), a synthetic
+failing-stage test confirming the orchestrator actually stops a run
+rather than continuing past a bad stage, and command-construction checks
+for every one of the 13 stages. All touched files `py_compile` clean.
+
+**Real side effect, not a test artifact**: exercising `viz-churn`
+end-to-end (part of orchestrator verification) surfaced that
+`Writing/figures/method_churn/`'s `fig7`/`fig8`/`fig9`/`table3` were
+stale - last generated before the 2026-08-13 entity-history
+sampling-bias fix landed. Regenerating them changed real numbers (e.g.
+`wieslawsoltes/Dock` now shows real churn stats instead of being absent)
+- kept as a genuine correction, committed alongside this entry rather than
+reverted.
+
+**Not done this entry**: Phase B (repo-level `ProcessPoolExecutor`
+concurrency, the `_tcc`/`_lcom` cohesion-sampling cap, entity-history
+`git cat-file --batch` port, `data/repo_cache` storage lifecycle) - the
+actual wall-clock levers for 100+ repos, still to come; `--pilot-size` →
+`--target-total` rename across `repo_pr_selection.py`/
+`repo_snapshot_pipeline.py` (planned, not yet renamed - the orchestrator
+currently translates `--target-total` to `--pilot-size` under the hood);
+re-running the Phase 0 candidate search with a wider pool (235 candidates
+is enough for 100 repos, not 1000 - flagged as a precondition, not
+addressed).
+

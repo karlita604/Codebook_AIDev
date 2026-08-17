@@ -43,7 +43,17 @@ Dock's post-`.slnx`-migration months (Designite can't read `.slnx`) as a
 side effect of not needing a project graph at all. Visualization (Phase C)
 and the RQ3 entity tracker (Phase D) are scoped but not yet built (see
 `Writing/InHouseTooling.md` and `Writing/RQ3_CodeTracking.md`'s
-design-decisions sections).
+design-decisions sections). **Update, 2026-08-17: the corpus is about to
+grow from ~18-21 repos toward 100, then 1000 — Phase A of a scaling plan
+just landed** (shared resumability with a stale-data safeguard, a single
+repo-exclusion registry, and a `src/pipeline/run_pipeline.py` orchestrator
+for the now-13-stage pipeline, previously run by hand). See
+`Writing/InHouseTooling.md`'s "Pipeline orchestration & scaling, Phase A"
+section and this entry's `ProjectUpdate.md` write-up. Phase B (the actual
+wall-clock levers — repo-level concurrency, the open `_tcc`/`_lcom` O(n²)
+cohesion bottleneck, entity-history git-subprocess batching — see item 7
+below) hasn't started yet — this doc's numbers above are otherwise
+unaffected, this was infrastructure, not new analysis.
 
 ## Where each piece stands
 
@@ -418,6 +428,18 @@ Ranked by what would change the analysis most:
 6. **Multiple-comparison correction + a matched non-adopting comparison
    arm** — needed before any of this is a defensible general claim, not
    just a per-repo descriptive result.
+7. **Scaling Phase B (2026-08-17 plan, not started)**: the corpus is
+   moving from ~18-21 repos toward 100/1000, and the actual wall-clock
+   levers for that are still open — repo-level concurrency (currently
+   zero anywhere in `src/inhouse`/`src/analysis`, so runtime scales
+   linearly with repo count), the `_tcc`/`_lcom` O(n²) cohesion-
+   computation bottleneck (item 4's "Open" note in `InHouseTooling.md` —
+   confirmed ~20min stall on `azure-sdk-for-python`, currently worked
+   around with a per-run exclusion rather than fixed), and entity-
+   history's per-touch `git show` subprocess cost (confirmed 68min on
+   `browser-use/browser-use`). Phase A (resumability, exclusion registry,
+   orchestrator skeleton) landed first since these three block a scaled
+   run outright rather than just being slow.
 
 ## Where things live
 
