@@ -1,0 +1,3 @@
+repo_id,full_name,language,track,target_date,commit_sha,total_loc,n_files,n_parse_errors,n_classes,n_methods,n_god_class,n_data_class,n_feature_envy,n_brain_method,n_tcc_sampled,design_smell_count,design_smell_density_per_kloc,implementation_smell_count,implementation_smell_density_per_kloc,status
+401807767.0,Azure/data-api-builder,C#,A1,2022-01-01T00:00:00+00:00,4cb36eb2312654102330116bd324ba0ffb95bcee,5890,51,0,59,217,0,9,1,2,0,9,1.5280135823429541,3,0.5093378607809848,ok
+401807767.0,Azure/data-api-builder,C#,A1,2022-02-01T00:00:00+00:00,a62b5ea93a483797175c9fd6271eb674a332b151,11701,75,0,84,452,5,14,4,2,0,19,1.6237928382189555,6,0.5127766857533544,ok

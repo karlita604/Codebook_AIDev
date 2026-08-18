@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-18T15:14:29.693701+00:00",
+  "finished_at": "2026-08-18T18:21:24.498393+00:00",
+  "total_elapsed_seconds": 11214.8,
+  "stages": [
+    {
+      "name": "metrics",
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\inhouse\\pool_inhouse_metrics.py",
+        "--workers",
+        "4"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 11214.8
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-17T19:50:02.203080+00:00",
+  "finished_at": "2026-08-17T20:20:52.513645+00:00",
+  "total_elapsed_seconds": 1850.3,
+  "stages": [
+    {
+      "name": "snapshot-manifest",
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\phase0\\repo_snapshot_pipeline.py",
+        "--target-total",
+        "100"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 1850.3
+    }
+  ]
+}

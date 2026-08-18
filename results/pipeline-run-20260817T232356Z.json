@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-17T20:21:49.210608+00:00",
+  "finished_at": "2026-08-17T23:23:56.512687+00:00",
+  "total_elapsed_seconds": 10927.3,
+  "stages": [
+    {
+      "name": "materialize",
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\phase0\\materialize_snapshots.py",
+        "--workers",
+        "4"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 10927.3
+    }
+  ]
+}

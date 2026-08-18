@@ -1,0 +1,236 @@
+repo_id,full_name,language,stars,agent_pr_count,distinct_agents,agent_breakdown,intervention_date,last_agent_pr_date
+710601088.0,crewAIInc/crewAI,Python,35096.0,327,1,{'Devin': 327},2024-12-27T20:52:41Z,2025-07-30T14:39:48Z
+134182879.0,wieslawsoltes/Dock,C#,1204.0,309,3,"{'OpenAI_Codex': 306, 'Cursor': 2, 'Copilot': 1}",2025-06-25T10:52:03Z,2025-07-30T11:59:11Z
+283046497.0,airbytehq/airbyte,Python,19011.0,218,3,"{'Devin': 216, 'OpenAI_Codex': 1, 'Claude_Code': 1}",2025-01-21T21:53:59Z,2025-07-22T03:26:34Z
+696529789.0,dotnet/aspire,C#,4723.0,169,1,{'Copilot': 169},2025-05-19T19:07:41Z,2025-07-30T00:23:02Z
+136202695.0,mlflow/mlflow,Python,21402.0,91,2,"{'Copilot': 85, 'Claude_Code': 6}",2025-05-21T12:41:48Z,2025-07-29T04:47:04Z
+958026130.0,featureform/enrichmcp,Python,583.0,87,1,{'OpenAI_Codex': 87},2025-06-12T14:37:13Z,2025-07-20T21:16:02Z
+262395224.0,dotnet/maui,C#,22821.0,80,1,{'Copilot': 80},2025-05-19T19:18:23Z,2025-07-26T10:28:59Z
+216883277.0,wieslawsoltes/Svg.Skia,C#,601.0,76,1,{'OpenAI_Codex': 76},2025-07-13T14:58:42Z,2025-07-20T09:37:00Z
+496005961.0,stanford-crfm/levanter,Python,628.0,71,1,{'OpenAI_Codex': 71},2025-06-17T05:56:22Z,2025-07-30T05:26:48Z
+781914762.0,julep-ai/julep,Python,5629.0,67,1,{'OpenAI_Codex': 67},2025-05-17T04:17:48Z,2025-06-09T13:47:52Z
+65080725.0,microsoft/testfx,C#,908.0,60,1,{'Copilot': 60},2025-05-20T08:15:28Z,2025-07-30T05:38:26Z
+4127088.0,Azure/azure-sdk-for-python,Python,5011.0,57,1,{'Copilot': 57},2025-05-20T20:40:51Z,2025-07-24T00:18:06Z
+17620347.0,dotnet/aspnetcore,C#,36926.0,52,1,{'Copilot': 52},2025-05-19T19:12:05Z,2025-07-23T10:03:45Z
+679017521.0,AgentOps-AI/agentops,Python,4722.0,51,3,"{'Devin': 35, 'Cursor': 9, 'OpenAI_Codex': 7}",2024-12-24T00:23:09Z,2025-07-30T00:17:20Z
+653589102.0,567-labs/instructor,Python,11095.0,51,4,"{'Devin': 22, 'OpenAI_Codex': 20, 'Claude_Code': 5, 'Cursor': 4}",2025-03-04T16:03:56Z,2025-07-29T17:41:08Z
+873328.0,getsentry/sentry,Python,41579.0,51,1,{'Cursor': 51},2025-02-06T18:53:03Z,2025-07-18T20:47:37Z
+210716005.0,dotnet/runtime,C#,16688.0,50,1,{'Copilot': 50},2025-05-19T17:16:02Z,2025-07-30T13:01:33Z
+678526156.0,marimo-team/marimo,Python,14933.0,46,1,{'Devin': 46},2024-12-24T18:44:06Z,2025-03-11T00:25:32Z
+614765452.0,Significant-Gravitas/AutoGPT,Python,177379.0,43,2,"{'OpenAI_Codex': 40, 'Claude_Code': 3}",2025-05-17T11:20:49Z,2025-07-30T04:14:20Z
+2928944.0,Azure/azure-sdk-for-net,C#,5827.0,37,1,{'Copilot': 37},2025-05-21T16:04:08Z,2025-07-29T00:54:13Z
+881458615.0,browser-use/browser-use,Python,66661.0,36,2,"{'Cursor': 35, 'OpenAI_Codex': 1}",2025-06-24T11:08:50Z,2025-07-24T15:44:30Z
+151148482.0,elsa-workflows/elsa-core,C#,7225.0,31,2,"{'Copilot': 22, 'OpenAI_Codex': 9}",2025-05-19T17:42:15Z,2025-07-25T09:55:55Z
+33010673.0,microsoft/perfview,C#,4477.0,30,1,{'Copilot': 30},2025-05-19T21:01:14Z,2025-07-23T00:33:40Z
+742063678.0,crewAIInc/crewAI-tools,Python,1177.0,29,1,{'Devin': 29},2024-12-28T00:55:17Z,2025-07-28T03:37:25Z
+174731004.0,ikamensh/flynt,Python,718.0,28,1,{'OpenAI_Codex': 28},2025-06-04T17:58:39Z,2025-07-29T06:50:47Z
+55075302.0,dotnet/android,C#,2045.0,26,1,{'Copilot': 26},2025-06-04T20:52:17Z,2025-07-22T16:58:15Z
+57002284.0,Albeoris/Memoria,C#,514.0,26,1,{'Copilot': 26},2025-05-31T17:27:13Z,2025-06-19T14:43:30Z
+788904329.0,janbjorge/pgqueuer,Python,1324.0,26,1,{'OpenAI_Codex': 26},2025-06-04T06:49:56Z,2025-07-20T18:49:27Z
+32051890.0,dotnet/msbuild,C#,5418.0,25,1,{'Copilot': 25},2025-05-21T02:48:46Z,2025-07-25T08:23:15Z
+967503541.0,Azure/azure-mcp,C#,1038.0,24,1,{'Copilot': 24},2025-05-19T18:11:20Z,2025-07-23T15:08:34Z
+764723738.0,Skyvern-AI/skyvern,Python,13976.0,23,1,{'OpenAI_Codex': 23},2025-05-20T05:25:59Z,2025-07-30T19:36:13Z
+164374484.0,saturday06/VRM-Addon-for-Blender,Python,1473.0,22,1,{'Devin': 22},2025-04-17T13:43:01Z,2025-07-12T11:55:58Z
+575321313.0,langbot-app/LangBot,Python,12782.0,22,2,"{'Devin': 21, 'Cursor': 1}",2025-05-09T01:29:03Z,2025-07-20T13:21:07Z
+63984307.0,dotnet/sdk,C#,2940.0,21,1,{'Copilot': 21},2025-05-21T20:31:51Z,2025-07-30T12:10:30Z
+111510915.0,dotnet/dotnet-api-docs,C#,846.0,20,1,{'Copilot': 20},2025-06-16T23:07:41Z,2025-07-16T15:56:51Z
+509436902.0,PriorLabs/TabPFN,Python,4181.0,19,1,{'OpenAI_Codex': 19},2025-05-21T10:20:52Z,2025-07-15T16:51:40Z
+60844169.0,NewFuture/DDNS,Python,4528.0,19,1,{'Copilot': 19},2025-06-30T07:48:02Z,2025-07-22T03:11:12Z
+832879402.0,Kiln-AI/Kiln,Python,4015.0,19,1,{'OpenAI_Codex': 19},2025-06-09T03:34:49Z,2025-07-30T00:17:34Z
+915016509.0,microsoft/Generative-AI-for-beginners-dotnet,C#,1666.0,19,1,{'Copilot': 19},2025-05-19T18:25:10Z,2025-07-09T16:03:19Z
+172811550.0,cartography-cncf/cartography,Python,3491.0,18,1,{'OpenAI_Codex': 18},2025-06-09T17:59:41Z,2025-07-29T21:51:57Z
+886899801.0,vlm-run/vlmrun-hub,Python,528.0,17,1,{'Devin': 17},2025-01-04T19:57:23Z,2025-03-15T23:08:15Z
+946380199.0,openai/openai-agents-python,Python,13119.0,17,1,{'OpenAI_Codex': 17},2025-05-21T16:12:20Z,2025-07-22T15:42:27Z
+197336679.0,3rdIteration/btcrecover,Python,742.0,16,1,{'OpenAI_Codex': 16},2025-07-22T21:33:58Z,2025-07-30T11:05:04Z
+56319070.0,nkdAgility/azure-devops-migration-tools,C#,554.0,16,1,{'Copilot': 16},2025-05-20T15:45:23Z,2025-07-03T09:24:09Z
+92912604.0,commaai/opendbc,Python,2457.0,16,1,{'OpenAI_Codex': 16},2025-05-16T23:44:52Z,2025-07-25T22:52:39Z
+673010778.0,roboflow/inference,Python,1824.0,16,2,"{'OpenAI_Codex': 15, 'Cursor': 1}",2025-05-18T19:03:45Z,2025-07-29T00:03:56Z
+671269505.0,BerriAI/litellm,Python,26663.0,15,4,"{'OpenAI_Codex': 7, 'Cursor': 4, 'Claude_Code': 2, 'Copilot': 2}",2025-02-24T23:13:02Z,2025-07-30T11:00:10Z
+633262635.0,onyx-dot-app/onyx,Python,13231.0,15,2,"{'Devin': 14, 'OpenAI_Codex': 1}",2025-01-19T21:52:14Z,2025-06-04T05:24:32Z
+617269166.0,dropseed/plain,Python,619.0,15,1,{'OpenAI_Codex': 15},2025-05-23T14:59:35Z,2025-06-13T02:54:36Z
+84483314.0,alexanderjeurissen/ranger_devicons,Python,1000.0,15,1,{'OpenAI_Codex': 15},2025-05-30T21:10:02Z,2025-06-05T14:56:51Z
+230706417.0,DaveSkender/Stock.Indicators,C#,1096.0,15,1,{'Copilot': 15},2025-06-04T02:25:42Z,2025-07-30T06:50:50Z
+62774726.0,microsoft/vstest,C#,934.0,14,1,{'Copilot': 14},2025-06-12T13:21:36Z,2025-07-17T08:53:47Z
+597502256.0,keephq/keep,Python,10563.0,14,1,{'Cursor': 14},2025-06-08T15:53:17Z,2025-06-30T06:29:31Z
+680120071.0,microsoft/autogen,Python,48110.0,14,1,{'Copilot': 14},2025-05-19T20:21:05Z,2025-07-11T11:40:11Z
+102692863.0,onnx/onnx,Python,19360.0,13,1,{'Copilot': 13},2025-06-19T14:52:12Z,2025-07-17T02:47:07Z
+879473096.0,bespokelabsai/curator,Python,1465.0,13,1,{'Devin': 13},2024-12-27T22:16:22Z,2025-01-17T02:05:34Z
+859956307.0,aipotheosis-labs/aci,Python,4464.0,12,3,"{'OpenAI_Codex': 7, 'Devin': 4, 'Cursor': 1}",2025-05-18T20:42:43Z,2025-07-27T12:27:08Z
+101194285.0,NethermindEth/nethermind,C#,1423.0,12,1,{'Copilot': 12},2025-06-22T21:09:02Z,2025-07-01T20:51:35Z
+957479421.0,plexguide/Huntarr.io,Python,2033.0,11,1,{'Copilot': 11},2025-05-20T08:46:47Z,2025-05-20T21:26:00Z
+178976529.0,bentoml/BentoML,Python,7934.0,11,1,{'Devin': 11},2025-01-06T08:14:17Z,2025-03-03T07:00:31Z
+155757874.0,microsoft/WinUI-Gallery,C#,3140.0,11,1,{'Copilot': 11},2025-07-30T09:34:36Z,2025-07-30T12:59:16Z
+314197645.0,zenml-io/zenml,Python,4768.0,11,3,"{'OpenAI_Codex': 5, 'Claude_Code': 4, 'Cursor': 2}",2025-02-24T19:52:57Z,2025-06-20T07:36:25Z
+587050620.0,stanfordnlp/dspy,Python,26818.0,10,1,{'OpenAI_Codex': 10},2025-05-17T17:51:33Z,2025-07-01T23:11:33Z
+305144746.0,tinygrad/tinygrad,Python,29760.0,10,1,{'OpenAI_Codex': 10},2025-05-17T23:25:02Z,2025-06-23T23:31:15Z
+77990768.0,Azure/azure-functions-core-tools,C#,1399.0,10,1,{'Copilot': 10},2025-05-22T20:34:40Z,2025-06-18T22:02:22Z
+131619646.0,dagster-io/dagster,Python,13669.0,10,1,{'OpenAI_Codex': 10},2025-06-04T22:34:44Z,2025-06-30T05:30:59Z
+946178371.0,OpenPipe/ART,Python,4108.0,10,2,"{'OpenAI_Codex': 5, 'Cursor': 5}",2025-05-20T21:43:50Z,2025-06-26T19:39:11Z
+920603619.0,willccbb/verifiers,Python,1663.0,10,3,"{'Cursor': 8, 'OpenAI_Codex': 1, 'Claude_Code': 1}",2025-06-06T20:44:13Z,2025-07-28T00:41:36Z
+644715009.0,PromtEngineer/localGPT,Python,21751.0,9,1,{'Devin': 9},2025-07-13T05:31:59Z,2025-07-23T08:01:37Z
+130741783.0,netket/netket,Python,620.0,9,1,{'OpenAI_Codex': 9},2025-05-26T12:57:04Z,2025-06-20T08:45:16Z
+756594023.0,bruin-data/ingestr,Python,3047.0,9,2,"{'OpenAI_Codex': 8, 'Cursor': 1}",2025-06-08T21:25:08Z,2025-07-08T16:22:51Z
+787462297.0,Blaizzy/mlx-vlm,Python,1551.0,9,1,{'OpenAI_Codex': 9},2025-05-16T23:50:59Z,2025-05-17T03:51:15Z
+172703996.0,spcl/dace,Python,544.0,9,1,{'Copilot': 9},2025-05-26T09:32:16Z,2025-07-09T00:55:31Z
+867014724.0,syncfusion/maui-toolkit,C#,550.0,9,1,{'Copilot': 9},2025-06-24T05:57:28Z,2025-07-16T05:18:08Z
+460609164.0,writer/writer-framework,Python,1414.0,8,1,{'OpenAI_Codex': 8},2025-05-18T01:22:34Z,2025-06-12T06:29:43Z
+535751429.0,wizarrrr/wizarr,Python,2081.0,8,2,"{'OpenAI_Codex': 7, 'Cursor': 1}",2025-06-04T14:07:11Z,2025-07-08T23:46:28Z
+395140743.0,skypilot-org/skypilot,Python,8435.0,8,2,"{'Cursor': 5, 'OpenAI_Codex': 3}",2025-05-28T19:18:32Z,2025-07-29T07:47:52Z
+540527604.0,TobikoData/sqlmesh,Python,2499.0,8,1,{'OpenAI_Codex': 8},2025-06-05T15:48:47Z,2025-07-28T11:02:05Z
+650377372.0,wandb/weave,Python,950.0,8,1,{'OpenAI_Codex': 8},2025-05-21T19:26:41Z,2025-06-11T18:41:35Z
+676672661.0,langchain-ai/langgraph,Python,16579.0,8,2,"{'OpenAI_Codex': 7, 'Copilot': 1}",2025-06-03T22:53:21Z,2025-07-29T00:24:13Z
+36759907.0,graphistry/pygraphistry,Python,2307.0,7,1,{'Claude_Code': 7},2025-07-19T09:48:04Z,2025-07-28T01:01:14Z
+557075997.0,reflex-dev/reflex,Python,23696.0,7,1,{'Devin': 7},2025-04-30T00:52:53Z,2025-07-22T17:33:46Z
+688141049.0,mangiucugna/json_repair,Python,2533.0,7,1,{'OpenAI_Codex': 7},2025-05-18T09:49:00Z,2025-05-22T05:47:14Z
+65600975.0,pytorch/pytorch,Python,91911.0,7,3,"{'OpenAI_Codex': 5, 'Copilot': 1, 'Claude_Code': 1}",2025-06-10T21:27:30Z,2025-07-09T12:13:49Z
+184456251.0,microsoft/PowerToys,C#,121672.0,7,1,{'Copilot': 7},2025-05-28T10:59:48Z,2025-07-02T18:23:38Z
+56710511.0,dotnet/macios,C#,2716.0,7,1,{'Copilot': 7},2025-05-20T06:20:20Z,2025-07-11T14:04:31Z
+38007053.0,dotnet/docfx,C#,4310.0,7,1,{'Copilot': 7},2025-05-21T09:29:00Z,2025-05-27T07:17:44Z
+953683578.0,oraios/serena,Python,6198.0,6,1,{'OpenAI_Codex': 6},2025-06-13T09:54:58Z,2025-07-06T17:31:25Z
+978331188.0,microsoft/magentic-ui,Python,6674.0,6,1,{'Copilot': 6},2025-05-20T00:06:37Z,2025-07-08T00:42:06Z
+626117554.0,mrwadams/stride-gpt,Python,794.0,6,3,"{'Claude_Code': 2, 'Devin': 2, 'OpenAI_Codex': 2}",2025-03-02T22:42:01Z,2025-05-25T20:42:44Z
+348132133.0,microsoft/fluentui-blazor,C#,4456.0,6,1,{'Copilot': 6},2025-06-02T15:48:42Z,2025-07-17T12:25:04Z
+550902717.0,dotnet/dotnet,C#,676.0,6,1,{'Copilot': 6},2025-05-19T19:26:38Z,2025-05-22T09:22:43Z
+599547518.0,vllm-project/vllm,Python,53643.0,6,2,"{'OpenAI_Codex': 5, 'Claude_Code': 1}",2025-05-18T06:48:13Z,2025-07-17T22:07:23Z
+774497032.0,MervinPraison/PraisonAI,Python,5243.0,6,3,"{'OpenAI_Codex': 4, 'Copilot': 1, 'Claude_Code': 1}",2025-06-04T05:48:40Z,2025-07-19T06:50:02Z
+826111692.0,ucbepic/docetl,Python,2444.0,6,1,{'Cursor': 6},2025-07-04T04:35:37Z,2025-07-15T01:32:27Z
+78002587.0,pardeike/Harmony,C#,5842.0,6,1,{'OpenAI_Codex': 6},2025-05-17T09:38:30Z,2025-05-19T00:16:11Z
+66466789.0,python-cachier/cachier,Python,608.0,6,2,"{'Copilot': 3, 'OpenAI_Codex': 3}",2025-07-09T15:59:12Z,2025-07-18T12:37:46Z
+165548191.0,peass-ng/PEASS-ng,C#,18020.0,5,1,{'OpenAI_Codex': 5},2025-06-05T22:00:41Z,2025-06-05T22:38:07Z
+132129752.0,microsoft/presidio,Python,5141.0,5,1,{'Copilot': 5},2025-07-06T07:04:06Z,2025-07-06T19:33:24Z
+820144741.0,iterative/datachain,Python,2617.0,5,1,{'Cursor': 5},2025-06-28T21:42:03Z,2025-07-11T03:54:33Z
+892165167.0,blorm-network/ZerePy,Python,587.0,5,1,{'Devin': 5},2025-02-07T22:49:42Z,2025-02-08T02:16:04Z
+74627617.0,commaai/openpilot,Python,55616.0,5,1,{'OpenAI_Codex': 5},2025-05-17T18:54:20Z,2025-06-09T21:27:05Z
+139199684.0,PrefectHQ/prefect,Python,19894.0,5,2,"{'OpenAI_Codex': 3, 'Claude_Code': 2}",2025-05-18T17:48:30Z,2025-07-14T15:34:18Z
+401807767.0,Azure/data-api-builder,C#,1121.0,5,1,{'Copilot': 5},2025-05-19T19:51:05Z,2025-07-03T18:08:17Z
+323591830.0,huggingface/huggingface_hub,Python,2806.0,5,2,"{'Copilot': 4, 'OpenAI_Codex': 1}",2025-05-23T14:59:09Z,2025-07-15T13:10:54Z
+156260788.0,Azure/azure-cosmos-dotnet-v3,C#,774.0,4,1,{'Copilot': 4},2025-05-21T02:47:05Z,2025-07-17T00:26:57Z
+137814779.0,getsentry/sentry-python,Python,2043.0,4,1,{'Cursor': 4},2025-06-12T11:47:53Z,2025-06-17T14:37:23Z
+76425236.0,EduardoPires/EquinoxProject,C#,6699.0,4,1,{'OpenAI_Codex': 4},2025-05-19T20:20:20Z,2025-06-10T02:22:43Z
+69648386.0,OWASP/mastg,Python,12399.0,4,1,{'Copilot': 4},2025-07-05T04:14:36Z,2025-07-05T07:27:09Z
+694848632.0,joshyattridge/smart-money-concepts,Python,810.0,4,1,{'OpenAI_Codex': 4},2025-06-03T18:48:32Z,2025-06-03T19:11:28Z
+998428732.0,BeehiveInnovations/zen-mcp-server,Python,5465.0,4,1,{'Claude_Code': 4},2025-06-16T14:26:02Z,2025-06-20T19:55:08Z
+16157746.0,dotnet/efcore,C#,14235.0,4,1,{'Copilot': 4},2025-05-24T01:57:26Z,2025-06-02T12:07:55Z
+291703561.0,alirezamika/autoscraper,Python,6867.0,4,1,{'OpenAI_Codex': 4},2025-06-08T12:19:45Z,2025-06-08T14:09:29Z
+97175798.0,microsoft/OpenAPI.NET,C#,1513.0,4,1,{'Copilot': 4},2025-06-04T18:47:10Z,2025-06-25T17:33:51Z
+28232663.0,dotnet/orleans,C#,10443.0,4,1,{'Copilot': 4},2025-05-21T05:53:34Z,2025-06-13T16:14:12Z
+651622038.0,allenai/open-instruct,Python,3083.0,4,2,"{'Cursor': 3, 'Claude_Code': 1}",2025-03-07T21:03:01Z,2025-07-13T21:31:44Z
+569233100.0,HotCakeX/Harden-Windows-Security,C#,2873.0,4,1,{'Copilot': 4},2025-05-19T16:33:09Z,2025-06-29T10:35:37Z
+534755927.0,dotnet/dev-proxy,C#,687.0,4,1,{'Copilot': 4},2025-06-24T15:07:52Z,2025-07-11T06:23:02Z
+898968194.0,huggingface/smolagents,Python,21715.0,3,1,{'OpenAI_Codex': 3},2025-05-23T14:54:43Z,2025-07-17T21:56:42Z
+886912514.0,ag2ai/ag2,Python,3135.0,3,1,{'Devin': 3},2025-01-29T03:50:21Z,2025-04-06T17:44:48Z
+946676136.0,PrunaAI/pruna,Python,793.0,3,1,{'OpenAI_Codex': 3},2025-05-21T10:00:36Z,2025-05-21T15:36:23Z
+888701643.0,test-zeus-ai/testzeus-hercules,Python,620.0,3,1,{'Devin': 3},2025-06-08T11:02:37Z,2025-07-01T04:34:53Z
+42940997.0,reneschulte/WriteableBitmapEx,C#,548.0,3,1,{'Copilot': 3},2025-05-21T06:56:43Z,2025-05-30T08:44:48Z
+173170791.0,dotnet/SqlClient,C#,930.0,3,1,{'Copilot': 3},2025-06-17T16:58:34Z,2025-06-19T01:25:09Z
+30932325.0,dotnet/extensions,C#,2992.0,3,1,{'Copilot': 3},2025-07-06T01:13:28Z,2025-07-21T09:07:49Z
+35752188.0,dotnet/Nerdbank.GitVersioning,C#,1481.0,3,1,{'Copilot': 3},2025-06-15T00:02:28Z,2025-06-15T00:10:29Z
+88064357.0,QL-Win/QuickLook,C#,20496.0,3,1,{'Copilot': 3},2025-07-23T13:40:25Z,2025-07-26T06:31:18Z
+599320067.0,langflow-ai/langflow,Python,93294.0,3,2,"{'OpenAI_Codex': 2, 'Cursor': 1}",2025-07-04T00:02:29Z,2025-07-15T18:38:14Z
+639195966.0,kyegomez/swarms,Python,5073.0,3,1,{'Cursor': 3},2025-07-09T04:58:24Z,2025-07-13T08:23:05Z
+823533826.0,trueai-org/midjourney-proxy,C#,678.0,3,1,{'Copilot': 3},2025-06-28T07:17:04Z,2025-07-07T01:58:06Z
+1007555070.0,fabriziosalmi/certmate,Python,844.0,3,1,{'Copilot': 3},2025-06-27T12:35:11Z,2025-06-28T09:30:38Z
+598401026.0,RimSort/RimSort,Python,620.0,3,1,{'Copilot': 3},2025-07-01T03:48:15Z,2025-07-01T03:55:48Z
+1006496207.0,SuperClaude-Org/SuperClaude_Framework,Python,11739.0,2,1,{'Claude_Code': 2},2025-06-26T06:54:08Z,2025-07-02T18:50:57Z
+938859604.0,MaiM-with-u/MaiBot,Python,2939.0,2,2,"{'Claude_Code': 1, 'Cursor': 1}",2025-03-11T08:41:22Z,2025-06-17T01:26:15Z
+973621150.0,AIDotNet/OpenDeepWiki,C#,1666.0,2,1,{'Copilot': 2},2025-07-18T02:18:01Z,2025-07-23T02:10:37Z
+719367294.0,VRSEN/agency-swarm,Python,3729.0,2,1,{'OpenAI_Codex': 2},2025-06-03T23:45:36Z,2025-07-23T22:45:47Z
+886966165.0,morphik-org/morphik-core,Python,3016.0,2,1,{'OpenAI_Codex': 2},2025-05-20T05:55:36Z,2025-05-22T03:50:58Z
+938717878.0,Wan-Video/Wan2.1,Python,13414.0,2,1,{'Claude_Code': 2},2025-02-28T04:36:11Z,2025-03-01T06:33:05Z
+722865845.0,livingbio/typed-ffmpeg,Python,1050.0,2,1,{'Copilot': 2},2025-06-30T00:55:04Z,2025-06-30T01:31:58Z
+132021166.0,dotnet/machinelearning,C#,9231.0,2,1,{'Copilot': 2},2025-06-11T20:16:50Z,2025-06-11T21:01:16Z
+145183271.0,Azure/Azure-Sentinel,Python,5204.0,2,1,{'Copilot': 2},2025-06-30T06:10:16Z,2025-07-03T12:01:08Z
+71932349.0,ray-project/ray,Python,38259.0,2,2,"{'OpenAI_Codex': 1, 'Cursor': 1}",2025-06-10T04:03:04Z,2025-07-01T04:43:24Z
+235572844.0,microsoft/playwright-dotnet,C#,2726.0,2,1,{'Copilot': 2},2025-05-23T15:41:30Z,2025-07-23T10:36:06Z
+208897838.0,microsoft/react-native-windows-samples,C#,511.0,2,1,{'Copilot': 2},2025-07-24T06:16:55Z,2025-07-24T06:23:08Z
+204086862.0,streamlit/streamlit,Python,40681.0,2,1,{'Copilot': 2},2025-07-03T16:11:58Z,2025-07-26T00:00:01Z
+199628708.0,microsoft/RulesEngine,C#,4002.0,2,1,{'Copilot': 2},2025-06-02T20:46:04Z,2025-06-26T05:23:49Z
+8162715.0,saleor/saleor,Python,21862.0,2,1,{'Copilot': 2},2025-07-30T06:09:36Z,2025-07-30T06:11:59Z
+29078997.0,dotnet/roslyn,C#,19709.0,2,1,{'Copilot': 2},2025-06-19T17:03:54Z,2025-07-22T16:53:02Z
+12858849.0,rcaloras/bashhub-client,Python,1282.0,2,1,{'OpenAI_Codex': 2},2025-06-08T01:25:26Z,2025-06-10T01:12:44Z
+26230481.0,riganti/dotvvm,C#,768.0,2,1,{'Copilot': 2},2025-05-20T03:24:57Z,2025-05-30T12:23:16Z
+42548553.0,Azure/azure-functions-host,C#,1973.0,2,1,{'Copilot': 2},2025-05-22T20:32:38Z,2025-06-12T23:43:22Z
+54591411.0,mariotoffia/FluentDocker,C#,1365.0,2,1,{'OpenAI_Codex': 2},2025-06-23T04:12:54Z,2025-06-25T12:25:51Z
+26884725.0,OrchardCMS/OrchardCore,C#,7777.0,2,1,{'Copilot': 2},2025-07-19T05:48:15Z,2025-07-20T04:42:55Z
+299862.0,nltk/nltk,Python,14209.0,2,1,{'Copilot': 2},2025-07-06T09:39:40Z,2025-07-07T05:55:48Z
+897595329.0,basicmachines-co/basic-memory,Python,1460.0,2,1,{'Claude_Code': 2},2025-07-01T04:51:03Z,2025-07-28T17:52:36Z
+627024850.0,OpenAdaptAI/OpenAdapt,Python,1339.0,2,1,{'Claude_Code': 2},2025-03-16T00:43:19Z,2025-03-16T00:52:22Z
+296298081.0,pnp/powershell,C#,770.0,2,1,{'Copilot': 2},2025-06-23T18:23:25Z,2025-07-06T17:29:08Z
+498824328.0,microsoft/sbom-tool,C#,1846.0,2,1,{'Copilot': 2},2025-05-29T17:11:10Z,2025-05-29T19:09:17Z
+579557127.0,kohya-ss/sd-scripts,Python,6459.0,2,2,"{'OpenAI_Codex': 1, 'Copilot': 1}",2025-05-17T05:28:28Z,2025-07-05T00:41:08Z
+429221032.0,andrewlock/NetEscapades.EnumGenerators,C#,1036.0,2,1,{'Copilot': 2},2025-06-23T18:32:34Z,2025-06-23T18:58:44Z
+302982238.0,Giorgi/DuckDB.NET,C#,561.0,2,1,{'Copilot': 2},2025-05-19T19:01:54Z,2025-06-22T16:05:02Z
+326705246.0,whitphx/streamlit-webrtc,Python,1613.0,2,1,{'Devin': 2},2025-03-11T19:29:20Z,2025-03-13T09:42:45Z
+452221115.0,dlt-hub/dlt,Python,3951.0,2,1,{'OpenAI_Codex': 2},2025-05-28T07:11:56Z,2025-06-02T19:58:48Z
+735090310.0,allenai/reward-bench,Python,620.0,2,1,{'OpenAI_Codex': 2},2025-05-18T23:43:14Z,2025-05-19T00:51:26Z
+638951438.0,comet-ml/opik,Python,11956.0,2,1,{'OpenAI_Codex': 2},2025-05-23T05:51:51Z,2025-07-02T12:23:28Z
+607289185.0,microsoft/semantic-kernel,C#,25612.0,2,1,{'Copilot': 2},2025-06-04T11:27:40Z,2025-06-20T23:15:29Z
+624102171.0,Azure-Samples/azure-search-openai-demo-csharp,C#,776.0,2,1,{'Copilot': 2},2025-07-10T17:02:15Z,2025-07-10T18:39:00Z
+842905162.0,clemlesne/scrape-it-now,Python,524.0,2,2,"{'OpenAI_Codex': 1, 'Copilot': 1}",2025-06-03T19:05:00Z,2025-07-13T14:08:57Z
+760683276.0,google-deepmind/gemma,Python,3564.0,2,1,{'Copilot': 2},2025-06-23T08:37:31Z,2025-06-23T08:40:33Z
+845380264.0,bugsink/bugsink,Python,908.0,2,1,{'Copilot': 2},2025-07-29T10:54:00Z,2025-07-29T12:07:47Z
+162405963.0,gradio-app/gradio,Python,39262.0,2,1,{'Copilot': 2},2025-07-18T01:32:46Z,2025-07-18T01:34:04Z
+295200728.0,srwi/EverythingToolbar,C#,11891.0,1,1,{'Copilot': 1},2025-07-20T11:22:19Z,2025-07-20T11:22:19Z
+285721510.0,exo-lang/exo,Python,650.0,1,1,{'OpenAI_Codex': 1},2025-06-04T21:42:16Z,2025-06-04T21:42:16Z
+234187391.0,microsoft/debugpy,Python,2159.0,1,1,{'Copilot': 1},2025-06-12T18:07:28Z,2025-06-12T18:07:28Z
+253975496.0,srbhr/Resume-Matcher,Python,21035.0,1,1,{'Copilot': 1},2025-07-23T10:18:56Z,2025-07-23T10:18:56Z
+233464042.0,arthurhenrique/cookiecutter-fastapi,Python,575.0,1,1,{'OpenAI_Codex': 1},2025-07-10T15:34:26Z,2025-07-10T15:34:26Z
+185478059.0,open-telemetry/opentelemetry-dotnet,C#,3526.0,1,1,{'OpenAI_Codex': 1},2025-07-22T01:56:43Z,2025-07-22T01:56:43Z
+191751505.0,milvus-io/pymilvus,Python,1230.0,1,1,{'Claude_Code': 1},2025-07-26T02:59:01Z,2025-07-26T02:59:01Z
+197153676.0,Chia-Network/chia-blockchain,Python,10846.0,1,1,{'Copilot': 1},2025-07-16T00:12:29Z,2025-07-16T00:12:29Z
+158467856.0,astronomer/dag-factory,Python,1331.0,1,1,{'OpenAI_Codex': 1},2025-06-11T17:21:12Z,2025-06-11T17:21:12Z
+159564733.0,dotnet/razor,C#,562.0,1,1,{'Copilot': 1},2025-06-30T10:57:04Z,2025-06-30T10:57:04Z
+136163130.0,Flagsmith/flagsmith,Python,5817.0,1,1,{'Devin': 1},2025-05-21T12:36:56Z,2025-05-21T12:36:56Z
+71483874.0,DhanushNehru/Python-Scripts,Python,772.0,1,1,{'Copilot': 1},2025-07-21T15:24:26Z,2025-07-21T15:24:26Z
+92974124.0,pyvista/pyvista,Python,3211.0,1,1,{'Claude_Code': 1},2025-07-10T12:10:30Z,2025-07-10T12:10:30Z
+86031674.0,wandb/wandb,Python,10170.0,1,1,{'Devin': 1},2025-05-28T14:38:41Z,2025-05-28T14:38:41Z
+135941897.0,saucepleez/taskt,C#,1204.0,1,1,{'OpenAI_Codex': 1},2025-07-26T02:39:57Z,2025-07-26T02:39:57Z
+47913347.0,PowerDNS-Admin/PowerDNS-Admin,Python,2642.0,1,1,{'OpenAI_Codex': 1},2025-07-18T04:17:19Z,2025-07-18T04:17:19Z
+9864166.0,App-vNext/Polly,C#,13882.0,1,1,{'Copilot': 1},2025-06-20T02:07:47Z,2025-06-20T02:07:47Z
+8085749.0,MarimerLLC/csla,C#,1309.0,1,1,{'Copilot': 1},2025-05-30T16:59:33Z,2025-05-30T16:59:33Z
+2786727.0,JessicaTegner/pypandoc,Python,1020.0,1,1,{'Claude_Code': 1},2025-06-14T18:34:45Z,2025-06-14T18:34:45Z
+4067434.0,andialbrecht/sqlparse,Python,3907.0,1,1,{'OpenAI_Codex': 1},2025-07-08T07:12:07Z,2025-07-08T07:12:07Z
+2750721.0,ckan/ckan,Python,4775.0,1,1,{'OpenAI_Codex': 1},2025-06-05T12:02:20Z,2025-06-05T12:02:20Z
+1446467.0,pypa/pip,Python,9879.0,1,1,{'Copilot': 1},2025-07-03T15:04:48Z,2025-07-03T15:04:48Z
+19330736.0,NuGet/NuGet.Client,C#,798.0,1,1,{'Copilot': 1},2025-07-27T04:08:35Z,2025-07-27T04:08:35Z
+14964475.0,AvaloniaUI/Avalonia,C#,28297.0,1,1,{'OpenAI_Codex': 1},2025-05-19T14:12:04Z,2025-05-19T14:12:04Z
+29273084.0,pydata/pandas-datareader,Python,3080.0,1,1,{'OpenAI_Codex': 1},2025-05-22T02:19:47Z,2025-05-22T02:19:47Z
+23736914.0,espressif/esptool,Python,5980.0,1,1,{'Copilot': 1},2025-07-18T07:35:38Z,2025-07-18T07:35:38Z
+17496194.0,AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet,C#,1113.0,1,1,{'Copilot': 1},2025-07-14T02:53:33Z,2025-07-14T02:53:33Z
+12095044.0,dnnsoftware/Dnn.Platform,C#,1085.0,1,1,{'Copilot': 1},2025-05-23T19:55:05Z,2025-05-23T19:55:05Z
+15730865.0,spack/spack,Python,4755.0,1,1,{'Copilot': 1},2025-07-08T15:59:15Z,2025-07-08T15:59:15Z
+44556479.0,AzureAD/microsoft-authentication-library-for-dotnet,C#,1471.0,1,1,{'Copilot': 1},2025-07-29T10:34:57Z,2025-07-29T10:34:57Z
+46746187.0,Nethereum/Nethereum,C#,2207.0,1,1,{'OpenAI_Codex': 1},2025-06-15T11:06:47Z,2025-06-15T11:06:47Z
+478037973.0,embeddings-benchmark/mteb,Python,2740.0,1,1,{'Copilot': 1},2025-07-04T02:00:31Z,2025-07-04T02:00:31Z
+686364232.0,traceloop/openllmetry,Python,6150.0,1,1,{'Devin': 1},2024-12-26T18:42:08Z,2024-12-26T18:42:08Z
+680849474.0,aorwall/moatless-tools,Python,519.0,1,1,{'OpenAI_Codex': 1},2025-06-18T03:32:35Z,2025-06-18T03:32:35Z
+675859069.0,IAHispano/Applio,Python,2498.0,1,1,{'Copilot': 1},2025-07-12T12:00:16Z,2025-07-12T12:00:16Z
+660489378.0,microsoft/promptflow,Python,10634.0,1,1,{'Copilot': 1},2025-05-30T14:21:24Z,2025-05-30T14:21:24Z
+652229784.0,rendercv/rendercv,Python,2854.0,1,1,{'OpenAI_Codex': 1},2025-07-07T22:52:08Z,2025-07-07T22:52:08Z
+599293758.0,Azure-Samples/azure-search-openai-demo,Python,7182.0,1,1,{'Copilot': 1},2025-06-02T05:25:38Z,2025-06-02T05:25:38Z
+637253688.0,pgalko/BambooAI,Python,657.0,1,1,{'OpenAI_Codex': 1},2025-06-26T08:41:36Z,2025-06-26T08:41:36Z
+639079153.0,pixeltable/pixeltable,Python,687.0,1,1,{'Cursor': 1},2025-07-26T04:32:07Z,2025-07-26T04:32:07Z
+598249096.0,microsoft/teams-ai,C#,607.0,1,1,{'Copilot': 1},2025-05-19T19:58:54Z,2025-05-19T19:58:54Z
+458648791.0,paperless-ngx/paperless-ngx,Python,29685.0,1,1,{'OpenAI_Codex': 1},2025-07-02T19:00:47Z,2025-07-02T19:00:47Z
+393538656.0,beeradmoore/dlss-swapper,C#,4741.0,1,1,{'Copilot': 1},2025-05-21T23:29:25Z,2025-05-21T23:29:25Z
+322043759.0,OfficeDev/Microsoft-Teams-Samples,C#,1226.0,1,1,{'Copilot': 1},2025-06-25T10:53:52Z,2025-06-25T10:53:52Z
+544426802.0,Tasshack/dreame-vacuum,Python,1331.0,1,1,{'OpenAI_Codex': 1},2025-06-10T15:11:09Z,2025-06-10T15:11:09Z
+505964914.0,ACEsuit/mace,Python,811.0,1,1,{'OpenAI_Codex': 1},2025-06-04T19:17:35Z,2025-06-04T19:17:35Z
+575865240.0,AstrBotDevs/AstrBot,Python,11041.0,1,1,{'Copilot': 1},2025-07-02T10:07:28Z,2025-07-02T10:07:28Z
+595221457.0,irihitech/Ursa.Avalonia,C#,1124.0,1,1,{'Copilot': 1},2025-06-25T08:44:09Z,2025-06-25T08:44:09Z
+854340390.0,chainstacklabs/pump-fun-bot,Python,711.0,1,1,{'Cursor': 1},2025-07-12T16:29:28Z,2025-07-12T16:29:28Z
+841370602.0,potpie-ai/potpie,Python,4830.0,1,1,{'OpenAI_Codex': 1},2025-05-26T13:18:33Z,2025-05-26T13:18:33Z
+822033113.0,Panchovix/stable-diffusion-webui-reForge,Python,788.0,1,1,{'OpenAI_Codex': 1},2025-05-17T01:25:06Z,2025-05-17T01:25:06Z
+792072603.0,openai/openai-dotnet,C#,2178.0,1,1,{'Copilot': 1},2025-07-11T15:37:10Z,2025-07-11T15:37:10Z
+765083837.0,opendatalab/MinerU,Python,41051.0,1,1,{'Copilot': 1},2025-07-21T09:23:45Z,2025-07-21T09:23:45Z
+773894671.0,Lightning-AI/lightning-thunder,Python,1385.0,1,1,{'Copilot': 1},2025-07-02T07:21:25Z,2025-07-02T07:21:25Z
+726692169.0,AgentOps-AI/tokencost,Python,1754.0,1,1,{'OpenAI_Codex': 1},2025-06-11T07:49:50Z,2025-06-11T07:49:50Z
+724855841.0,ml-explore/mlx-examples,Python,7687.0,1,1,{'Claude_Code': 1},2025-07-02T04:00:20Z,2025-07-02T04:00:20Z
+704703338.0,patrickrchao/JailbreakingLLMs,Python,586.0,1,1,{'OpenAI_Codex': 1},2025-07-02T00:03:41Z,2025-07-02T00:03:41Z
+705358800.0,awaescher/OllamaSharp,C#,1060.0,1,1,{'Copilot': 1},2025-07-10T07:52:50Z,2025-07-10T07:52:50Z
+702796244.0,fishaudio/fish-speech,Python,22527.0,1,1,{'Claude_Code': 1},2025-06-02T19:49:36Z,2025-06-02T19:49:36Z
+881221486.0,volcengine/verl,Python,11675.0,1,1,{'Cursor': 1},2025-05-20T01:40:31Z,2025-05-20T01:40:31Z
+862584018.0,modelcontextprotocol/python-sdk,Python,16924.0,1,1,{'OpenAI_Codex': 1},2025-05-21T16:03:06Z,2025-05-21T16:03:06Z
+944976593.0,tadata-org/fastapi_mcp,Python,6761.0,1,1,{'Cursor': 1},2025-07-28T08:45:24Z,2025-07-28T08:45:24Z
+943088234.0,confident-ai/deepteam,Python,571.0,1,1,{'Devin': 1},2025-05-11T09:32:09Z,2025-05-11T09:32:09Z
+985839104.0,browseros-ai/BrowserOS,Python,3093.0,1,1,{'Copilot': 1},2025-06-22T20:30:31Z,2025-06-22T20:30:31Z
