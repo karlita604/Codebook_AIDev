@@ -1,0 +1,3 @@
+repo_id,full_name,language,track,target_date,commit_sha,total_loc,n_files,n_parse_errors,n_classes,n_methods,n_god_class,n_data_class,n_feature_envy,n_brain_method,n_tcc_sampled,design_smell_count,design_smell_density_per_kloc,implementation_smell_count,implementation_smell_density_per_kloc,status
+395140743.0,skypilot-org/skypilot,Python,A1,2022-01-01T00:00:00+00:00,12f0932115ac517c17cbf19f26df37f15f888999,8953,66,0,35,215,1,0,1,3,0,1,0.11169440411035408,4,0.44677761644141634,ok
+395140743.0,skypilot-org/skypilot,Python,A1,2022-02-01T00:00:00+00:00,228359485f7b71054c836450a8d3b841685b2064,14234,80,0,44,266,0,1,0,4,0,1,0.0702543206407194,4,0.2810172825628776,ok

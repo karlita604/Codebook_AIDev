@@ -1,0 +1,2 @@
+repo_id,full_name,language,track,target_date,commit_sha,error
+32051890.0,dotnet/msbuild,C#,A2,2025-06-04T02:48:46+00:00,8f55314264235d0dc9bb53662b68d6b444666770,"Command '['dotnet', 'C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\inhouse\\roslyn_tool\\bin\\Release\\net8.0\\roslyn_tool.dll', '--smells', 'C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\dotnet__msbuild\\8f55314264235d0dc9bb53662b68d6b444666770']' timed out after 120 seconds"

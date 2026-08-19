@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-19T17:02:24.949583+00:00",
+  "finished_at": "2026-08-19T18:06:16.557720+00:00",
+  "total_elapsed_seconds": 3831.6,
+  "stages": [
+    {
+      "name": "entity-history",
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\inhouse\\pool_entity_history.py",
+        "--workers",
+        "4"
+      ],
+      "returncode": 0,
+      "elapsed_seconds": 3831.6
+    }
+  ]
+}

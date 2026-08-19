@@ -1,0 +1,4 @@
+repo_id,full_name,language,track,target_date,commit_sha,total_loc,n_files,n_parse_errors,n_classes,n_methods,n_god_class,n_data_class,n_feature_envy,n_brain_method,n_tcc_sampled,design_smell_count,design_smell_density_per_kloc,implementation_smell_count,implementation_smell_density_per_kloc,status
+164374484.0,saturday06/VRM-Addon-for-Blender,Python,A1,2022-01-01T00:00:00+00:00,e861fe103f81de4776d755bafb356fd04afbc7c7,14138,69,0,113,244,1,1,14,31,0,2,0.14146272457207526,45,3.1829113028716933,ok
+164374484.0,saturday06/VRM-Addon-for-Blender,Python,A1,2022-02-01T00:00:00+00:00,289ce132db726133ba5a8b1b982518150e89e260,15406,69,0,117,268,2,1,17,33,0,3,0.19472932623653122,50,3.2454887706088535,ok
+164374484.0,saturday06/VRM-Addon-for-Blender,Python,A1,2022-03-01T00:00:00+00:00,d5f9a18a2ddf50b7b72104a2dad174a8bd755900,18358,75,0,183,344,6,1,18,34,0,7,0.38130515306678286,52,2.8325525656389585,ok

@@ -21,10 +21,21 @@ undocumented as runnable code before now):
 
   select -> snapshot-manifest -> materialize
   -> metrics / smells / entity-history
-  -> consolidate-metrics / consolidate-smells
+  -> consolidate-metrics / consolidate-smells / consolidate-entity-history
   -> regression
   -> viz-track-a / viz-churn
   -> validate-metrics / validate-smells
+
+consolidate-entity-history matters more than its metrics/smells
+counterparts might suggest: viz-churn has no auto-discovery of its own
+(see _entity_history_extra_args below) and under --workers>1,
+pool_entity_history.py writes one fragment file per repo, not one
+shared file - skipping this stage silently starves viz-churn of most of
+the corpus (or points it at a single repo's fragment) rather than
+failing loudly. regression also always passes --full here (see its own
+stage entry below) - without it, segmented_regression.py's __main__
+only re-validates the pilot reproduction and fits nothing new against
+real data, which looks like a successful run but isn't one.
 
 `legacy-dpy-designite` (src/phase0/long_analysis.py, the licensed
 DPy/Designite driver - ~29 hours for a single large snapshot under its
@@ -62,16 +73,30 @@ def _latest_file(glob_pattern, exclude_substrings=()):
 def _entity_history_extra_args(args):
     """generate_churn_figures.py requires --entity-history <path> (no
     auto-discovery of its own, unlike every other stage) - resolve it to
-    the latest real pooled entity-history output the same way every other
-    stage's own latest_manifest()-style helper would."""
+    the latest real pooled entity-history output.
+
+    Prefers a *-entity-history-pooled.csv file (consolidate-entity-
+    history's output) over the raw glob - a real bug found and fixed
+    2026-08-19: under --workers>1, pool_entity_history.py writes one
+    fragment file PER REPO, so "latest-mtime *-entity-history-*.csv"
+    almost always picked a single repo's fragment instead of the pooled
+    table (whichever repo's worker happened to finish last), not
+    "the pooled entity-history output" the old docstring here claimed.
+    Falls back to the broad glob for a --workers=1 sequential run, which
+    still produces one shared unscoped file with no separate pooling
+    step needed."""
+    pooled = _latest_file("*-entity-history-pooled.csv")
+    if pooled is not None:
+        return ["--entity-history", str(pooled)]
     path = _latest_file(
         "*-entity-history-*.csv",
-        exclude_substrings=("-errors", "-repo-summary", "dryrun"),
+        exclude_substrings=("-errors", "-repo-summary", "dryrun", "-pooled"),
     )
     if path is None:
         raise SystemExit(
             "viz-churn: no *-entity-history-*.csv found in "
-            f"{OUT_DIR} - run the entity-history stage first"
+            f"{OUT_DIR} - run the entity-history stage first (and "
+            "consolidate-entity-history if it was run with --workers>1)"
         )
     return ["--entity-history", str(path)]
 
@@ -123,9 +148,22 @@ STAGES = [
         "supports": set(),
     },
     {
+        "name": "consolidate-entity-history",
+        "script": "src/inhouse/consolidate_entity_history.py",
+        "supports": set(),
+    },
+    {
         "name": "regression",
         "script": "src/analysis/segmented_regression.py",
         "supports": set(),
+        # segmented_regression.py's __main__ always runs the pilot
+        # reproduction check, but only fits the real corpus if --full is
+        # passed - a real bug found 2026-08-19: without this, the
+        # orchestrator's "regression" stage silently did NOT fit anything
+        # against real data, just re-validated the pilot reproduction
+        # (which always passes since the pilot data never changes) and
+        # exited looking successful.
+        "extra_args": lambda args: ["--full"],
     },
     {
         "name": "viz-track-a",

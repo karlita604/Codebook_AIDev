@@ -1,0 +1,18 @@
+{
+  "started_at": "2026-08-19T13:47:21.481721+00:00",
+  "finished_at": "2026-08-19T15:03:13.179498+00:00",
+  "total_elapsed_seconds": 4551.7,
+  "stages": [
+    {
+      "name": "smells",
+      "cmd": [
+        "C:\\Python314\\python.exe",
+        "C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\inhouse\\pool_inhouse_smells.py",
+        "--workers",
+        "4"
+      ],
+      "returncode": 1073807364,
+      "elapsed_seconds": 4551.7
+    }
+  ]
+}

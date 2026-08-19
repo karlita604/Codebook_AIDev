@@ -1,0 +1,2 @@
+repo_id,full_name,language,track,target_date,commit_sha,error
+63984307.0,dotnet/sdk,C#,A1,2025-11-01T00:00:00+00:00,2d7fc2d5dda4d80aee330306bb810733912c6d0d,"Command '['dotnet', 'C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\src\\inhouse\\roslyn_tool\\bin\\Release\\net8.0\\roslyn_tool.dll', '--smells', 'C:\\Users\\kvrlv\\Projects\\Codebook_AIDev\\data\\snapshots\\dotnet__sdk\\2d7fc2d5dda4d80aee330306bb810733912c6d0d']' timed out after 120 seconds"

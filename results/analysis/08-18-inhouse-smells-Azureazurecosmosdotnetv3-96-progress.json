@@ -1,1 +1,1 @@
-{"started_at": 1787086559.519835, "total": 96, "done": 29, "ok": 29, "failed": 0, "elapsed_seconds": 265.2, "eta_seconds": 612.8, "current": "Azure/azure-cosmos-dotnet-v3 A1 2024-05-01 @ca4b969d"}
+{"started_at": 1787086559.519835, "total": 96, "done": 96, "ok": 96, "failed": 0, "elapsed_seconds": 993.1, "eta_seconds": 0.0, "current": "Azure/azure-cosmos-dotnet-v3 A2 2026-05-21 @3f86916a"}

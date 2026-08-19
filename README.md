@@ -189,7 +189,7 @@ not a substitute for keeping it elsewhere).
 ## Quick start — running the pipeline
 
 Everything runs through one orchestrator,
-`src/pipeline/run_pipeline.py`, which sequences the 13-stage pipeline
+`src/pipeline/run_pipeline.py`, which sequences the 14-stage pipeline
 (previously run stage-by-stage by hand). It's a thin subprocess
 sequencer — it doesn't reimplement any stage, just runs each one's own
 script with the right flags and stops on the first failure.
@@ -341,46 +341,71 @@ Every row includes a `status` column (`"ok"` or an error string);
 failures are also written to a sibling `<output>-errors.csv` rather than
 crashing the run.
 
-### 7–8. `consolidate-metrics` / `consolidate-smells`
+### 7–9. `consolidate-metrics` / `consolidate-smells` / `consolidate-entity-history`
 
 ```bash
 python src/inhouse/consolidate_inhouse_metrics.py
 python src/inhouse/consolidate_inhouse_smells.py
+python src/inhouse/consolidate_entity_history.py
 ```
 
-Concatenates every fragment file from stages 4–5 (there can be several,
+Concatenates every fragment file from stages 4–6 (there can be several,
 if you ran with `--workers` or `--repo`-scoped invocations) into one
-canonical pooled table, deduped on `(repo_id, track, target_date,
-commit_sha)`, keep-last. No CLI flags — always operates on everything it
-finds in `results/analysis/`.
+canonical pooled table. The metrics/smells consolidators dedupe on
+`(repo_id, track, target_date, commit_sha)`; entity-history's dedupes on
+`(repo_id, full_name, relpath, lineage_id)` (its unit of work is a
+lineage within a file's history, not a snapshot grid point). All keep
+the last-seen row per key. No CLI flags — always operates on everything
+found in `results/analysis/`.
 
-### 9. `regression` — `src/analysis/segmented_regression.py`
+**`consolidate-entity-history` matters more than it looks** — under
+`--workers>1`, `pool_entity_history.py` writes one fragment file *per
+repo*, not one shared file, and `viz-churn` below has no auto-discovery
+of its own beyond finding *a* file matching `*-entity-history-*.csv`.
+Skip this stage after a `--workers` entity-history run and `viz-churn`
+will silently read whichever single repo's fragment happens to have the
+newest timestamp instead of the full corpus — not an error, just wrong
+data. The orchestrator's `viz-churn` step specifically looks for a
+`*-entity-history-pooled.csv` file first for this reason.
+
+### 10. `regression` — `src/analysis/segmented_regression.py`
 
 Fits the interrupted-time-series model (`metric ~ time + post +
 time_since_intervention × post`) per (repo, metric), closed-form OLS, for
 every repo with enough pre/post data (default: ≥5 points each side).
 
 ```bash
-python src/analysis/segmented_regression.py
+python src/analysis/segmented_regression.py         # pilot reproduction check ONLY
+python src/analysis/segmented_regression.py --full   # actually fits the full corpus
 ```
+
+**`--full` is required to do anything beyond validation.** Without it,
+`__main__` only re-runs the pilot reproduction check (verifying the
+script still reproduces the original pilot's stored numbers) and exits
+— it looks like a clean, successful run but fits nothing against real
+data. This is easy to miss since there's no error; check for the
+`fitted N (repo, metric) rows -> ...` line and the actual output file
+before trusting a run. The orchestrator always passes `--full`.
 
 Writes `results/analysis/<date>-segmented-regression-full-<n>.csv`
 (fitted rows) and a matching `-skipped.csv` (repos excluded for
 insufficient data — reported, not silently dropped).
 
-### 10–11. `viz-track-a` / `viz-churn`
+### 11–12. `viz-track-a` / `viz-churn`
 
 ```bash
 python src/viz/generate_track_a_figures.py     # Figs 1-6, Tables 1-2
-python src/viz/generate_churn_figures.py --entity-history <path>  # Figs 7-9, Table 3
+python src/viz/generate_churn_figures.py --entity-history <path-to-pooled-file>  # Figs 7-9, Table 3
 ```
 
 Reads the consolidated/regression outputs above and writes PNGs/CSVs to
 `Writing/figures/`. `generate_churn_figures.py` needs an explicit
-`--entity-history` path (the orchestrator resolves this to the latest
-real pooled entity-history file automatically).
+`--entity-history` path — point it at `consolidate-entity-history`'s
+output (`*-entity-history-pooled.csv`), not a per-repo fragment. The
+orchestrator resolves this automatically, preferring a pooled file over
+any fragment.
 
-### 12–13. `validate-metrics` / `validate-smells`
+### 13–14. `validate-metrics` / `validate-smells`
 
 ```bash
 python src/inhouse/validate_against_pilot.py
@@ -485,16 +510,21 @@ python src/inhouse/pool_inhouse_metrics.py --workers 4
 python src/inhouse/pool_inhouse_smells.py --workers 4
 python src/inhouse/pool_entity_history.py --workers 4
 
-# 6. Consolidate fragments into canonical pooled tables
+# 6. Consolidate fragments into canonical pooled tables (required if you
+#    ran step 5 with --workers, which writes one fragment PER REPO)
 python src/inhouse/consolidate_inhouse_metrics.py
 python src/inhouse/consolidate_inhouse_smells.py
+python src/inhouse/consolidate_entity_history.py
 
-# 7. Fit the interrupted-time-series model
-python src/analysis/segmented_regression.py
+# 7. Fit the interrupted-time-series model - --full is required, see
+#    stage 10's note above; without it this only re-validates the pilot
+#    reproduction and fits nothing new
+python src/analysis/segmented_regression.py --full
 
-# 8. Generate figures/tables
+# 8. Generate figures/tables - point --entity-history at step 6's pooled
+#    output, not a per-repo fragment
 python src/viz/generate_track_a_figures.py
-python src/viz/generate_churn_figures.py --entity-history results/analysis/<latest-entity-history-file>.csv
+python src/viz/generate_churn_figures.py --entity-history results/analysis/<date>-entity-history-pooled.csv
 
 # 9. (Optional) validate the in-house engines against the licensed
 #    pilot baseline
@@ -534,12 +564,18 @@ consistent naming convention:
 `<repo-slug>-<count>` for a `--repo`-scoped or `--workers`-parallel
 fragment. `<tag>` is one of `inhouse-metrics`, `inhouse-smells`,
 `entity-history` (or `dryrun-` prefixed variants), plus
-`inhouse-metrics-pooled`/`inhouse-smells-pooled` for the consolidated
-tables and `segmented-regression-full-<n>` for the regression output.
+`inhouse-metrics-pooled`/`inhouse-smells-pooled`/`entity-history-pooled`
+for the three consolidated tables and `segmented-regression-full-<n>`
+for the regression output.
 
 **Row keys**: `(repo_id, track, target_date, commit_sha)` for
-metrics/smells (one row per snapshot grid point); `(repo_id, full_name)`
-for entity-history (one row per lineage, many rows per repo).
+metrics/smells (one row per snapshot grid point — matches what
+`pool_inhouse_metrics.py`/`pool_inhouse_smells.py` resume on);
+`(repo_id, full_name, relpath, lineage_id)` for entity-history's
+consolidated rows (one row per lineage - many per repo; note
+`pool_entity_history.py`'s own resumability is coarser, at the
+`(repo_id, full_name)` whole-repo level, since that stage's unit of work
+is "one repo's full git history," not one lineage).
 
 **Key columns worth knowing about**:
 - `status`: `"ok"` or an error string — always check this before trusting

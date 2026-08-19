@@ -1,0 +1,33 @@
+metric,outcome,covariate,n,spearman_rho,p
+cyclomatic_complexity_p90,level_change_coef,agent_pr_count,15,-0.4432530813741882,0.09795815846010603
+cyclomatic_complexity_p90,level_change_coef,distinct_agents,15,0.21877670777129787,0.4334088601174865
+cyclomatic_complexity_p90,level_change_coef,log1p_stars,15,0.13214285714285715,0.6387442188840664
+cyclomatic_complexity_p90,level_change_coef,slope_pre_coef,15,0.5821428571428571,0.02279368712641428
+design_smell_density_per_kloc,level_change_coef,agent_pr_count,15,0.007149243247970777,0.9798262107739047
+design_smell_density_per_kloc,level_change_coef,distinct_agents,15,-0.07032108464077431,0.8033360152965159
+design_smell_density_per_kloc,level_change_coef,log1p_stars,15,-0.06428571428571428,0.8199479653196377
+design_smell_density_per_kloc,level_change_coef,slope_pre_coef,15,-0.557142857142857,0.030961086755812137
+implementation_smell_density_per_kloc,level_change_coef,agent_pr_count,15,-0.20375343256716716,0.4663881988754898
+implementation_smell_density_per_kloc,level_change_coef,distinct_agents,15,0.2148699808468104,0.4418686455905757
+implementation_smell_density_per_kloc,level_change_coef,log1p_stars,15,-0.33928571428571425,0.2160289253419548
+implementation_smell_density_per_kloc,level_change_coef,slope_pre_coef,15,-0.38928571428571423,0.15151193679039396
+"pooled (non-independent, see caveat)",level_change_coef,agent_pr_count,45,-0.20671971203970724,0.17305138688331007
+"pooled (non-independent, see caveat)",level_change_coef,distinct_agents,45,0.10354007063834082,0.49850409106632365
+"pooled (non-independent, see caveat)",level_change_coef,log1p_stars,45,-0.08871304521739473,0.5622495909539666
+"pooled (non-independent, see caveat)",level_change_coef,slope_pre_coef,45,-0.10961791831357047,0.47349056175643733
+cyclomatic_complexity_p90,slope_change_coef,agent_pr_count,15,-0.6541557571893262,0.008153664593607538
+cyclomatic_complexity_p90,slope_change_coef,distinct_agents,15,-0.15626907697949846,0.5781033072558704
+cyclomatic_complexity_p90,slope_change_coef,log1p_stars,15,-0.2285714285714285,0.4125661704963605
+cyclomatic_complexity_p90,slope_change_coef,slope_pre_coef,15,-0.7392857142857142,0.001635511143540766
+design_smell_density_per_kloc,slope_change_coef,agent_pr_count,15,0.3592494732105316,0.18848118889773025
+design_smell_density_per_kloc,slope_change_coef,distinct_agents,15,0.06250763079179938,0.8248559150394004
+design_smell_density_per_kloc,slope_change_coef,log1p_stars,15,0.14285714285714282,0.6115222287644656
+design_smell_density_per_kloc,slope_change_coef,slope_pre_coef,15,-0.17857142857142855,0.5242843600465525
+implementation_smell_density_per_kloc,slope_change_coef,agent_pr_count,15,0.05898125679575891,0.8346072489884698
+implementation_smell_density_per_kloc,slope_change_coef,distinct_agents,15,-0.06250763079179938,0.8248559150394004
+implementation_smell_density_per_kloc,slope_change_coef,log1p_stars,15,-0.24642857142857136,0.37595051597380513
+implementation_smell_density_per_kloc,slope_change_coef,slope_pre_coef,15,-0.48214285714285704,0.0687495377206437
+"pooled (non-independent, see caveat)",slope_change_coef,agent_pr_count,45,-0.09295450138698245,0.5436332734784904
+"pooled (non-independent, see caveat)",slope_change_coef,distinct_agents,45,-0.03314148704532666,0.8288918594023709
+"pooled (non-independent, see caveat)",slope_change_coef,log1p_stars,45,-0.10297049891304744,0.5008823936017601
+"pooled (non-independent, see caveat)",slope_change_coef,slope_pre_coef,45,-0.4931488801054018,0.0005776340993654471
