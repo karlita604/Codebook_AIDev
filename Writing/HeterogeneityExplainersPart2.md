@@ -9,6 +9,14 @@
 > artifact `HeterogeneityExplainers.md` published (new section, existing
 > sections unchanged):
 > https://claude.ai/code/artifact/7ae0a6d0-bbea-4fe8-a4f8-2d5f9b61c560
+>
+> **A separate narrative presentation of everything in this doc and
+> `HeterogeneityExplainers.md`** (linear "case file" framing, an
+> interactive permutation-test histogram, a closing verdict scorecard -
+> deliberately a different read on the same numbers, not a replacement
+> for this doc's own rigor) lives on branch `project-reshift`, kept off
+> `main` and off the dashboard above on purpose:
+> https://claude.ai/code/artifact/52cd025b-b9e6-40d0-a746-152f04b93cc4
 
 ## Why this doc exists
 
