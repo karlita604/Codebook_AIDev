@@ -1066,3 +1066,63 @@ are unadjusted.
   materialization gap**, not a smell-detector issue — all 57 of its rows
   fail "not materialized" even after a full gap-filling run. Open, not
   fixed this entry (a different pipeline).
+
+## Mixed-effects companion to RQ1's segmented regression (2026-08-24)
+
+> Additive, not a replacement — the 45-row/15-repo checkpoint above, and
+> the later 79-repo/237-row full-corpus regression
+> (`results/analysis/08-19-segmented-regression-full-237.csv`, never
+> previously narrated in this doc) both stand as-is. This section adds a
+> hierarchical/partial-pooling companion, and reports plainly whether it
+> agrees with the sign-counting headline above. Full methodology:
+> `writing/MixedEffectsMethodology.md`. Code:
+> `src/analysis/segmented_regression_mixed_effects.py`.
+
+**What the old method does**: fits 79 repos × 3 primary metrics
+completely independently (237 separate OLS regressions, zero cross-repo
+pooling), then the "no consistent cross-repo direction" claim (this
+doc's own 15-repo-scale version above: "20/45 level changes and 17/45
+slope changes are significant... sign splits close to evenly") is read
+off that table by counting p<.05 signs by hand — not computed by any
+versioned test.
+
+**What the new method does**: one linear mixed model per metric
+(`MixedLM`, REML), fit on all eligible repos' raw snapshot rows at once,
+with `full_name` as a random effect on the intercept, `level_change`,
+and `slope_change` terms — the same design-matrix formula
+`fit_one()` already uses, just partially pooled across repos instead of
+fit in isolation per repo.
+
+**What it buys, reported plainly (a null result, not a hoped-for one)**:
+none of the 3 metrics' population-average `level_change` or
+`slope_change` fixed effects reach p<.05, in either the all-rows or
+degenerate-CC-p90-excluded version:
+
+| Metric | level_change (fixed effect, p) | slope_change (fixed effect, p) |
+|---|---|---|
+| design_smell_density_per_kloc | -0.134 (p=.082) | -0.012 (p=.379) |
+| implementation_smell_density_per_kloc | +0.004 (p=.932) | -0.007 (p=.242) |
+| cyclomatic_complexity_p90 | +0.196 (p=.196) | -0.007 (p=.572) |
+
+**This agrees with the sign-counting headline, via a different and more
+rigorous mechanism.** The old method's "no consistent direction" reads
+individual repos' significant coefficients pointing both ways and
+concludes there's no one story. The new method asks a related but
+distinct question — "once repo-to-repo clustering is properly modeled,
+is there a real population-average effect at all" — and the answer is
+also no, for every metric. The two aren't the same claim (a population
+average can be null even when individual repos show large, real,
+opposite-signed effects, and vice versa), but here they point the same
+way: no evidence of a real cross-repo structural-health effect at
+intervention, from either angle.
+
+The between-repo variance components are real and non-degenerate on the
+intercept (e.g. `re_var_Group` ≈ 1.0–3.9 across metrics) but small to
+near-zero on `slope_change` specifically (`re_var_t_rel_post` ≈
+0.001–0.007) — repos differ meaningfully in their baseline smell
+density/complexity, much less so in how much the intervention shifts
+their trend, consistent with there being no strong per-repo
+"agents reverse this repo's trend" story either.
+
+Full fixed-effect table, random-effects (per-repo shrunk estimates), and
+convergence diagnostics: `results/analysis/08-24-segmented-regression-mixed-effects-{fixed,random-effects,convergence}.csv`.

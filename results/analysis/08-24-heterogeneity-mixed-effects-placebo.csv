@@ -1,0 +1,2 @@
+n,n_repos,slope_pre_coef_coef,slope_pre_coef_p,re_var_intercept,converged,warnings
+274,92,-1.0353348932281408,6.029798238542952e-127,1.3932159189264333e-11,True,The MLE may be on the boundary of the parameter space.

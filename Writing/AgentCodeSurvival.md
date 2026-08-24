@@ -372,3 +372,65 @@ this data separates them.
   or rewritten than one born early, a real confound `touches_per_day`
   partially addresses (age-normalized) but the modification-survival
   check does not.
+
+## GLMM companion to the full-corpus follow-up (2026-08-24)
+
+> Additive, not a replacement - Findings 1-3 above (the repo-stratified
+> permutation checks) stand as-is. Full methodology and shared
+> verification recipe: `writing/MixedEffectsMethodology.md`. Code:
+> `src/analysis/agent_code_survival_mixed_effects.py`.
+
+**Two different questions, not two versions of the same one**: the
+existing repo-stratified permutation test asks "is the pooled point
+estimate an artifact of which repos happen to be in the agent vs. human
+bucket" (robustness). A GLMM (generalized linear mixed model) with
+`full_name` as a random intercept asks "what is the `is_born_agent`
+effect, accounting for clustering from the start, and how much do repos
+vary around it" (effect size + between-repo heterogeneity). Neither
+replaces the other.
+
+**A real methodological difference from the rest of this mixed-effects
+layer, not just a naming detail**: this uses
+`statsmodels.genmod.bayes_mixed_glm` (variational-Bayes GLMM fitting),
+not `MixedLM` (REML) - a different inferential framework. Output is a
+posterior mean/SD, not a classical coefficient/CI, named as such below.
+
+**`ended` (binary, all 166,369 lineages, both languages)**: posterior
+mean for `is_born_agent` = -0.098 (SD 0.125) - direction-consistent with
+Finding 2's naive-pooled read (agent-born deleted somewhat less), but
+Finding 2 already showed that direction doesn't survive a
+repo-composition check, and this GLMM's own posterior SD is wide enough
+that -0.098 is not distinguishable from zero either. **Point estimate is
+stable across repeated runs; the optimizer's own `success` flag is not**
+(true on some runs, false on others, no code change between runs) -
+reported with this caveat rather than picking whichever run looked
+cleanest.
+
+**`full_survival` (binary, 3,688-row resolved modification-similarity
+subset)**: posterior mean for `is_born_agent` = -0.052 (SD 0.185),
+consistently reproducible across runs, optimizer converged cleanly every
+time. Small and not distinguishable from zero - agrees with Finding 3's
+null result (97.0% vs. 96.8%/96.7% vs. 96.9% survived, no real
+difference either way).
+
+**`touches_after_birth` (count) - genuinely did not converge, no
+reliable estimate reported.** This is the one place this mixed-effects
+layer produced a real fitting failure rather than a null/small result:
+two limitations compounded. (1) statsmodels' `bayes_mixed_glm` has no
+negative-binomial option, and `touches_after_birth` is severely
+overdispersed (variance/mean ≈ 6, Poisson assumes ≈1). (2) The module
+also has no offset mechanism at all (discovered only by trying it, not
+anticipated when this was planned) - `log(age_days+1)` had to be
+included as an ordinary covariate rather than the statistically correct
+fixed-coefficient offset the original plan called for. Tried with and
+without feature scaling; the fit either collapses toward a degenerate
+near-zero-variance posterior or diverges to numerical overflow depending
+on the run. **No effect estimate for `touches_after_birth` is reported
+from this GLMM** - Finding 1's own repo-stratified permutation result
+(the real, robust finding: agent-born entities touched more, p=0.0066)
+is unaffected and remains the standing result for touch frequency.
+
+Full output, including the group-size diagnostics (11/32 repos with <5
+rows in at least one cohort for the `full_survival` model, flagged not
+silently absorbed): `results/analysis/08-24-agent-survival-fc-mixed-effects.csv`,
+`08-24-agent-survival-fc-mixed-effects-group-diagnostics.csv`.

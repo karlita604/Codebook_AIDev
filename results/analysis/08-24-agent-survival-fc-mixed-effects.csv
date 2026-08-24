@@ -1,0 +1,4 @@
+outcome,n_repos,n_obs,n_agent,n_human,is_born_agent_posterior_mean,is_born_agent_posterior_sd,re_intercept_sd_posterior_mean,re_intercept_variance_approx,converged,optimizer_message
+ended,99,166369,1007,165362,-0.09785955907373725,0.12491009088757765,1.1896038596370642,1.4151573428634,False,Desired error not necessarily achieved due to precision loss.
+full_survival,32,3688,937,2751,-0.05191994716154215,0.1851398653178137,0.6180734840547631,0.38201483169159356,True,Optimization terminated successfully.
+"touches_after_birth (log_age covariate, NOT a true offset - see docstring)",99,166365,1007,165358,-8.038777781285725e-06,0.5985484248543228,0.9999999999056299,0.9999999998112599,False,Desired error not necessarily achieved due to precision loss.

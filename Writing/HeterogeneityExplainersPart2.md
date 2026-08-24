@@ -368,3 +368,62 @@ outcome/review table), `08-21-review-intensity-correlations.csv`,
    coverage catches up to the 100-repo structural corpus, not a
    confirmed answer to "does review intensity matter" at the scale this
    project's other RQ1 tables already operate at.
+
+## Mixed-effects companions (2026-08-24)
+
+> Additive, not a replacement - every pooled Spearman/OLS result above
+> stands as-is. Full methodology and shared verification recipe:
+> `writing/MixedEffectsMethodology.md`. Code:
+> `src/analysis/heterogeneity_explainers_mixed_effects.py`,
+> `src/analysis/review_intensity_mixed_effects.py`.
+
+**What the old method does**: every pooled correlation/regression above
+(`pairwise_correlations`, `multivariate_fits`,
+`placebo_slope_reversion_check`, `review_intensity_correlations`) treats
+each of a repo's up to 3 metric-rows as an independent observation,
+explicitly flagged `"pooled (non-independent, see caveat)"` in the code.
+
+**What the new method does**: the same relationships refit as a
+random-intercept `MixedLM` (`outcome ~ covariate`, `groups=full_name`) -
+partial pooling that respects the repo-level clustering the pooled tests
+could only flag, not correct for.
+
+**What it buys, reported plainly**:
+
+- **The slope_pre/slope_change mechanical-coupling relationship holds up
+  under partial pooling too, and just as strongly**: MixedLM slope
+  -1.099 (p=1.1×10⁻⁵⁶) vs. the naive pooled Spearman ρ=-0.698
+  (p=6.8×10⁻³⁶) - the hierarchical model doesn't soften this at all,
+  reinforcing (via a completely different mechanism) that this is a
+  real, robust regression-to-the-mean/multicollinearity artifact, not a
+  naive-pooling illusion.
+- **The placebo check agrees, and even more strongly**: refitting the
+  SAME placebo-cut regression as a MixedLM gives slope_pre_coef=-1.035
+  (p=6.0×10⁻¹²⁷) on the fake-intervention-date data - as strong as, if
+  not stronger than, the real data's own multivariate fits (-0.97 to
+  -1.29 depending on metric). Independent confirmation, via partial
+  pooling instead of a permutation null, of `HeterogeneityExplainers.md`'s
+  "mostly mechanical" conclusion.
+- **`agent_pr_count`/`distinct_agents` as predictors of `slope_change_coef`
+  did not reliably converge** (genuine optimizer failure, not a boundary
+  artifact - `result.converged=False` on both) - no reliable MixedLM read
+  is reported for these two cells; the naive pooled Spearman already
+  found nothing there either (ρ=0.009-0.085, p≥0.19), so this doesn't
+  change the substantive conclusion, but the mixed-model number itself
+  isn't trustworthy and isn't presented as if it were.
+- **A genuine new capability, not just parity**: `multivariate_fits()`'s
+  per-metric-only OLS loop can't combine all 3 metrics into one model:
+  the MixedLM version can, since the random intercept absorbs each
+  repo's own baseline across metrics. That combined fit
+  (`slope_change_coef ~ slope_pre_coef + log1p_agent_pr_count + C(metric)`,
+  237 rows, 79 repos) agrees with every per-metric version: slope_pre_coef
+  -1.100 (p=3.7×10⁻⁵⁵), log1p_agent_pr_count not significant (p=0.46).
+- **Review-intensity companion (n=15 repos - thin, flagged prominently,
+  not a result to lean on)**: no covariate reaches significance
+  (p=0.17-0.96 across both covariates and both outcomes) - a consistent
+  null with the original pooled version's own thin-coverage finding, not
+  a contradiction of it.
+
+Full tables: `results/analysis/08-24-heterogeneity-mixed-effects-{correlations,multivariate}-{all-rows,excl-degenerate}.csv`,
+`08-24-heterogeneity-mixed-effects-placebo.csv`,
+`08-24-review-intensity-mixed-effects.csv`.
