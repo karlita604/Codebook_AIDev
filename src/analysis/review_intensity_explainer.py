@@ -21,28 +21,29 @@ before this could even be attempted, neither assumed away:
    `pr_sampling_pipeline.py --repos-file` (added alongside this change):
    targets an exact repo set instead of suggest_pilot's stratified n-based
    pick, so a gap-fill run can be scoped to precisely the repos missing
-   coverage (`results/pr_samples/rq1-gap-repos-63.csv`, the 63 repos this
-   found with zero PR-comment data - re-derive with the diff shown in
-   that file's own generating command if the eligible-repo set changes).
-   `load_agent_pr_reviews()` below no longer pins to the single 08-04
-   file - it concatenates every `*-pr-sample-*.csv` in `results/
-   pr_samples/`, so a completed gap-fill run's output is picked up
-   automatically without another code change. **Whether that gap-fill run
-   has actually been executed against GitHub is a separate, checkable
-   fact - see `coverage_report()`'s output, not this docstring, for the
-   current true count.** As of the change that added --repos-file, it had
-   NOT yet been run (needs GITHUB_TOKEN, which wasn't available in the
-   environment that made the pipeline change - see the pipeline's own
-   module docstring for the ~2-3 hour cost estimate at this scale). Note
-   also: `dotnet/aspire` (1 of the 63 gap repos) returns 422 from the
-   Search API regardless of token - confirmed directly that even an
-   unauthenticated request gets the same "cannot be searched" error, so
-   this isn't a fine-grained-vs-classic-PAT issue (both a fine-grained
-   and a classic PAT search every *other* dotnet/* repo in the gap set
-   fine) - it's that repo specifically excluded from GitHub's search
-   index, likely tied to a repo transfer (its REST endpoint 301-redirects
-   to a different internal repo ID). Nothing to fix on our end; it'll
-   just stay uncovered same as the other 62 get filled in.
+   coverage. **Gap-fill run completed 2026-08-24** (`results/pr_samples/
+   rq1-gap-repos-63.csv` -> `08-24-pr-sample-rq1gap-3339.csv`, 3180/3339
+   query units ok, 8074 new PR rows), bringing real coverage from 15/79
+   to **69/79 regression-eligible repos (87%)**, 394 matched agent-PR rows
+   - see `coverage_report()`'s output for the current true count, not
+   this docstring, since it's a checkable fact that could drift from a
+   future rerun. `load_agent_pr_reviews()` below doesn't pin to one file -
+   it concatenates every `*-pr-sample-*.csv` in `results/pr_samples/`, so
+   this and any future gap-fill run are picked up automatically. The
+   remaining 10 uncovered repos split into two different causes, neither
+   fixable by re-running with a different token: 3 repos (`dotnet/aspire`,
+   `DaveSkender/Stock.Indicators`, `TobikoData/sqlmesh`) return 422 from
+   the Search API on every query regardless of token - confirmed directly
+   that even an unauthenticated request gets the same "cannot be
+   searched" error on all three, and each one's REST endpoint
+   301-redirects to a different internal repo ID (consistent with a repo
+   transfer desyncing GitHub's search index) - so these are excluded from
+   Search API results entirely, not a permissions issue. The other 7
+   (`dotnet/sdk`, `pytorch/pytorch`, `vllm-project/vllm`, `BerriAI/
+   litellm`, `Azure/data-api-builder`, `getsentry/sentry`, `writer/
+   writer-framework`) collected PR-sample data successfully but simply had
+   zero agent-authored PRs land in the sampled window - a real absence of
+   signal, not a collection failure.
 2. **The PR-sample file doesn't itself flag which PRs are agent-authored**
    - it's a calendar-window sample of PRs near each repo's intervention
      date (track B1/B2), a mix of human and agent PRs, with no `agent`
