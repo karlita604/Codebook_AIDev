@@ -12,14 +12,38 @@ not built") and its item-3 caveat that comment counts (not diff size or
 review-round detail) are what's actually captured.** Two real gaps found
 before this could even be attempted, neither assumed away:
 
-1. **Track B's PR-comment sample predates the 100-repo scaling run and
-   was never re-collected at that scale.** The only PR-level file with a
-   `comments` column is `results/pr_samples/08-04-pr-sample-4990.csv`
-   (4990 rows, 22 repos - the pilot + Phase 2's 21-repo cut). The 79
-   repos that actually clear RQ1's regression gate
-   (`08-19-segmented-regression-full-237.csv`) come from the later
-   100-repo corpus run; only 16 of the 79 even appear in the PR-sample
-   file's repo set at all.
+1. **Track B's original PR-comment sample predated the 100-repo scaling
+   run and was never re-collected at that scale.** The first PR-level
+   file with a `comments` column, `results/pr_samples/
+   08-04-pr-sample-4990.csv` (4990 rows, 22 repos - the pilot + Phase 2's
+   21-repo cut), only covered 16 of the 79 repos that clear RQ1's
+   regression gate (`08-19-segmented-regression-full-237.csv`). Fixed by
+   `pr_sampling_pipeline.py --repos-file` (added alongside this change):
+   targets an exact repo set instead of suggest_pilot's stratified n-based
+   pick, so a gap-fill run can be scoped to precisely the repos missing
+   coverage. **Gap-fill run completed 2026-08-24** (`results/pr_samples/
+   rq1-gap-repos-63.csv` -> `08-24-pr-sample-rq1gap-3339.csv`, 3180/3339
+   query units ok, 8074 new PR rows), bringing real coverage from 15/79
+   to **69/79 regression-eligible repos (87%)**, 394 matched agent-PR rows
+   - see `coverage_report()`'s output for the current true count, not
+   this docstring, since it's a checkable fact that could drift from a
+   future rerun. `load_agent_pr_reviews()` below doesn't pin to one file -
+   it concatenates every `*-pr-sample-*.csv` in `results/pr_samples/`, so
+   this and any future gap-fill run are picked up automatically. The
+   remaining 10 uncovered repos split into two different causes, neither
+   fixable by re-running with a different token: 3 repos (`dotnet/aspire`,
+   `DaveSkender/Stock.Indicators`, `TobikoData/sqlmesh`) return 422 from
+   the Search API on every query regardless of token - confirmed directly
+   that even an unauthenticated request gets the same "cannot be
+   searched" error on all three, and each one's REST endpoint
+   301-redirects to a different internal repo ID (consistent with a repo
+   transfer desyncing GitHub's search index) - so these are excluded from
+   Search API results entirely, not a permissions issue. The other 7
+   (`dotnet/sdk`, `pytorch/pytorch`, `vllm-project/vllm`, `BerriAI/
+   litellm`, `Azure/data-api-builder`, `getsentry/sentry`, `writer/
+   writer-framework`) collected PR-sample data successfully but simply had
+   zero agent-authored PRs land in the sampled window - a real absence of
+   signal, not a collection failure.
 2. **The PR-sample file doesn't itself flag which PRs are agent-authored**
    - it's a calendar-window sample of PRs near each repo's intervention
      date (track B1/B2), a mix of human and agent PRs, with no `agent`
@@ -30,24 +54,11 @@ before this could even be attempted, neither assumed away:
      agent file's `html_url` (no `pr_number` column there) - before
      "review intensity on agent PRs" is even measurable.
 
-**Real coverage after that match, restricted to the 79 regression-eligible
-repos: 15 of 79 (19%), 109 matched agent-PR rows total, 2-20 PRs per
-repo** (`coverage_by_repo` output below has the exact per-repo counts).
-This is genuinely partial, not a rounding-down of "basically complete" -
-reported honestly as an N=15 exploratory pass, not extrapolated to the
-other 64 repos. Closing this gap for real would need a fresh
-`src/collection/pr_sampling_pipeline.py` run scoped to the other 64
-repos' intervention windows - that needs GITHUB_TOKEN and hits GitHub's
-API rate limits at non-trivial cost for 64 repos' worth of PR history;
-not run here, flagged as a real cost rather than silently done or
-silently skipped.
-
-Pinned inputs, none re-derived via fc.latest_*(): `results/pr_samples/
-08-04-pr-sample-4990.csv`, `results/repos/08-17-aidev-agent-prs-3332.csv`,
-plus heterogeneity_explainers.load_joined()'s own pinned regression/
-covariate files (`08-19-segmented-regression-full-237.csv`,
-`08-19-inhouse-smells-pooled.csv` for the repo_id map,
-`08-17-repo-summary-235.csv`).
+Pinned input for the agent-authorship side only (PR-sample side is now
+dynamic, see above): `results/repos/08-17-aidev-agent-prs-3332.csv`, plus
+heterogeneity_explainers.load_joined()'s own pinned regression/covariate
+files (`08-19-segmented-regression-full-237.csv`, `08-19-inhouse-smells-
+pooled.csv` for the repo_id map, `08-17-repo-summary-235.csv`).
 """
 
 import sys
@@ -63,15 +74,33 @@ import figures_common as fc  # noqa: E402
 from src.analysis import heterogeneity_explainers as he  # noqa: E402
 
 OUT_DIR = fc.ANALYSIS_DIR
-# Pinned, not fc.latest_*() - same reasoning as heterogeneity_explainers.py's
-# own module docstring (a concurrent pipeline job was actively writing new
-# dated files into results/analysis/ this session; confirmed by mtime check
-# immediately before this script was written that no newer pr_samples/
-# aidev-agent-prs file has landed since these).
-PR_SAMPLE_PATH = fc.ROOT / "results" / "pr_samples" / "08-04-pr-sample-4990.csv"
+PR_SAMPLE_DIR = fc.ROOT / "results" / "pr_samples"
+# AIDev agent-PR registry: pinned, not fc.latest_*() - same reasoning as
+# heterogeneity_explainers.py's own module docstring (a concurrent pipeline
+# job was actively writing new dated files into results/analysis/ this
+# session; confirmed by mtime check immediately before this script was
+# written that no newer aidev-agent-prs file has landed since this one).
 AIDEV_AGENT_PRS_PATH = fc.REPO_SUMMARY_DIR / "08-17-aidev-agent-prs-3332.csv"
 
 OUTCOME_COLS = ["level_change_coef", "slope_change_coef"]
+
+
+def _load_all_pr_samples():
+    """Concatenates every Track B PR-comment sample file rather than
+    pinning one - coverage accumulates across separate collection runs
+    (the original pilot/21-repo cut, plus any --repos-file gap-fill run
+    scoped to repos that cut missed, see pr_sampling_pipeline.py and this
+    module's docstring), and a completed gap-fill run should be picked up
+    here without another code change. Excludes the pipeline's own query-
+    ledger files (`*-pr-sample-*-queries.csv`), which share the stem but
+    aren't PR data."""
+    files = sorted(
+        p for p in PR_SAMPLE_DIR.glob("*-pr-sample-*.csv")
+        if not p.stem.endswith("-queries")
+    )
+    if not files:
+        raise FileNotFoundError(f"no *-pr-sample-*.csv in {PR_SAMPLE_DIR}")
+    return pd.concat([pd.read_csv(f) for f in files], ignore_index=True)
 
 
 def load_agent_pr_reviews():
@@ -81,7 +110,7 @@ def load_agent_pr_reviews():
     carries no agent flag (see module docstring). pr_number isn't a
     column on the agent-PR side; extracted from its html_url instead,
     checked to parse cleanly on every row before trusting it."""
-    prs = pd.read_csv(PR_SAMPLE_PATH)
+    prs = _load_all_pr_samples()
     agent = pd.read_csv(AIDEV_AGENT_PRS_PATH)
 
     # A handful of PRs are sampled twice under different tracks/windows
