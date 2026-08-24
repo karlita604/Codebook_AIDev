@@ -1,0 +1,5 @@
+outcome,covariate,n,n_repos,mixedlm_slope,mixedlm_slope_se,mixedlm_slope_p,re_var_intercept,converged,at_variance_boundary,warnings
+level_change_coef,mean_comments,45,15,0.001956390667581257,0.04442771208689128,0.964876211318126,0.03425700522959258,True,False,
+level_change_coef,log1p_n_agent_prs_matched,45,15,-0.17427311465794343,0.12811101286188464,0.17372586331414563,0.02197890054644485,True,False,
+slope_change_coef,mean_comments,45,15,-0.0028510645843364277,0.0063994425485097055,0.6559457099628985,1.039962134656661e-10,True,True,The MLE may be on the boundary of the parameter space.
+slope_change_coef,log1p_n_agent_prs_matched,45,15,-0.009760863451913689,0.01971067728399382,0.6204540784661976,1.3008227786625125e-11,True,True,The MLE may be on the boundary of the parameter space.
