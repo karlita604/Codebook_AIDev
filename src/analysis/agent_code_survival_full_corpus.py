@@ -22,9 +22,10 @@ motivated this file: was an entity *created* by an agent-authored commit
 touched more often than one created by a human commit, and did it
 *survive* (see `survived_no_deletion` below - deletion is the cheap half
 of "survived"; the "modified >50%" half needs an additional per-lineage
-similarity computation against each entity's birth state, deliberately
-NOT done in this pass - see the module's own follow-up note at the
-bottom for why and what it would cost).
+similarity computation against each entity's birth state - see
+`compute_modification_similarity`, extended to BOTH languages 2026-08-24
+via cs_entity_history.py's Roslyn-batch path, Python-only on first
+landing).
 
 Reuses `agent_code_survival.py`'s PR->commit and agent-PR-registry
 resolution unchanged - not a parallel reimplementation.
@@ -48,6 +49,7 @@ from agent_code_survival import (  # noqa: E402
 )
 from entity_matching import jaccard  # noqa: E402
 from py_entity_history import _entities_from_text, batch_show, _safe_dirname  # noqa: E402
+from cs_entity_history import _run_roslyn_batch, _to_snapshot  # noqa: E402
 
 ROOT = fc.ROOT
 REPO_CACHE_DIR = ROOT / "data" / "repo_cache"
@@ -248,19 +250,20 @@ def stratified_permutation_test_proportion(labeled, value_col, n_perms=300, seed
 
 
 def sample_modification_candidates(labeled, human_multiplier=3, seed=20260824):
-    """Python-only (see module docstring's follow-up note): the "modified
-    >50%" half of survival needs each candidate lineage's own token
-    content at birth and at its last known state - re-parsed from git
-    blobs, not something the pooled file carries. All agent-born,
-    still-alive Python lineages are candidates (937 on the real run - a
-    real number, not too large to do in full). Human-born candidates are a
-    per-repo random sample (`human_multiplier`x the repo's own agent-alive
-    count, capped by availability) rather than all ~150K alive human-born
-    lineages - matching this analysis's now-established repo-stratified
-    design without paying to re-parse a six-figure blob count."""
-    py = labeled[labeled["language"] == "Python"]
-    agent_alive = py[py["is_born_agent"] & ~py["ended"]].copy()
-    human_alive = py[~py["is_born_agent"] & ~py["ended"]]
+    """Both languages (2026-08-24: extended from the first pass's
+    Python-only scope - see git history for why that was deferred rather
+    than skipped). The "modified >50%" half of survival needs each
+    candidate lineage's own token content at birth and at its last known
+    state - re-parsed from git blobs, not something the pooled file
+    carries. All agent-born, still-alive lineages are candidates (937 on
+    the full-corpus run, both languages - a real number, not too large to
+    do in full). Human-born candidates are a per-repo random sample
+    (`human_multiplier`x the repo's own agent-alive count, capped by
+    availability) rather than all ~150K alive human-born lineages -
+    matching this analysis's now-established repo-stratified design
+    without paying to re-parse a six-figure blob count."""
+    agent_alive = labeled[labeled["is_born_agent"] & ~labeled["ended"]].copy()
+    human_alive = labeled[~labeled["is_born_agent"] & ~labeled["ended"]]
 
     rng = np.random.default_rng(seed)
     samples = []
@@ -274,29 +277,71 @@ def sample_modification_candidates(labeled, human_multiplier=3, seed=20260824):
     return pd.concat([agent_alive, human_sample], ignore_index=True)
 
 
+def _build_inventory_python(repo_dir, pairs, blobs):
+    """AST-based, in-process - no subprocess beyond the blob fetch
+    itself."""
+    inventory = {}
+    for sha, path in pairs:
+        text = blobs.get((sha, path))
+        if text is None:
+            inventory[(sha, path)] = {}
+            continue
+        class_inv, callable_inv = _entities_from_text(text, path)
+        inventory[(sha, path)] = {**class_inv, **callable_inv}
+    return inventory
+
+
+def _build_inventory_csharp(repo_dir, pairs, blobs):
+    """Roslyn-based: one `_run_roslyn_batch` call for ALL of a repo's
+    needed blobs at once (not one dotnet subprocess per pair - the same
+    per-file batching cs_entity_history.py's own collect_file_sequences
+    already established, applied here across a whole repo's birth/last
+    pairs instead of one file's touch history). Blobs missing from git
+    (deleted/renamed-away path at that commit) are skipped before the
+    Roslyn call, not sent as empty input - `_run_roslyn_batch` returns one
+    result per INPUT blob, positionally aligned, so a pair with no text
+    needs no matching output slot rather than a placeholder one."""
+    ordered_pairs = [(sha, path) for sha, path in pairs if blobs.get((sha, path)) is not None]
+    payload = [{"relpath": path, "text": blobs[(sha, path)]} for sha, path in ordered_pairs]
+    results = _run_roslyn_batch(payload)
+    if len(results) != len(ordered_pairs):
+        raise RuntimeError(
+            f"roslyn_tool --batch returned {len(results)} result(s) for "
+            f"{len(ordered_pairs)} input blob(s) in {repo_dir} - can't align by position"
+        )
+    inventory = {pair: {} for pair in pairs}
+    for (sha, path), result in zip(ordered_pairs, results):
+        if result.get("status") != "ok":
+            continue
+        class_inv = {c["qualified_name"]: _to_snapshot(c) for c in result["classes"]}
+        callable_inv = {c["qualified_name"]: _to_snapshot(c) for c in result["callables"]}
+        inventory[(sha, path)] = {**class_inv, **callable_inv}
+    return inventory
+
+
 def compute_modification_similarity(candidates):
     """Birth-to-current Jaccard token-similarity per candidate lineage,
     one batched `git cat-file --batch` call per repo (reusing
-    py_entity_history.py's batch_show/_entities_from_text - the same fix
-    that took a documented 68-minute single-git-show-per-touch stall on
+    py_entity_history.py's batch_show - the same fix that took a
+    documented 68-minute single-git-show-per-touch stall on
     browser-use/browser-use down to seconds, applied here to a birth/last
-    pair per lineage instead of a full touch history). A lookup miss
-    (entity not found in its own recorded commit's inventory - can happen
-    on a real parse failure, or a qualified-name change a rename/move
-    touch didn't fully track) is left NaN, not assumed 0 or 1, and
-    reported as a real coverage number, not silently dropped."""
+    pair per lineage instead of a full touch history) plus, per repo,
+    ONE entity-extraction call - AST-in-process for Python
+    (`_entities_from_text`), one batched Roslyn subprocess call for C#
+    (`_run_roslyn_batch`, reusing cs_entity_history.py's own per-file
+    batching pattern at repo scope instead). A lookup miss (entity not
+    found in its own recorded commit's inventory - can happen on a real
+    parse failure, or a qualified-name change a rename/move touch didn't
+    fully track) is left NaN, not assumed 0 or 1, and reported as a real
+    coverage number, not silently dropped."""
+    build_inventory = {"Python": _build_inventory_python, "C#": _build_inventory_csharp}
     results = []
     for full_name, g in candidates.groupby("full_name"):
         repo_dir = REPO_CACHE_DIR / _safe_dirname(full_name)
+        language = g["language"].iloc[0]
         pairs = set(zip(g["first_commit"], g["relpath"])) | set(zip(g["last_commit"], g["relpath"]))
         blobs = batch_show(repo_dir, sorted(pairs))
-        inventory = {}
-        for (sha, path), text in blobs.items():
-            if text is None:
-                inventory[(sha, path)] = {}
-                continue
-            class_inv, callable_inv = _entities_from_text(text, path)
-            inventory[(sha, path)] = {**class_inv, **callable_inv}
+        inventory = build_inventory[language](repo_dir, pairs, blobs)
 
         for row in g.itertuples():
             first_inv = inventory.get((row.first_commit, row.relpath), {})
@@ -331,7 +376,7 @@ def full_survival_test(mod_results, n_perms=300, seed=20260824):
     definitionally satisfied for all of them; deletion-caused
     non-survival was already tested full-corpus in
     `survival_deletion_test`/its stratified check above, on all 166K
-    lineages, not just this Python-only similarity-resolved subset)."""
+    lineages, not just this similarity-resolved subset)."""
     resolved = mod_results.dropna(subset=["similarity_birth_to_last"]).copy()
     resolved["full_survival"] = resolved["survived_modification"]
 
@@ -428,7 +473,7 @@ def run():
     mod_results = compute_modification_similarity(candidates)
     mod_path = OUT_DIR / f"{prefix}-agent-survival-fc-modification-similarity.csv"
     mod_results.to_csv(mod_path, index=False)
-    print(f"\n=== birth-to-last token similarity (Python only) -> {mod_path} ===")
+    print(f"\n=== birth-to-last token similarity (both languages) -> {mod_path} ===")
 
     full_test, full_strat = full_survival_test(mod_results)
     full_test_path = OUT_DIR / f"{prefix}-agent-survival-fc-full-survival.csv"

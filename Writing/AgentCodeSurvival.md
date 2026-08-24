@@ -285,7 +285,7 @@ reporting. **No real cross-repo deletion-rate difference found.**
 Outputs: `results/analysis/08-24-agent-survival-fc-deletion.csv`,
 `-deletion-stratified-permutation.csv`.
 
-### Finding 3: the requested full survival definition (not deleted AND <50% modified) - no signal either way
+### Finding 3: the requested full survival definition (not deleted AND <50% modified) - no signal either way, now confirmed on both languages
 
 The "modified >50%" half needed a new per-lineage computation not in the
 pooled file: Jaccard token-similarity between each entity's birth-state
@@ -293,31 +293,40 @@ source and its last-known-state source (reusing the matcher's own
 similarity metric and `py_entity_history.py`'s batched
 `git cat-file --batch` blob-fetch - the same fix that took a documented
 68-minute single-`git-show`-per-touch stall down to seconds, applied
-here to one birth/last pair per lineage). **Python only this piece** (C#
-would need `cs_entity_history.py`'s separate Roslyn-based extraction
-path - not attempted here, same scoping boundary the pilot already drew
-for a different reason). Survived = similarity ≥ 0.5 AND not deleted.
+here to one birth/last pair per lineage). **First landed Python-only,
+extended to C# same day** via `cs_entity_history.py`'s Roslyn-batch path
+(`_run_roslyn_batch`, one `dotnet` subprocess call per repo covering all
+of that repo's needed blobs at once - the same per-repo batching
+Finding 1/2's git-log resolution and this Python path already use, not a
+per-pair subprocess). Survived = similarity ≥ 0.5 AND not deleted.
 
-Candidates: all 805 Python agent-born lineages still alive, plus a
-per-repo random sample of human-born alive lineages (3x the repo's own
-agent-alive count, capped by availability - 2,355 lineages, 22 repos) -
-not all ~150K alive human-born lineages, to keep the added git/AST work
-bounded while preserving the repo-stratified design Finding 1/2 already
-established as necessary. 3,160/3,160 candidates resolved (100% -
-every birth/last qualified-name pair was found in its recorded commit's
-own entity inventory, no silent misses).
+Candidates: all 937 agent-born lineages still alive (both languages),
+plus a per-repo random sample of human-born alive lineages (3x the
+repo's own agent-alive count, capped by availability - 2,751 lineages,
+32 repos total, 10 of them C#) - not all ~150K alive human-born
+lineages, to keep the added git/AST/Roslyn work bounded while preserving
+the repo-stratified design Finding 1/2 already established as necessary.
+**3,688/3,688 candidates resolved (100%, both languages)** - every
+birth/last qualified-name pair was found in its recorded commit's own
+entity inventory, no silent misses on either extraction path.
 
-**Pooled: 97.0% of agent-born lineages survived vs. 96.8% of
-human-born** (Fisher p=0.91). Repo-stratified permutation: real
-percentage-point difference (+0.20pp) sits at the **64th percentile** of
-the null (p=0.94) - solidly unremarkable. **No detectable difference by
-this definition, in either direction.** Both cohorts overwhelmingly
-survive (>96%) within this corpus's observation window - token-level
-rewrite-past-50% and outright deletion are both rare events for either
-group, at least among entities still alive to check.
+**Pooled: 96.7% of agent-born lineages survived vs. 96.9% of
+human-born** (Fisher p=0.75). Repo-stratified permutation: real
+percentage-point difference (-0.22pp) sits at the **37th percentile** of
+the null (p=0.75) - solidly unremarkable, same conclusion as the
+Python-only pass before C# was added (97.0% vs. 96.8%, p=0.91/0.94).
+**No detectable difference by this definition, in either direction, on
+either language.** Both cohorts overwhelmingly survive (>96%) within
+this corpus's observation window - token-level rewrite-past-50% and
+outright deletion are both rare events for either group, at least among
+entities still alive to check. One per-repo exception worth naming, not
+correcting for multiple comparisons: `microsoft/testfx` alone shows
+agent-born surviving *less* often (92.6% vs. 100%, p=0.004, n=54/162) -
+a single-repo lead in the opposite direction from nothing, same
+"interesting but uncorrected" status as the pilot's getsentry result.
 
 Outputs: `results/analysis/08-24-agent-survival-fc-modification-similarity.csv`
-(per-lineage similarity + resolution status),
+(per-lineage similarity + resolution status, both languages),
 `-full-survival.csv`, `-full-survival-stratified-permutation.csv`.
 
 ### Bottom line
@@ -347,9 +356,10 @@ this data separates them.
 - **`is_born_agent` depends on the same PR->commit resolution as the
   pilot** - real, variable resolution rates per repo (see the pilot's own
   table above), not distinguished here from "PR never merged."
-- **The modification-similarity candidate set is Python-only and
-  partially sampled** (all agent-alive, a 3x-capped human sample) - not a
-  full-corpus number the way Findings 1/2 are.
+- **The modification-similarity candidate set is partially sampled**
+  (all agent-alive, a 3x-capped human sample, both languages) - not a
+  full-corpus number the way Findings 1/2 are, though it does now cover
+  both languages rather than Python only.
 - **A single-touch lineage (no touches after birth) trivially "survives"
   by the modification definition** (similarity of a snapshot against
   itself = 1.0) - correct by the definition as stated, but worth naming:
