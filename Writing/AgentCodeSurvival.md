@@ -205,3 +205,160 @@ composition/randomization check before it goes in a headline.
 Outputs: `results/analysis/08-21-agent-code-survival-coverage.csv`,
 `-gaps.csv` (12,391 rows, one per gap-pair), `-test.csv`,
 `-stratified-permutation.csv`.
+
+## Full-corpus follow-up (2026-08-24): a birth-cohort redesign, not just more repos
+
+> **Status: full corpus (99/100 repos, both languages), real data, one
+> naive result checked and rejected by stratification before being
+> reported as a finding.** Branch: `analysis/agent-code-survival-full-corpus`,
+> off `main`. Code: `src/analysis/agent_code_survival_full_corpus.py`.
+
+The pilot above scoped to 10 Python repos and asked "what happens after
+an agent touches a file it already touched" - a real question, but not
+the one motivating this project's Tier-2 idea: **was an entity *created*
+by an agent-authored commit touched more often than one created by a
+human, and did it survive** (survival defined here, per direct request,
+as: not deleted AND not rewritten past 50% token-overlap loss from its
+birth state - not the pilot's "gap until next touch").
+
+**Scope, and why it's cheap this time.** `results/analysis/08-19-entity-history-pooled.csv`
+already carries a first/last-touch summary row per lineage for all 100
+scaled-corpus repos, both languages - the C# entity-history walk
+(`EntityHistory.cs`/`cs_entity_history.py`) already ran for the RQ3
+tracker; only the *agent-PR linking* step was Python-only before, not the
+underlying walk. Reusing that pooled file means this pass needed one
+`git log` per repo (PR->commit resolution, reusing `agent_code_survival.py`'s
+already-validated regex) rather than re-walking git history - the
+expensive part already paid for once. **99/100 repos** with a local clone
+have at least one registered agent PR (65 Python + 34 C#, 3,057 agent PRs
+total) and are in scope; the 100th has a clone but 0 agent PRs.
+
+**166,369 lineages labeled, 1,007 agent-born / 165,362 human-born**
+(`is_born_agent` = the lineage's own first-touch commit resolves to a
+commit this repo's agent-PR registry flags) - `results/analysis/08-24-agent-survival-fc-labeled-lineages.csv`.
+Sanity-checked the single largest agent-born contributor before trusting
+it: `NewFuture/DDNS` supplies 421/1,007 (42%) from just 10 resolved
+commits, one of which (`6c24557`, Copilot, "add task subcommand for
+automated scheduled task management") alone created 202 entities across
+53 files, 5,471 insertions - a real large feature PR, not a matcher
+false-positive (confirmed by reading the commit message and diffstat
+directly).
+
+### Finding 1: agent-born code IS touched more often - real, and it survives the composition check this time
+
+| Metric | Pooled Cliff's δ | Naive pooled p | Stratified-permutation percentile | Stratified p |
+|---|---|---|---|---|
+| Touches after birth (raw count) | **+0.117** | 9.0×10⁻²⁰ | **100th** (above every one of 300 within-repo-shuffled draws) | **0.0066** |
+| Touches per day since birth (age-normalized) | **+0.126** | 1.4×10⁻²² | **100th** | **0.0066** |
+
+Unlike every pooled result this project has checked before (the
+pre-slope/slope-change placebo, this doc's own pilot mlflow result, and
+the deletion result immediately below), **this one does not evaporate
+under repo-stratified shuffling** - the real pooled effect sits above the
+entire null distribution built by shuffling `is_born_agent` within each
+repo separately (300 draws), not inside it. Agent-born entities being
+touched again more often than human-born entities, within the same
+repos, is the one part of this analysis with real cross-repo support.
+Per-repo results are mixed in direction (`microsoft/testfx` alone:
+δ=+0.47, p≈2×10⁻²⁴⁵ on n=11,881; several smaller repos lean the other
+way), consistent with a real but uneven effect, not a single repo
+driving a spurious pooled number the way mlflow did in the pilot.
+
+Outputs: `results/analysis/08-24-agent-survival-fc-freq-touches_after_birth.csv`,
+`-touches_per_day.csv`, and each metric's own `-stratified-permutation.csv`.
+
+### Finding 2: "survived" by deletion alone does NOT survive the same check - a repo-composition artifact, same failure mode as before
+
+Naive pooled: 6.95% of agent-born lineages were later deleted vs. 9.51%
+of human-born (Fisher p=0.005, OR=0.71 - agent-born deleted *less*
+often). This looked like a real result until stratified the same way as
+Finding 1: the real pooled percentage-point difference (-2.56pp) lands at
+the **25th percentile** of the repo-shuffled null (p=0.51) - well inside
+it, not extreme. `microsoft/testfx` alone is a dramatic outlier in the
+*opposite* direction (36.5% of its 85 agent-born lineages deleted vs.
+0.6% of its human-born, OR=99, p=2×10⁻⁴⁴) that the naive pooled number
+doesn't reflect - exactly the composition-confound shape this project's
+convention (established by the pilot's mlflow result and
+`HeterogeneityExplainersPart2.md`'s placebo work) says to check before
+reporting. **No real cross-repo deletion-rate difference found.**
+
+Outputs: `results/analysis/08-24-agent-survival-fc-deletion.csv`,
+`-deletion-stratified-permutation.csv`.
+
+### Finding 3: the requested full survival definition (not deleted AND <50% modified) - no signal either way
+
+The "modified >50%" half needed a new per-lineage computation not in the
+pooled file: Jaccard token-similarity between each entity's birth-state
+source and its last-known-state source (reusing the matcher's own
+similarity metric and `py_entity_history.py`'s batched
+`git cat-file --batch` blob-fetch - the same fix that took a documented
+68-minute single-`git-show`-per-touch stall down to seconds, applied
+here to one birth/last pair per lineage). **Python only this piece** (C#
+would need `cs_entity_history.py`'s separate Roslyn-based extraction
+path - not attempted here, same scoping boundary the pilot already drew
+for a different reason). Survived = similarity ≥ 0.5 AND not deleted.
+
+Candidates: all 805 Python agent-born lineages still alive, plus a
+per-repo random sample of human-born alive lineages (3x the repo's own
+agent-alive count, capped by availability - 2,355 lineages, 22 repos) -
+not all ~150K alive human-born lineages, to keep the added git/AST work
+bounded while preserving the repo-stratified design Finding 1/2 already
+established as necessary. 3,160/3,160 candidates resolved (100% -
+every birth/last qualified-name pair was found in its recorded commit's
+own entity inventory, no silent misses).
+
+**Pooled: 97.0% of agent-born lineages survived vs. 96.8% of
+human-born** (Fisher p=0.91). Repo-stratified permutation: real
+percentage-point difference (+0.20pp) sits at the **64th percentile** of
+the null (p=0.94) - solidly unremarkable. **No detectable difference by
+this definition, in either direction.** Both cohorts overwhelmingly
+survive (>96%) within this corpus's observation window - token-level
+rewrite-past-50% and outright deletion are both rare events for either
+group, at least among entities still alive to check.
+
+Outputs: `results/analysis/08-24-agent-survival-fc-modification-similarity.csv`
+(per-lineage similarity + resolution status),
+`-full-survival.csv`, `-full-survival-stratified-permutation.csv`.
+
+### Bottom line
+
+Splitting the request's two questions gives two different answers, not
+one combined "does or doesn't replicate":
+
+- **"Touched more often" - yes, and it's the one result in this entire
+  analysis (pilot or full-corpus) that survives a repo-composition
+  check.** Real, if modest (δ≈0.12), and directionally consistent with
+  `LitReview.md` source #15's "agents churn more" finding (7.33% vs.
+  4.10%), though not the same metric.
+- **"Survived longer," under the requested modified->50%-or-deleted
+  definition - no.** Neither cohort shows a real survival disadvantage
+  relative to the other; the one component that looked different
+  (deletion rate) turned out to be a composition artifact once checked,
+  and the modification-based half shows no gap at all.
+
+Read together: agent-created code in this corpus gets revisited more,
+but when it's revisited, it isn't disproportionately rewritten past
+recognition or deleted, relative to human-created code in the same
+repos. "Touched more" and "survives worse" are not the same claim, and
+this data separates them.
+
+### Caveats specific to this pass
+
+- **`is_born_agent` depends on the same PR->commit resolution as the
+  pilot** - real, variable resolution rates per repo (see the pilot's own
+  table above), not distinguished here from "PR never merged."
+- **The modification-similarity candidate set is Python-only and
+  partially sampled** (all agent-alive, a 3x-capped human sample) - not a
+  full-corpus number the way Findings 1/2 are.
+- **A single-touch lineage (no touches after birth) trivially "survives"
+  by the modification definition** (similarity of a snapshot against
+  itself = 1.0) - correct by the definition as stated, but worth naming:
+  most of both cohorts' high survival rate reflects entities that simply
+  haven't been touched again yet within the walked history, not
+  necessarily evidence of durable, unmodified code under active use.
+- **Right-censoring**: "survived" and "touched more" are both measured
+  against each repo's walked history, not a fixed follow-up window -
+  an entity born recently has had less time to be either touched again
+  or rewritten than one born early, a real confound `touches_per_day`
+  partially addresses (age-normalized) but the modification-survival
+  check does not.
