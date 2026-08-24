@@ -1,0 +1,4 @@
+metric,n_eligible_repos,n_repos_with_any_scoped_month,n_repos_with_ge2_months,n_repos_with_ge3_months,n_repo_months,median_months_per_repo,max_months_per_repo
+cyclomatic_complexity_p90,79,72,49,12,162,2.0,7
+design_smell_density_per_kloc,79,72,49,12,162,2.0,7
+implementation_smell_density_per_kloc,79,72,49,12,162,2.0,7

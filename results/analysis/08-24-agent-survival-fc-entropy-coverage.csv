@@ -1,0 +1,3 @@
+is_born_agent,n_total,n_with_entropy,coverage_pct
+False,165362,15592,9.42901029257024
+True,1007,121,12.01588877855015
