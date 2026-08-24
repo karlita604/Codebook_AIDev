@@ -34,11 +34,15 @@ before this could even be attempted, neither assumed away:
    NOT yet been run (needs GITHUB_TOKEN, which wasn't available in the
    environment that made the pipeline change - see the pipeline's own
    module docstring for the ~2-3 hour cost estimate at this scale). Note
-   also: 6 of the 63 gap repos are under the `dotnet/*` GitHub org, which
-   blocks fine-grained PATs from the Search API entirely (confirmed
-   during the original Phase 1b pilot on `dotnet/aspire` - 401/422 on
-   every query) - a classic PAT is needed for those 6 to return data, or
-   they'll fail exactly like `dotnet/aspire` did and stay uncovered.
+   also: `dotnet/aspire` (1 of the 63 gap repos) returns 422 from the
+   Search API regardless of token - confirmed directly that even an
+   unauthenticated request gets the same "cannot be searched" error, so
+   this isn't a fine-grained-vs-classic-PAT issue (both a fine-grained
+   and a classic PAT search every *other* dotnet/* repo in the gap set
+   fine) - it's that repo specifically excluded from GitHub's search
+   index, likely tied to a repo transfer (its REST endpoint 301-redirects
+   to a different internal repo ID). Nothing to fix on our end; it'll
+   just stay uncovered same as the other 62 get filled in.
 2. **The PR-sample file doesn't itself flag which PRs are agent-authored**
    - it's a calendar-window sample of PRs near each repo's intervention
      date (track B1/B2), a mix of human and agent PRs, with no `agent`
