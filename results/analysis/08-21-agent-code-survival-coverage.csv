@@ -1,0 +1,11 @@
+full_name,agent_prs_in_registry,agent_prs_resolved_to_a_commit,resolved_rate,agent_touched_files,agent_touched_files_still_at_head,agent_touched_files_gone,total_touches_walked,agent_tagged_touches,gap_pairs_total,gap_pairs_after_agent_touch
+crewAIInc/crewAI,327,40,0.12232415902140673,72,0,72,0,0,0,0
+airbytehq/airbyte,218,86,0.3944954128440367,61,28,33,121,71,11,0
+mlflow/mlflow,91,74,0.8131868131868132,146,137,9,8876,277,5747,119
+AgentOps-AI/agentops,51,18,0.35294117647058826,17,12,5,74,28,11,1
+567-labs/instructor,51,20,0.39215686274509803,48,20,28,270,30,165,14
+getsentry/sentry,51,34,0.6666666666666666,26,13,13,2244,29,1937,19
+Significant-Gravitas/AutoGPT,43,14,0.32558139534883723,37,29,8,1446,120,682,69
+browser-use/browser-use,36,18,0.5,25,14,11,4220,0,3108,0
+crewAIInc/crewAI-tools,29,3,0.10344827586206896,5,5,0,132,0,73,0
+ikamensh/flynt,28,23,0.8214285714285714,40,17,23,14,11,1,0
