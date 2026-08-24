@@ -1,0 +1,2401 @@
+draw,metric,n,spearman_rho,null_kind
+0,cyclomatic_complexity_p90,92,-0.5735830154510075,uniform
+0,design_smell_density_per_kloc,91,-0.7457354463645776,uniform
+0,implementation_smell_density_per_kloc,91,-0.8020688172385511,uniform
+0,"pooled (non-independent, see caveat)",274,-0.6908577283052236,uniform
+1,cyclomatic_complexity_p90,92,-0.6921689810890371,uniform
+1,design_smell_density_per_kloc,91,-0.847798040933344,uniform
+1,implementation_smell_density_per_kloc,91,-0.7694359725750324,uniform
+1,"pooled (non-independent, see caveat)",274,-0.7533582099347537,uniform
+2,cyclomatic_complexity_p90,92,-0.6244162569548263,uniform
+2,design_smell_density_per_kloc,91,-0.8133630644262164,uniform
+2,implementation_smell_density_per_kloc,91,-0.8475859817326145,uniform
+2,"pooled (non-independent, see caveat)",274,-0.7496440382996347,uniform
+3,cyclomatic_complexity_p90,92,-0.680129464801757,uniform
+3,design_smell_density_per_kloc,91,-0.8049852671816518,uniform
+3,implementation_smell_density_per_kloc,91,-0.8002213745928857,uniform
+3,"pooled (non-independent, see caveat)",274,-0.7414329999988332,uniform
+4,cyclomatic_complexity_p90,92,-0.6210866608402011,uniform
+4,design_smell_density_per_kloc,91,-0.793995142587841,uniform
+4,implementation_smell_density_per_kloc,91,-0.8039321861139204,uniform
+4,"pooled (non-independent, see caveat)",274,-0.7183606120367383,uniform
+5,cyclomatic_complexity_p90,91,-0.5650262780697562,uniform
+5,design_smell_density_per_kloc,91,-0.8224894481165884,uniform
+5,implementation_smell_density_per_kloc,91,-0.8264837273747999,uniform
+5,"pooled (non-independent, see caveat)",273,-0.7241949432134523,uniform
+6,cyclomatic_complexity_p90,92,-0.7586868570107502,uniform
+6,design_smell_density_per_kloc,91,-0.8631838815003584,uniform
+6,implementation_smell_density_per_kloc,91,-0.8451811210473089,uniform
+6,"pooled (non-independent, see caveat)",274,-0.8017054714694898,uniform
+7,cyclomatic_complexity_p90,92,-0.5845875236003544,uniform
+7,design_smell_density_per_kloc,91,-0.8562236202914709,uniform
+7,implementation_smell_density_per_kloc,91,-0.790235628568471,uniform
+7,"pooled (non-independent, see caveat)",274,-0.7066918913495205,uniform
+8,cyclomatic_complexity_p90,92,-0.7033891774424734,uniform
+8,design_smell_density_per_kloc,91,-0.8064187305885164,uniform
+8,implementation_smell_density_per_kloc,91,-0.7485407592033699,uniform
+8,"pooled (non-independent, see caveat)",274,-0.7205550478665053,uniform
+9,cyclomatic_complexity_p90,92,-0.6907202194719725,uniform
+9,design_smell_density_per_kloc,91,-0.8752409014892093,uniform
+9,implementation_smell_density_per_kloc,91,-0.765884423351038,uniform
+9,"pooled (non-independent, see caveat)",274,-0.7432613393637654,uniform
+10,cyclomatic_complexity_p90,91,-0.756660123672679,uniform
+10,design_smell_density_per_kloc,91,-0.7887234211993313,uniform
+10,implementation_smell_density_per_kloc,91,-0.7972113171788278,uniform
+10,"pooled (non-independent, see caveat)",273,-0.7609497233475583,uniform
+11,cyclomatic_complexity_p90,91,-0.5409141583054627,uniform
+11,design_smell_density_per_kloc,91,-0.8209922752249741,uniform
+11,implementation_smell_density_per_kloc,91,-0.8426329242946672,uniform
+11,"pooled (non-independent, see caveat)",273,-0.7168901806789055,uniform
+12,cyclomatic_complexity_p90,92,-0.7309443994913882,uniform
+12,design_smell_density_per_kloc,91,-0.7939953810623557,uniform
+12,implementation_smell_density_per_kloc,91,-0.8384761783419203,uniform
+12,"pooled (non-independent, see caveat)",274,-0.7730641922676196,uniform
+13,cyclomatic_complexity_p90,91,-0.6901098901098901,uniform
+13,design_smell_density_per_kloc,91,-0.8628971888189855,uniform
+13,implementation_smell_density_per_kloc,91,-0.8053018418684653,uniform
+13,"pooled (non-independent, see caveat)",273,-0.7638157374782808,uniform
+14,cyclomatic_complexity_p90,91,-0.6403959323761517,uniform
+14,design_smell_density_per_kloc,90,-0.77383000617411,uniform
+14,implementation_smell_density_per_kloc,90,-0.7653518158769879,uniform
+14,"pooled (non-independent, see caveat)",271,-0.7103184472962173,uniform
+15,cyclomatic_complexity_p90,91,-0.6775257009531848,uniform
+15,design_smell_density_per_kloc,91,-0.8012694165446039,uniform
+15,implementation_smell_density_per_kloc,91,-0.7989950549056769,uniform
+15,"pooled (non-independent, see caveat)",273,-0.739488455570182,uniform
+16,cyclomatic_complexity_p90,90,-0.6288040301935249,uniform
+16,design_smell_density_per_kloc,91,-0.8179501473281835,uniform
+16,implementation_smell_density_per_kloc,91,-0.7753286775655166,uniform
+16,"pooled (non-independent, see caveat)",272,-0.7154936195867566,uniform
+17,cyclomatic_complexity_p90,92,-0.7073324856471312,uniform
+17,design_smell_density_per_kloc,91,-0.7835310981922434,uniform
+17,implementation_smell_density_per_kloc,91,-0.82640409622628,uniform
+17,"pooled (non-independent, see caveat)",274,-0.7552289880841958,uniform
+18,cyclomatic_complexity_p90,92,-0.7248102338843292,uniform
+18,design_smell_density_per_kloc,91,-0.8507127498606355,uniform
+18,implementation_smell_density_per_kloc,91,-0.8383487685042882,uniform
+18,"pooled (non-independent, see caveat)",274,-0.7890571312231871,uniform
+19,cyclomatic_complexity_p90,92,-0.7663640707118968,uniform
+19,design_smell_density_per_kloc,91,-0.8573544636457753,uniform
+19,implementation_smell_density_per_kloc,91,-0.9102875480773058,uniform
+19,"pooled (non-independent, see caveat)",274,-0.8342090118711734,uniform
+20,cyclomatic_complexity_p90,90,-0.7145444218532635,uniform
+20,design_smell_density_per_kloc,91,-0.8313450664967748,uniform
+20,implementation_smell_density_per_kloc,91,-0.8158131534731126,uniform
+20,"pooled (non-independent, see caveat)",272,-0.7729736917901713,uniform
+21,cyclomatic_complexity_p90,92,-0.697992524948946,uniform
+21,design_smell_density_per_kloc,91,-0.8405033049295213,uniform
+21,implementation_smell_density_per_kloc,91,-0.7902993334872869,uniform
+21,"pooled (non-independent, see caveat)",274,-0.7527706898985763,uniform
+22,cyclomatic_complexity_p90,92,-0.6687550572188184,uniform
+22,design_smell_density_per_kloc,91,-0.8420641873058853,uniform
+22,implementation_smell_density_per_kloc,91,-0.8513764244021692,uniform
+22,"pooled (non-independent, see caveat)",274,-0.7708316561602713,uniform
+23,cyclomatic_complexity_p90,92,-0.6246137248102338,uniform
+23,design_smell_density_per_kloc,91,-0.8652066576411563,uniform
+23,implementation_smell_density_per_kloc,91,-0.8107326861975329,uniform
+23,"pooled (non-independent, see caveat)",274,-0.7391222930426777,uniform
+24,cyclomatic_complexity_p90,92,-0.6352945709551883,uniform
+24,design_smell_density_per_kloc,91,-0.8757187226248307,uniform
+24,implementation_smell_density_per_kloc,91,-0.7631451118419482,uniform
+24,"pooled (non-independent, see caveat)",274,-0.71419979302226,uniform
+25,cyclomatic_complexity_p90,91,-0.6792164357381749,uniform
+25,design_smell_density_per_kloc,91,-0.7633670462690133,uniform
+25,implementation_smell_density_per_kloc,91,-0.8373454160329356,uniform
+25,"pooled (non-independent, see caveat)",273,-0.7377773085602192,uniform
+26,cyclomatic_complexity_p90,92,-0.7628944630678534,uniform
+26,design_smell_density_per_kloc,91,-0.8301186589153461,uniform
+26,implementation_smell_density_per_kloc,91,-0.7847251530908831,uniform
+26,"pooled (non-independent, see caveat)",274,-0.7918514473857685,uniform
+27,cyclomatic_complexity_p90,92,-0.7000863105329674,uniform
+27,design_smell_density_per_kloc,91,-0.8102923082500655,uniform
+27,implementation_smell_density_per_kloc,91,-0.8696915885617819,uniform
+27,"pooled (non-independent, see caveat)",274,-0.7843806408641583,uniform
+28,cyclomatic_complexity_p90,91,-0.6440965448044658,uniform
+28,design_smell_density_per_kloc,91,-0.7993310504101299,uniform
+28,implementation_smell_density_per_kloc,91,-0.829446006099746,uniform
+28,"pooled (non-independent, see caveat)",273,-0.7467345053224917,uniform
+29,cyclomatic_complexity_p90,91,-0.6552954292084727,uniform
+29,design_smell_density_per_kloc,91,-0.8830134586286534,uniform
+29,implementation_smell_density_per_kloc,91,-0.8469967112335662,uniform
+29,"pooled (non-independent, see caveat)",273,-0.7619454860943182,uniform
+30,cyclomatic_complexity_p90,92,-0.6506118800283591,uniform
+30,design_smell_density_per_kloc,91,-0.7666162299912401,uniform
+30,implementation_smell_density_per_kloc,91,-0.8834837034854554,uniform
+30,"pooled (non-independent, see caveat)",274,-0.7530202978835238,uniform
+31,cyclomatic_complexity_p90,92,-0.614328263897998,uniform
+31,design_smell_density_per_kloc,91,-0.8925735681826602,uniform
+31,implementation_smell_density_per_kloc,91,-0.836803924222999,uniform
+31,"pooled (non-independent, see caveat)",274,-0.7506601520233179,uniform
+32,cyclomatic_complexity_p90,92,-0.672443754315652,uniform
+32,design_smell_density_per_kloc,91,-0.8015768097475512,uniform
+32,implementation_smell_density_per_kloc,91,-0.8901886461908441,uniform
+32,"pooled (non-independent, see caveat)",274,-0.7681804439607787,uniform
+33,cyclomatic_complexity_p90,92,-0.6969776366690813,uniform
+33,design_smell_density_per_kloc,91,-0.9049295213824958,uniform
+33,implementation_smell_density_per_kloc,91,-0.8350679651852619,uniform
+33,"pooled (non-independent, see caveat)",274,-0.7916479139327538,uniform
+34,cyclomatic_complexity_p90,92,-0.7055292259083727,uniform
+34,design_smell_density_per_kloc,91,-0.8386079477582226,uniform
+34,implementation_smell_density_per_kloc,91,-0.8353864897793422,uniform
+34,"pooled (non-independent, see caveat)",274,-0.7745972742875077,uniform
+35,cyclomatic_complexity_p90,92,-0.6880538816022688,uniform
+35,design_smell_density_per_kloc,91,-0.8833512530397614,uniform
+35,implementation_smell_density_per_kloc,91,-0.8719371869500474,uniform
+35,"pooled (non-independent, see caveat)",274,-0.7957913631802309,uniform
+36,cyclomatic_complexity_p90,92,-0.6764047454882196,uniform
+36,design_smell_density_per_kloc,91,-0.8575296647288365,uniform
+36,implementation_smell_density_per_kloc,91,-0.8653596540822909,uniform
+36,"pooled (non-independent, see caveat)",274,-0.7691228692430943,uniform
+37,cyclomatic_complexity_p90,92,-0.5093630072592205,uniform
+37,design_smell_density_per_kloc,91,-0.8615752170104325,uniform
+37,implementation_smell_density_per_kloc,91,-0.832137538919724,uniform
+37,"pooled (non-independent, see caveat)",274,-0.7114825651348199,uniform
+38,cyclomatic_complexity_p90,92,-0.6517705082264091,uniform
+38,design_smell_density_per_kloc,91,-0.8620848928884287,uniform
+38,implementation_smell_density_per_kloc,91,-0.8481911784613669,uniform
+38,"pooled (non-independent, see caveat)",274,-0.7524690904296713,uniform
+39,cyclomatic_complexity_p90,92,-0.7105052248697635,uniform
+39,design_smell_density_per_kloc,91,-0.7787847415784025,uniform
+39,implementation_smell_density_per_kloc,91,-0.7866044481959563,uniform
+39,"pooled (non-independent, see caveat)",274,-0.744537591584614,uniform
+40,cyclomatic_complexity_p90,92,-0.7245811691814498,uniform
+40,design_smell_density_per_kloc,91,-0.8371904117225452,uniform
+40,implementation_smell_density_per_kloc,91,-0.8187754321980586,uniform
+40,"pooled (non-independent, see caveat)",274,-0.7792875895938297,uniform
+41,cyclomatic_complexity_p90,92,-0.6722253903179569,uniform
+41,design_smell_density_per_kloc,91,-0.7335191526638529,uniform
+41,implementation_smell_density_per_kloc,91,-0.75723648062176,uniform
+41,"pooled (non-independent, see caveat)",274,-0.7058980179903738,uniform
+42,cyclomatic_complexity_p90,92,-0.6990891296641646,uniform
+42,design_smell_density_per_kloc,91,-0.8956438639802501,uniform
+42,implementation_smell_density_per_kloc,91,-0.8434770144689797,uniform
+42,"pooled (non-independent, see caveat)",274,-0.7843854335644951,uniform
+43,cyclomatic_complexity_p90,91,-0.6789724314768509,uniform
+43,design_smell_density_per_kloc,91,-0.8374930317751055,uniform
+43,implementation_smell_density_per_kloc,91,-0.8852833674420088,uniform
+43,"pooled (non-independent, see caveat)",273,-0.775244722331499,uniform
+44,cyclomatic_complexity_p90,92,-0.6880334141251933,uniform
+44,design_smell_density_per_kloc,91,-0.7951102970454728,uniform
+44,implementation_smell_density_per_kloc,91,-0.7957301778163547,uniform
+44,"pooled (non-independent, see caveat)",274,-0.7397735116659115,uniform
+45,cyclomatic_complexity_p90,92,-0.6949408546218163,uniform
+45,design_smell_density_per_kloc,91,-0.7910647447638768,uniform
+45,implementation_smell_density_per_kloc,91,-0.7595408449755016,uniform
+45,"pooled (non-independent, see caveat)",274,-0.7323623715230635,uniform
+46,cyclomatic_complexity_p90,92,-0.6437433534207728,uniform
+46,design_smell_density_per_kloc,91,-0.775376284144302,uniform
+46,implementation_smell_density_per_kloc,91,-0.7973865057055717,uniform
+46,"pooled (non-independent, see caveat)",274,-0.7134199182181485,uniform
+47,cyclomatic_complexity_p90,90,-0.687744888215732,uniform
+47,design_smell_density_per_kloc,91,-0.8631360993867961,uniform
+47,implementation_smell_density_per_kloc,91,-0.8306882520166589,uniform
+47,"pooled (non-independent, see caveat)",272,-0.7779115871930521,uniform
+48,cyclomatic_complexity_p90,92,-0.6250240823655433,uniform
+48,design_smell_density_per_kloc,91,-0.81809349366887,uniform
+48,implementation_smell_density_per_kloc,91,-0.86110735075132,uniform
+48,"pooled (non-independent, see caveat)",274,-0.7511213731475976,uniform
+49,cyclomatic_complexity_p90,92,-0.7195567405946087,uniform
+49,design_smell_density_per_kloc,91,-0.8269013299354943,uniform
+49,implementation_smell_density_per_kloc,91,-0.8402599160687695,uniform
+49,"pooled (non-independent, see caveat)",274,-0.7896796425376468,uniform
+50,cyclomatic_complexity_p90,92,-0.7067182466901962,uniform
+50,design_smell_density_per_kloc,91,-0.8906267420562236,uniform
+50,implementation_smell_density_per_kloc,91,-0.8735775886095605,uniform
+50,"pooled (non-independent, see caveat)",274,-0.8002519550727762,uniform
+51,cyclomatic_complexity_p90,92,-0.6685546950256231,uniform
+51,design_smell_density_per_kloc,91,-0.8337023174325078,uniform
+51,implementation_smell_density_per_kloc,91,-0.7894393170832703,uniform
+51,"pooled (non-independent, see caveat)",274,-0.7504512324742707,uniform
+52,cyclomatic_complexity_p90,91,-0.6611721611721612,uniform
+52,design_smell_density_per_kloc,91,-0.8235884367285181,uniform
+52,implementation_smell_density_per_kloc,91,-0.7738156857436355,uniform
+52,"pooled (non-independent, see caveat)",273,-0.7449275469166512,uniform
+53,cyclomatic_complexity_p90,92,-0.7066411849020544,uniform
+53,design_smell_density_per_kloc,91,-0.7337580632316636,uniform
+53,implementation_smell_density_per_kloc,91,-0.8259740880242716,uniform
+53,"pooled (non-independent, see caveat)",274,-0.7473740581946797,uniform
+54,cyclomatic_complexity_p90,91,-0.6542734055853288,uniform
+54,design_smell_density_per_kloc,91,-0.8056064346579598,uniform
+54,implementation_smell_density_per_kloc,91,-0.8129782845857987,uniform
+54,"pooled (non-independent, see caveat)",273,-0.7416333356630386,uniform
+55,cyclomatic_complexity_p90,92,-0.48790505914537813,uniform
+55,design_smell_density_per_kloc,91,-0.817185633511189,uniform
+55,implementation_smell_density_per_kloc,91,-0.8694845475756298,uniform
+55,"pooled (non-independent, see caveat)",274,-0.7068832349197348,uniform
+56,cyclomatic_complexity_p90,92,-0.7590923627676942,uniform
+56,design_smell_density_per_kloc,91,-0.8164051923230071,uniform
+56,implementation_smell_density_per_kloc,91,-0.8162750141345289,uniform
+56,"pooled (non-independent, see caveat)",274,-0.7896999376092785,uniform
+57,cyclomatic_complexity_p90,92,-0.6950182447349949,uniform
+57,design_smell_density_per_kloc,91,-0.8545512463167955,uniform
+57,implementation_smell_density_per_kloc,91,-0.8524434817923379,uniform
+57,"pooled (non-independent, see caveat)",274,-0.7722848952430038,uniform
+58,cyclomatic_complexity_p90,92,-0.6556236273263205,uniform
+58,design_smell_density_per_kloc,91,-0.8282392291152345,uniform
+58,implementation_smell_density_per_kloc,91,-0.825066292931143,uniform
+58,"pooled (non-independent, see caveat)",274,-0.7478295922165168,uniform
+59,cyclomatic_complexity_p90,92,-0.7058397423053804,uniform
+59,design_smell_density_per_kloc,91,-0.8145369695731115,uniform
+59,implementation_smell_density_per_kloc,91,-0.8665381950803877,uniform
+59,"pooled (non-independent, see caveat)",274,-0.7881869280567324,uniform
+60,cyclomatic_complexity_p90,91,-0.6510403809554146,uniform
+60,design_smell_density_per_kloc,91,-0.7434259775424067,uniform
+60,implementation_smell_density_per_kloc,91,-0.8494812030673917,uniform
+60,"pooled (non-independent, see caveat)",273,-0.731859981929069,uniform
+61,cyclomatic_complexity_p90,92,-0.6640696643933263,uniform
+61,design_smell_density_per_kloc,91,-0.8268216930795573,uniform
+61,implementation_smell_density_per_kloc,91,-0.8352590799417099,uniform
+61,"pooled (non-independent, see caveat)",274,-0.7646269908773453,uniform
+62,cyclomatic_complexity_p90,92,-0.6558420541590246,uniform
+62,design_smell_density_per_kloc,91,-0.8369037190411723,uniform
+62,implementation_smell_density_per_kloc,91,-0.8245088748915025,uniform
+62,"pooled (non-independent, see caveat)",274,-0.7504268039595274,uniform
+63,cyclomatic_complexity_p90,92,-0.652124995183601,uniform
+63,design_smell_density_per_kloc,91,-0.8752886836027713,uniform
+63,implementation_smell_density_per_kloc,91,-0.8244929486617986,uniform
+63,"pooled (non-independent, see caveat)",274,-0.7517348950085243,uniform
+64,cyclomatic_complexity_p90,92,-0.6618682859917081,uniform
+64,design_smell_density_per_kloc,91,-0.8405510870430837,uniform
+64,implementation_smell_density_per_kloc,91,-0.7478559313260975,uniform
+64,"pooled (non-independent, see caveat)",274,-0.7257528244315333,uniform
+65,cyclomatic_complexity_p90,92,-0.4812160443879319,uniform
+65,design_smell_density_per_kloc,91,-0.877088476546946,uniform
+65,implementation_smell_density_per_kloc,91,-0.7990746860541971,uniform
+65,"pooled (non-independent, see caveat)",274,-0.6860407865154118,uniform
+66,cyclomatic_complexity_p90,92,-0.6748429853966784,uniform
+66,design_smell_density_per_kloc,91,-0.7840407740702396,uniform
+66,implementation_smell_density_per_kloc,91,-0.7895030220020863,uniform
+66,"pooled (non-independent, see caveat)",274,-0.7322903259914542,uniform
+67,cyclomatic_complexity_p90,92,-0.7421800947867297,uniform
+67,design_smell_density_per_kloc,91,-0.7422951341881023,uniform
+67,implementation_smell_density_per_kloc,91,-0.8248592519449909,uniform
+67,"pooled (non-independent, see caveat)",274,-0.774321926223053,uniform
+68,cyclomatic_complexity_p90,92,-0.7087019512345488,uniform
+68,design_smell_density_per_kloc,91,-0.7871147567094051,uniform
+68,implementation_smell_density_per_kloc,91,-0.8259103831054556,uniform
+68,"pooled (non-independent, see caveat)",274,-0.7595463989333759,uniform
+69,cyclomatic_complexity_p90,91,-0.6615967765054388,uniform
+69,design_smell_density_per_kloc,91,-0.7857290754161025,uniform
+69,implementation_smell_density_per_kloc,91,-0.793341243360753,uniform
+69,"pooled (non-independent, see caveat)",273,-0.7308118268657147,uniform
+70,cyclomatic_complexity_p90,92,-0.7367261069925867,uniform
+70,design_smell_density_per_kloc,91,-0.8313132117544,uniform
+70,implementation_smell_density_per_kloc,91,-0.8112104730886535,uniform
+70,"pooled (non-independent, see caveat)",274,-0.7749969446290956,uniform
+71,cyclomatic_complexity_p90,92,-0.6774193548387097,uniform
+71,design_smell_density_per_kloc,91,-0.7605001194552838,uniform
+71,implementation_smell_density_per_kloc,91,-0.8136153337739591,uniform
+71,"pooled (non-independent, see caveat)",274,-0.7286942538746781,uniform
+72,cyclomatic_complexity_p90,92,-0.6958371222045836,uniform
+72,design_smell_density_per_kloc,91,-0.8562076929202836,uniform
+72,implementation_smell_density_per_kloc,91,-0.8057318500704737,uniform
+72,"pooled (non-independent, see caveat)",274,-0.7627877116628248,uniform
+73,cyclomatic_complexity_p90,92,-0.6691635167103585,uniform
+73,design_smell_density_per_kloc,91,-0.7856812933025404,uniform
+73,implementation_smell_density_per_kloc,91,-0.8165457600394971,uniform
+73,"pooled (non-independent, see caveat)",274,-0.7299769147965163,uniform
+74,cyclomatic_complexity_p90,92,-0.6838617203273584,uniform
+74,design_smell_density_per_kloc,91,-0.8367922274428605,uniform
+74,implementation_smell_density_per_kloc,91,-0.7868433416415166,uniform
+74,"pooled (non-independent, see caveat)",274,-0.74887545562588,uniform
+75,cyclomatic_complexity_p90,92,-0.6674295842484489,uniform
+75,design_smell_density_per_kloc,91,-0.7982161344270128,uniform
+75,implementation_smell_density_per_kloc,91,-0.7851392350631874,uniform
+75,"pooled (non-independent, see caveat)",274,-0.7354146385606092,uniform
+76,cyclomatic_complexity_p90,92,-0.6754594844526643,uniform
+76,design_smell_density_per_kloc,91,-0.7678267102014813,uniform
+76,implementation_smell_density_per_kloc,91,-0.7871618662355967,uniform
+76,"pooled (non-independent, see caveat)",274,-0.7212993395146641,uniform
+77,cyclomatic_complexity_p90,92,-0.6394124809272074,uniform
+77,design_smell_density_per_kloc,91,-0.8112447240582943,uniform
+77,implementation_smell_density_per_kloc,91,-0.8284426536283934,uniform
+77,"pooled (non-independent, see caveat)",274,-0.7367485827158734,uniform
+78,cyclomatic_complexity_p90,92,-0.6655954995568912,uniform
+78,design_smell_density_per_kloc,91,-0.788882694911205,uniform
+78,implementation_smell_density_per_kloc,91,-0.8417410554312424,uniform
+78,"pooled (non-independent, see caveat)",274,-0.7460803251718915,uniform
+79,cyclomatic_complexity_p90,91,-0.6092786953128732,uniform
+79,design_smell_density_per_kloc,91,-0.8747949350959624,uniform
+79,implementation_smell_density_per_kloc,91,-0.8451651948176049,uniform
+79,"pooled (non-independent, see caveat)",273,-0.7604903116674621,uniform
+80,cyclomatic_complexity_p90,91,-0.700637044115305,uniform
+80,design_smell_density_per_kloc,91,-0.7723819383610735,uniform
+80,implementation_smell_density_per_kloc,91,-0.8257511208084154,uniform
+80,"pooled (non-independent, see caveat)",273,-0.757004153361793,uniform
+81,cyclomatic_complexity_p90,92,-0.695819365776596,uniform
+81,design_smell_density_per_kloc,91,-0.8313928486103369,uniform
+81,implementation_smell_density_per_kloc,91,-0.8060185222051457,uniform
+81,"pooled (non-independent, see caveat)",274,-0.7558177131377442,uniform
+82,cyclomatic_complexity_p90,92,-0.7367991122345181,uniform
+82,design_smell_density_per_kloc,91,-0.8520028669268137,uniform
+82,implementation_smell_density_per_kloc,91,-0.8591484244977265,uniform
+82,"pooled (non-independent, see caveat)",274,-0.7978425422800869,uniform
+83,cyclomatic_complexity_p90,91,-0.6817302255950437,uniform
+83,design_smell_density_per_kloc,91,-0.8574978099864617,uniform
+83,implementation_smell_density_per_kloc,91,-0.7298752179902691,uniform
+83,"pooled (non-independent, see caveat)",273,-0.7323257210953626,uniform
+84,cyclomatic_complexity_p90,91,-0.5985475278509942,uniform
+84,design_smell_density_per_kloc,91,-0.8557139444134747,uniform
+84,implementation_smell_density_per_kloc,91,-0.8297167520047142,uniform
+84,"pooled (non-independent, see caveat)",273,-0.7359346998381298,uniform
+85,cyclomatic_complexity_p90,92,-0.6060601390194659,uniform
+85,design_smell_density_per_kloc,91,-0.8011786254678666,uniform
+85,implementation_smell_density_per_kloc,91,-0.7378861115313867,uniform
+85,"pooled (non-independent, see caveat)",274,-0.682034331576726,uniform
+86,cyclomatic_complexity_p90,92,-0.6800524024197586,uniform
+86,design_smell_density_per_kloc,91,-0.8568288603965916,uniform
+86,implementation_smell_density_per_kloc,91,-0.7377905541531624,uniform
+86,"pooled (non-independent, see caveat)",274,-0.7374258689506555,uniform
+87,cyclomatic_complexity_p90,92,-0.6762917581782453,uniform
+87,design_smell_density_per_kloc,91,-0.834291630166441,uniform
+87,implementation_smell_density_per_kloc,91,-0.8189028420356907,uniform
+87,"pooled (non-independent, see caveat)",274,-0.7573209333366001,uniform
+88,cyclomatic_complexity_p90,92,-0.6066273648518474,uniform
+88,design_smell_density_per_kloc,91,-0.7883283759255612,uniform
+88,implementation_smell_density_per_kloc,91,-0.8341442438624292,uniform
+88,"pooled (non-independent, see caveat)",274,-0.7302678008247395,uniform
+89,cyclomatic_complexity_p90,92,-0.6505529225908372,uniform
+89,design_smell_density_per_kloc,91,-0.791399219558812,uniform
+89,implementation_smell_density_per_kloc,91,-0.842616998064963,uniform
+89,"pooled (non-independent, see caveat)",274,-0.751746411396036,uniform
+90,cyclomatic_complexity_p90,91,-0.6697696270873316,uniform
+90,design_smell_density_per_kloc,91,-0.8389599019115078,uniform
+90,implementation_smell_density_per_kloc,91,-0.8885960232204428,uniform
+90,"pooled (non-independent, see caveat)",273,-0.7813457093875721,uniform
+91,cyclomatic_complexity_p90,91,-0.7806002595975442,uniform
+91,design_smell_density_per_kloc,91,-0.873316609620027,uniform
+91,implementation_smell_density_per_kloc,91,-0.8406262193519618,uniform
+91,"pooled (non-independent, see caveat)",273,-0.8051020912414271,uniform
+92,cyclomatic_complexity_p90,92,-0.669818518090394,uniform
+92,design_smell_density_per_kloc,91,-0.8477343314485943,uniform
+92,implementation_smell_density_per_kloc,91,-0.7532708494254613,uniform
+92,"pooled (non-independent, see caveat)",274,-0.7305032774283887,uniform
+93,cyclomatic_complexity_p90,92,-0.6792226006812262,uniform
+93,design_smell_density_per_kloc,91,-0.7912877279605002,uniform
+93,implementation_smell_density_per_kloc,91,-0.8353407259061814,uniform
+93,"pooled (non-independent, see caveat)",274,-0.752388920888431,uniform
+94,cyclomatic_complexity_p90,92,-0.6745322277365062,uniform
+94,design_smell_density_per_kloc,91,-0.8152106394839532,uniform
+94,implementation_smell_density_per_kloc,91,-0.8345742520644376,uniform
+94,"pooled (non-independent, see caveat)",274,-0.7572747767390321,uniform
+95,cyclomatic_complexity_p90,92,-0.5857710921364939,uniform
+95,design_smell_density_per_kloc,91,-0.7566456956279366,uniform
+95,implementation_smell_density_per_kloc,91,-0.823712563406302,uniform
+95,"pooled (non-independent, see caveat)",274,-0.6965378611775612,uniform
+96,cyclomatic_complexity_p90,92,-0.7282184855817394,uniform
+96,design_smell_density_per_kloc,91,-0.899068248785538,uniform
+96,implementation_smell_density_per_kloc,91,-0.8200654568040836,uniform
+96,"pooled (non-independent, see caveat)",274,-0.7888209301803267,uniform
+97,cyclomatic_complexity_p90,92,-0.582355932987069,uniform
+97,design_smell_density_per_kloc,91,-0.8403440312176476,uniform
+97,implementation_smell_density_per_kloc,91,-0.8179950469425622,uniform
+97,"pooled (non-independent, see caveat)",274,-0.7123307769334227,uniform
+98,cyclomatic_complexity_p90,92,-0.5829846260547913,uniform
+98,design_smell_density_per_kloc,91,-0.8474157840248469,uniform
+98,implementation_smell_density_per_kloc,91,-0.8230614561316596,uniform
+98,"pooled (non-independent, see caveat)",274,-0.7209191519929155,uniform
+99,cyclomatic_complexity_p90,92,-0.5980734404500443,uniform
+99,design_smell_density_per_kloc,91,-0.9034523958900865,uniform
+99,implementation_smell_density_per_kloc,91,-0.7637980872598126,uniform
+99,"pooled (non-independent, see caveat)",274,-0.7072380448218937,uniform
+100,cyclomatic_complexity_p90,91,-0.6194616977225674,uniform
+100,design_smell_density_per_kloc,91,-0.8435772875686869,uniform
+100,implementation_smell_density_per_kloc,91,-0.8175331862811458,uniform
+100,"pooled (non-independent, see caveat)",273,-0.7329971962397025,uniform
+101,cyclomatic_complexity_p90,91,-0.7147293735417546,uniform
+101,design_smell_density_per_kloc,91,-0.8831408775981526,uniform
+101,implementation_smell_density_per_kloc,91,-0.8374887521002715,uniform
+101,"pooled (non-independent, see caveat)",273,-0.7884680772884121,uniform
+102,cyclomatic_complexity_p90,92,-0.6485774174655529,uniform
+102,design_smell_density_per_kloc,91,-0.8051763956359003,uniform
+102,implementation_smell_density_per_kloc,91,-0.8240947929191982,uniform
+102,"pooled (non-independent, see caveat)",274,-0.7427743131514124,uniform
+103,cyclomatic_complexity_p90,92,-0.71702911394356,uniform
+103,design_smell_density_per_kloc,91,-0.786875324161458,uniform
+103,implementation_smell_density_per_kloc,91,-0.8171987354573615,uniform
+103,"pooled (non-independent, see caveat)",274,-0.7653641510155039,uniform
+104,cyclomatic_complexity_p90,92,-0.7660077833005817,uniform
+104,design_smell_density_per_kloc,91,-0.8344031217647528,uniform
+104,implementation_smell_density_per_kloc,91,-0.7811736038668885,uniform
+104,"pooled (non-independent, see caveat)",274,-0.7759465964762448,uniform
+105,cyclomatic_complexity_p90,92,-0.725041421030324,uniform
+105,design_smell_density_per_kloc,91,-0.7581269411483635,uniform
+105,implementation_smell_density_per_kloc,91,-0.8140294157462634,uniform
+105,"pooled (non-independent, see caveat)",274,-0.7501280485172623,uniform
+106,cyclomatic_complexity_p90,91,-0.6619099759165364,uniform
+106,design_smell_density_per_kloc,91,-0.800573385362746,uniform
+106,implementation_smell_density_per_kloc,91,-0.8668567196744679,uniform
+106,"pooled (non-independent, see caveat)",273,-0.7641802136593854,uniform
+107,cyclomatic_complexity_p90,91,-0.694530049292466,uniform
+107,design_smell_density_per_kloc,91,-0.8441028908178706,uniform
+107,implementation_smell_density_per_kloc,91,-0.8459296538433974,uniform
+107,"pooled (non-independent, see caveat)",273,-0.7697931427004246,uniform
+108,cyclomatic_complexity_p90,91,-0.596352922439879,uniform
+108,design_smell_density_per_kloc,91,-0.8862944970932547,uniform
+108,implementation_smell_density_per_kloc,91,-0.8556469113309741,uniform
+108,"pooled (non-independent, see caveat)",273,-0.7580430716548026,uniform
+109,cyclomatic_complexity_p90,92,-0.7640349863214271,uniform
+109,design_smell_density_per_kloc,91,-0.891757585410528,uniform
+109,implementation_smell_density_per_kloc,91,-0.793325317131049,uniform
+109,"pooled (non-independent, see caveat)",274,-0.7844573017989795,uniform
+110,cyclomatic_complexity_p90,92,-0.7808962355026393,uniform
+110,design_smell_density_per_kloc,91,-0.8430516843195032,uniform
+110,implementation_smell_density_per_kloc,91,-0.8525231129408579,uniform
+110,"pooled (non-independent, see caveat)",274,-0.8214606981473509,uniform
+111,cyclomatic_complexity_p90,90,-0.6232456681894885,uniform
+111,design_smell_density_per_kloc,91,-0.8517321016166283,uniform
+111,implementation_smell_density_per_kloc,91,-0.8382691373557681,uniform
+111,"pooled (non-independent, see caveat)",272,-0.7471345986193716,uniform
+112,cyclomatic_complexity_p90,92,-0.6914113975262975,uniform
+112,design_smell_density_per_kloc,91,-0.7975631122083301,uniform
+112,implementation_smell_density_per_kloc,91,-0.8351475963337819,uniform
+112,"pooled (non-independent, see caveat)",274,-0.7549641405815211,uniform
+113,cyclomatic_complexity_p90,92,-0.7496859707933571,uniform
+113,design_smell_density_per_kloc,91,-0.8536911682726767,uniform
+113,implementation_smell_density_per_kloc,91,-0.8167545938350181,uniform
+113,"pooled (non-independent, see caveat)",274,-0.7845124989919033,uniform
+114,cyclomatic_complexity_p90,92,-0.6563660743183884,uniform
+114,design_smell_density_per_kloc,91,-0.7737357649120012,uniform
+114,implementation_smell_density_per_kloc,91,-0.7928156777805206,uniform
+114,"pooled (non-independent, see caveat)",274,-0.716917759766565,uniform
+115,cyclomatic_complexity_p90,92,-0.6748454911147758,uniform
+115,design_smell_density_per_kloc,91,-0.8504897666640121,uniform
+115,implementation_smell_density_per_kloc,91,-0.8802029001664291,uniform
+115,"pooled (non-independent, see caveat)",274,-0.7831547120236355,uniform
+116,cyclomatic_complexity_p90,92,-0.7922876562427754,uniform
+116,design_smell_density_per_kloc,91,-0.7939905789287238,uniform
+116,implementation_smell_density_per_kloc,91,-0.8628148926835314,uniform
+116,"pooled (non-independent, see caveat)",274,-0.8043319484259418,uniform
+117,cyclomatic_complexity_p90,92,-0.7399144607559818,uniform
+117,design_smell_density_per_kloc,91,-0.8480847336147168,uniform
+117,implementation_smell_density_per_kloc,91,-0.8310864077592592,uniform
+117,"pooled (non-independent, see caveat)",274,-0.7934358654854701,uniform
+118,cyclomatic_complexity_p90,92,-0.7185197743596066,uniform
+118,design_smell_density_per_kloc,91,-0.8852273632237,uniform
+118,implementation_smell_density_per_kloc,91,-0.7816991694471209,uniform
+118,"pooled (non-independent, see caveat)",274,-0.7634814904408181,uniform
+119,cyclomatic_complexity_p90,91,-0.6934862239210066,uniform
+119,design_smell_density_per_kloc,91,-0.760213426773911,uniform
+119,implementation_smell_density_per_kloc,91,-0.8788357787650904,uniform
+119,"pooled (non-independent, see caveat)",273,-0.7702472222279627,uniform
+120,cyclomatic_complexity_p90,91,-0.699456119255608,uniform
+120,design_smell_density_per_kloc,91,-0.7248387353667278,uniform
+120,implementation_smell_density_per_kloc,91,-0.8211165879645482,uniform
+120,"pooled (non-independent, see caveat)",273,-0.7412305030954116,uniform
+121,cyclomatic_complexity_p90,92,-0.716978514842329,uniform
+121,design_smell_density_per_kloc,91,-0.8173289798518755,uniform
+121,implementation_smell_density_per_kloc,91,-0.8376639406270157,uniform
+121,"pooled (non-independent, see caveat)",274,-0.78548629428358,uniform
+122,cyclomatic_complexity_p90,92,-0.6374523176511385,uniform
+122,design_smell_density_per_kloc,91,-0.8477502588197818,uniform
+122,implementation_smell_density_per_kloc,91,-0.8405147357440337,uniform
+122,"pooled (non-independent, see caveat)",274,-0.7476510826662559,uniform
+123,cyclomatic_complexity_p90,92,-0.7464165716223298,uniform
+123,design_smell_density_per_kloc,91,-0.8074383791691995,uniform
+123,implementation_smell_density_per_kloc,91,-0.807802259931995,uniform
+123,"pooled (non-independent, see caveat)",274,-0.7819266486751186,uniform
+124,cyclomatic_complexity_p90,91,-0.7351308737925928,uniform
+124,design_smell_density_per_kloc,91,-0.7716970614000159,uniform
+124,implementation_smell_density_per_kloc,91,-0.8055725877734334,uniform
+124,"pooled (non-independent, see caveat)",273,-0.7500385580953274,uniform
+125,cyclomatic_complexity_p90,92,-0.6625130042769621,uniform
+125,design_smell_density_per_kloc,91,-0.8103687186429879,uniform
+125,implementation_smell_density_per_kloc,91,-0.7690855955215442,uniform
+125,"pooled (non-independent, see caveat)",274,-0.7282427328996616,uniform
+126,cyclomatic_complexity_p90,92,-0.7514603208852859,uniform
+126,design_smell_density_per_kloc,91,-0.8369196464123596,uniform
+126,implementation_smell_density_per_kloc,91,-0.8201132354931956,uniform
+126,"pooled (non-independent, see caveat)",274,-0.7841370976280697,uniform
+127,cyclomatic_complexity_p90,92,-0.654323794262917,uniform
+127,design_smell_density_per_kloc,91,-0.795699609779406,uniform
+127,implementation_smell_density_per_kloc,91,-0.8126311430763138,uniform
+127,"pooled (non-independent, see caveat)",274,-0.7306931802040161,uniform
+128,cyclomatic_complexity_p90,92,-0.703466239230615,uniform
+128,design_smell_density_per_kloc,91,-0.8328614830896762,uniform
+128,implementation_smell_density_per_kloc,91,-0.8697075147914859,uniform
+128,"pooled (non-independent, see caveat)",274,-0.7871478317863861,uniform
+129,cyclomatic_complexity_p90,91,-0.6578436056696926,uniform
+129,design_smell_density_per_kloc,91,-0.8479413872740303,uniform
+129,implementation_smell_density_per_kloc,91,-0.8538927686954029,uniform
+129,"pooled (non-independent, see caveat)",273,-0.7627110446866814,uniform
+130,cyclomatic_complexity_p90,92,-0.6096974554197554,uniform
+130,design_smell_density_per_kloc,91,-0.8962331767141833,uniform
+130,implementation_smell_density_per_kloc,91,-0.8399367726229894,uniform
+130,"pooled (non-independent, see caveat)",274,-0.7577236360465063,uniform
+131,cyclomatic_complexity_p90,92,-0.7030169922552306,uniform
+131,design_smell_density_per_kloc,91,-0.8162140638687584,uniform
+131,implementation_smell_density_per_kloc,91,-0.855580949044028,uniform
+131,"pooled (non-independent, see caveat)",274,-0.7713701016337706,uniform
+132,cyclomatic_complexity_p90,91,-0.5954227651340203,uniform
+132,design_smell_density_per_kloc,90,-0.8861036678554907,uniform
+132,implementation_smell_density_per_kloc,90,-0.7666853248164368,uniform
+132,"pooled (non-independent, see caveat)",271,-0.7139191827317615,uniform
+133,cyclomatic_complexity_p90,92,-0.6286363811505413,uniform
+133,design_smell_density_per_kloc,91,-0.8091900931751215,uniform
+133,implementation_smell_density_per_kloc,91,-0.7883085547742855,uniform
+133,"pooled (non-independent, see caveat)",274,-0.7259382543632751,uniform
+134,cyclomatic_complexity_p90,92,-0.6697285883821649,uniform
+134,design_smell_density_per_kloc,91,-0.7554511427888828,uniform
+134,implementation_smell_density_per_kloc,91,-0.8170412693939565,uniform
+134,"pooled (non-independent, see caveat)",274,-0.7383607148428543,uniform
+135,cyclomatic_complexity_p90,92,-0.6645140408742024,uniform
+135,design_smell_density_per_kloc,91,-0.8343394122800032,uniform
+135,implementation_smell_density_per_kloc,91,-0.8099045222529244,uniform
+135,"pooled (non-independent, see caveat)",274,-0.7467678574383843,uniform
+136,cyclomatic_complexity_p90,92,-0.7040786051492398,uniform
+136,design_smell_density_per_kloc,91,-0.8536911682726767,uniform
+136,implementation_smell_density_per_kloc,91,-0.7705985873434252,uniform
+136,"pooled (non-independent, see caveat)",274,-0.7587061023330159,uniform
+137,cyclomatic_complexity_p90,92,-0.7864617850592605,uniform
+137,design_smell_density_per_kloc,91,-0.8141594329855858,uniform
+137,implementation_smell_density_per_kloc,91,-0.8294937847888582,uniform
+137,"pooled (non-independent, see caveat)",274,-0.7923806195854671,uniform
+138,cyclomatic_complexity_p90,92,-0.7808825115977991,uniform
+138,design_smell_density_per_kloc,91,-0.8504738392928248,uniform
+138,implementation_smell_density_per_kloc,91,-0.7959372188025069,uniform
+138,"pooled (non-independent, see caveat)",274,-0.7955383709374869,uniform
+139,cyclomatic_complexity_p90,92,-0.6732555003275151,uniform
+139,design_smell_density_per_kloc,91,-0.8470991126852925,uniform
+139,implementation_smell_density_per_kloc,91,-0.8676530311596685,uniform
+139,"pooled (non-independent, see caveat)",274,-0.7689528848464663,uniform
+140,cyclomatic_complexity_p90,91,-0.7078946949306407,uniform
+140,design_smell_density_per_kloc,91,-0.8340049374850681,uniform
+140,implementation_smell_density_per_kloc,91,-0.8297486044641222,uniform
+140,"pooled (non-independent, see caveat)",273,-0.7654039267634841,uniform
+141,cyclomatic_complexity_p90,92,-0.7259045197087042,uniform
+141,design_smell_density_per_kloc,91,-0.8418730588516367,uniform
+141,implementation_smell_density_per_kloc,91,-0.7930386449963768,uniform
+141,"pooled (non-independent, see caveat)",274,-0.7724041474465456,uniform
+142,cyclomatic_complexity_p90,92,-0.7276461295418641,uniform
+142,design_smell_density_per_kloc,91,-0.7450187146611452,uniform
+142,implementation_smell_density_per_kloc,91,-0.7926564154834805,uniform
+142,"pooled (non-independent, see caveat)",274,-0.7427344862950167,uniform
+143,cyclomatic_complexity_p90,92,-0.6486698930365894,uniform
+143,design_smell_density_per_kloc,91,-0.8770247670621963,uniform
+143,implementation_smell_density_per_kloc,91,-0.8733864738531124,uniform
+143,"pooled (non-independent, see caveat)",274,-0.7727776940001232,uniform
+144,cyclomatic_complexity_p90,91,-0.6148719132976055,uniform
+144,design_smell_density_per_kloc,91,-0.8203392530062914,uniform
+144,implementation_smell_density_per_kloc,91,-0.8147460960829439,uniform
+144,"pooled (non-independent, see caveat)",273,-0.7348162547978375,uniform
+145,cyclomatic_complexity_p90,92,-0.637128655646746,uniform
+145,design_smell_density_per_kloc,91,-0.8716413156008601,uniform
+145,implementation_smell_density_per_kloc,91,-0.7908408252972234,uniform
+145,"pooled (non-independent, see caveat)",274,-0.7446665896625468,uniform
+146,cyclomatic_complexity_p90,92,-0.621346279813509,uniform
+146,design_smell_density_per_kloc,91,-0.8785219399538106,uniform
+146,implementation_smell_density_per_kloc,91,-0.8553739080578759,uniform
+146,"pooled (non-independent, see caveat)",274,-0.7555889240074344,uniform
+147,cyclomatic_complexity_p90,92,-0.7613686279042883,uniform
+147,design_smell_density_per_kloc,91,-0.8546308831727324,uniform
+147,implementation_smell_density_per_kloc,91,-0.8575558015273254,uniform
+147,"pooled (non-independent, see caveat)",274,-0.8150821902305107,uniform
+148,cyclomatic_complexity_p90,91,-0.583325370281892,uniform
+148,design_smell_density_per_kloc,91,-0.76314406307239,uniform
+148,implementation_smell_density_per_kloc,91,-0.7720956529356023,uniform
+148,"pooled (non-independent, see caveat)",273,-0.6910398975165941,uniform
+149,cyclomatic_complexity_p90,92,-0.7307769369480449,uniform
+149,design_smell_density_per_kloc,91,-0.7851079079397947,uniform
+149,implementation_smell_density_per_kloc,91,-0.8289045142898097,uniform
+149,"pooled (non-independent, see caveat)",274,-0.770562208664186,uniform
+150,cyclomatic_complexity_p90,91,-0.5702784701263747,uniform
+150,design_smell_density_per_kloc,91,-0.8265827825117464,uniform
+150,implementation_smell_density_per_kloc,91,-0.7638936446380366,uniform
+150,"pooled (non-independent, see caveat)",273,-0.6918189305945438,uniform
+151,cyclomatic_complexity_p90,92,-0.72955727661542,uniform
+151,design_smell_density_per_kloc,91,-0.7445727482678983,uniform
+151,implementation_smell_density_per_kloc,91,-0.7906497105407753,uniform
+151,"pooled (non-independent, see caveat)",274,-0.7510608484220572,uniform
+152,cyclomatic_complexity_p90,92,-0.7292511135428387,uniform
+152,design_smell_density_per_kloc,91,-0.75686867882456,uniform
+152,implementation_smell_density_per_kloc,91,-0.8079472836076375,uniform
+152,"pooled (non-independent, see caveat)",274,-0.7497340214950172,uniform
+153,cyclomatic_complexity_p90,92,-0.7067005741147457,uniform
+153,design_smell_density_per_kloc,91,-0.8737148097557308,uniform
+153,implementation_smell_density_per_kloc,91,-0.8676211787002603,uniform
+153,"pooled (non-independent, see caveat)",274,-0.7944297266018033,uniform
+154,cyclomatic_complexity_p90,90,-0.6366958883812815,uniform
+154,design_smell_density_per_kloc,90,-0.7495781024902244,uniform
+154,implementation_smell_density_per_kloc,90,-0.7578622435907909,uniform
+154,"pooled (non-independent, see caveat)",270,-0.7054694560180095,uniform
+155,cyclomatic_complexity_p90,92,-0.5911872139081116,uniform
+155,design_smell_density_per_kloc,91,-0.726829656765151,uniform
+155,implementation_smell_density_per_kloc,91,-0.8534468342636907,uniform
+155,"pooled (non-independent, see caveat)",274,-0.715122907231946,uniform
+156,cyclomatic_complexity_p90,92,-0.6676299464416444,uniform
+156,design_smell_density_per_kloc,91,-0.7829258580871227,uniform
+156,implementation_smell_density_per_kloc,91,-0.7752123174012402,uniform
+156,"pooled (non-independent, see caveat)",274,-0.7244580724903549,uniform
+157,cyclomatic_complexity_p90,92,-0.6438793203097907,uniform
+157,design_smell_density_per_kloc,91,-0.8977781317193598,uniform
+157,implementation_smell_density_per_kloc,91,-0.8165935387286092,uniform
+157,"pooled (non-independent, see caveat)",274,-0.745197451396983,uniform
+158,cyclomatic_complexity_p90,91,-0.6048893135849658,uniform
+158,design_smell_density_per_kloc,91,-0.8258511534441406,uniform
+158,implementation_smell_density_per_kloc,91,-0.8095541451994362,uniform
+158,"pooled (non-independent, see caveat)",273,-0.7248687172543025,uniform
+159,cyclomatic_complexity_p90,91,-0.680710946893987,uniform
+159,design_smell_density_per_kloc,91,-0.8534841124472407,uniform
+159,implementation_smell_density_per_kloc,91,-0.8322330962979478,uniform
+159,"pooled (non-independent, see caveat)",273,-0.7842275396849941,uniform
+160,cyclomatic_complexity_p90,92,-0.6948175548106191,uniform
+160,design_smell_density_per_kloc,91,-0.8510790793979455,uniform
+160,implementation_smell_density_per_kloc,91,-0.8571576457847251,uniform
+160,"pooled (non-independent, see caveat)",274,-0.7708164886821445,uniform
+161,cyclomatic_complexity_p90,92,-0.6492863968435005,uniform
+161,design_smell_density_per_kloc,91,-0.7856488677434904,uniform
+161,implementation_smell_density_per_kloc,91,-0.85265052277849,uniform
+161,"pooled (non-independent, see caveat)",274,-0.7382823911002397,uniform
+162,cyclomatic_complexity_p90,91,-0.5693888683219401,uniform
+162,design_smell_density_per_kloc,91,-0.7857768575296648,uniform
+162,implementation_smell_density_per_kloc,91,-0.79170084170124,uniform
+162,"pooled (non-independent, see caveat)",273,-0.6922843839101176,uniform
+163,cyclomatic_complexity_p90,92,-0.6674141717720493,uniform
+163,design_smell_density_per_kloc,91,-0.868742534044756,uniform
+163,implementation_smell_density_per_kloc,91,-0.8518860637526975,uniform
+163,"pooled (non-independent, see caveat)",274,-0.7675618978948707,uniform
+164,cyclomatic_complexity_p90,92,-0.6331623826286072,uniform
+164,design_smell_density_per_kloc,91,-0.8524488333200606,uniform
+164,implementation_smell_density_per_kloc,91,-0.7992976532700531,uniform
+164,"pooled (non-independent, see caveat)",274,-0.7493729924053296,uniform
+165,cyclomatic_complexity_p90,92,-0.7710767238987701,uniform
+165,design_smell_density_per_kloc,91,-0.8115473441108545,uniform
+165,implementation_smell_density_per_kloc,91,-0.8427444079025953,uniform
+165,"pooled (non-independent, see caveat)",274,-0.7943773558819351,uniform
+166,cyclomatic_complexity_p90,92,-0.6467152159673255,uniform
+166,design_smell_density_per_kloc,91,-0.783101059170184,uniform
+166,implementation_smell_density_per_kloc,91,-0.7479524596898378,uniform
+166,"pooled (non-independent, see caveat)",274,-0.7092022392549838,uniform
+167,cyclomatic_complexity_p90,92,-0.6967417773804754,uniform
+167,design_smell_density_per_kloc,91,-0.8143505614398343,uniform
+167,implementation_smell_density_per_kloc,91,-0.8199380469664513,uniform
+167,"pooled (non-independent, see caveat)",274,-0.7685025259076291,uniform
+168,cyclomatic_complexity_p90,92,-0.726738899249418,uniform
+168,design_smell_density_per_kloc,91,-0.7831488412837462,uniform
+168,implementation_smell_density_per_kloc,91,-0.8205385476082034,uniform
+168,"pooled (non-independent, see caveat)",274,-0.7724626631058862,uniform
+169,cyclomatic_complexity_p90,91,-0.5994075442550107,uniform
+169,design_smell_density_per_kloc,91,-0.8441188181890579,uniform
+169,implementation_smell_density_per_kloc,91,-0.807786333702291,uniform
+169,"pooled (non-independent, see caveat)",273,-0.7343923760250335,uniform
+170,cyclomatic_complexity_p90,92,-0.5952498381677507,uniform
+170,design_smell_density_per_kloc,91,-0.7636696663215735,uniform
+170,implementation_smell_density_per_kloc,91,-0.8305289897196189,uniform
+170,"pooled (non-independent, see caveat)",274,-0.7118738345466834,uniform
+171,cyclomatic_complexity_p90,92,-0.6922436712518784,uniform
+171,design_smell_density_per_kloc,91,-0.7621869157478257,uniform
+171,implementation_smell_density_per_kloc,91,-0.8557879900301804,uniform
+171,"pooled (non-independent, see caveat)",274,-0.7502158090852198,uniform
+172,cyclomatic_complexity_p90,92,-0.6926930012484009,uniform
+172,design_smell_density_per_kloc,91,-0.7444453292983993,uniform
+172,implementation_smell_density_per_kloc,91,-0.7965105630718512,uniform
+172,"pooled (non-independent, see caveat)",274,-0.7350942381392543,uniform
+173,cyclomatic_complexity_p90,91,-0.679805701544832,uniform
+173,design_smell_density_per_kloc,91,-0.8659348010532972,uniform
+173,implementation_smell_density_per_kloc,91,-0.8454518669522771,uniform
+173,"pooled (non-independent, see caveat)",273,-0.7811199539957104,uniform
+174,cyclomatic_complexity_p90,92,-0.6877716469899201,uniform
+174,design_smell_density_per_kloc,91,-0.803758859600223,uniform
+174,implementation_smell_density_per_kloc,91,-0.8232347765151818,uniform
+174,"pooled (non-independent, see caveat)",274,-0.7356342793272755,uniform
+175,cyclomatic_complexity_p90,91,-0.644542479236178,uniform
+175,design_smell_density_per_kloc,90,-0.8464540028812513,uniform
+175,implementation_smell_density_per_kloc,90,-0.8061819604261168,uniform
+175,"pooled (non-independent, see caveat)",271,-0.7408066192529261,uniform
+176,cyclomatic_complexity_p90,92,-0.6394124809272074,uniform
+176,design_smell_density_per_kloc,91,-0.781364975710759,uniform
+176,implementation_smell_density_per_kloc,91,-0.8107645386569411,uniform
+176,"pooled (non-independent, see caveat)",274,-0.7252417972406282,uniform
+177,cyclomatic_complexity_p90,92,-0.6743089217869777,uniform
+177,design_smell_density_per_kloc,91,-0.8179979294417458,uniform
+177,implementation_smell_density_per_kloc,91,-0.8579061785808137,uniform
+177,"pooled (non-independent, see caveat)",274,-0.7614345417549493,uniform
+178,cyclomatic_complexity_p90,92,-0.6284051940045465,uniform
+178,design_smell_density_per_kloc,91,-0.7552759417058215,uniform
+178,implementation_smell_density_per_kloc,91,-0.7679548332125594,uniform
+178,"pooled (non-independent, see caveat)",274,-0.6900064986810127,uniform
+179,cyclomatic_complexity_p90,91,-0.6489884813136484,uniform
+179,design_smell_density_per_kloc,91,-0.8686469698176316,uniform
+179,implementation_smell_density_per_kloc,91,-0.842489588227331,uniform
+179,"pooled (non-independent, see caveat)",273,-0.7613241751331148,uniform
+180,cyclomatic_complexity_p90,91,-0.6916363404709386,uniform
+180,design_smell_density_per_kloc,91,-0.8160872861166847,uniform
+180,implementation_smell_density_per_kloc,91,-0.8040277434921443,uniform
+180,"pooled (non-independent, see caveat)",273,-0.7553098642860776,uniform
+181,cyclomatic_complexity_p90,92,-0.6322737255808576,uniform
+181,design_smell_density_per_kloc,91,-0.7551485227363225,uniform
+181,implementation_smell_density_per_kloc,91,-0.7834032760254502,uniform
+181,"pooled (non-independent, see caveat)",274,-0.7106010171544178,uniform
+182,cyclomatic_complexity_p90,91,-0.6627594005319402,uniform
+182,design_smell_density_per_kloc,91,-0.8539460062116748,uniform
+182,implementation_smell_density_per_kloc,91,-0.859610285159143,uniform
+182,"pooled (non-independent, see caveat)",273,-0.7693508613718842,uniform
+183,cyclomatic_complexity_p90,92,-0.6983778368589372,uniform
+183,design_smell_density_per_kloc,91,-0.8800509675877997,uniform
+183,implementation_smell_density_per_kloc,91,-0.8753931787958178,uniform
+183,"pooled (non-independent, see caveat)",274,-0.8024340889120699,uniform
+184,cyclomatic_complexity_p90,92,-0.6366196966066209,uniform
+184,design_smell_density_per_kloc,91,-0.801529027633989,uniform
+184,implementation_smell_density_per_kloc,91,-0.7655818249866617,uniform
+184,"pooled (non-independent, see caveat)",274,-0.715263287846929,uniform
+185,cyclomatic_complexity_p90,91,-0.625571358040421,uniform
+185,design_smell_density_per_kloc,91,-0.8625627140240503,uniform
+185,implementation_smell_density_per_kloc,91,-0.7883244810039896,uniform
+185,"pooled (non-independent, see caveat)",273,-0.7309598668618758,uniform
+186,cyclomatic_complexity_p90,92,-0.6781258428698032,uniform
+186,design_smell_density_per_kloc,91,-0.8071195349207613,uniform
+186,implementation_smell_density_per_kloc,91,-0.7921308499032482,uniform
+186,"pooled (non-independent, see caveat)",274,-0.7464837702150398,uniform
+187,cyclomatic_complexity_p90,90,-0.7418117463061282,uniform
+187,design_smell_density_per_kloc,91,-0.8215211496487427,uniform
+187,implementation_smell_density_per_kloc,91,-0.8491308260139036,uniform
+187,"pooled (non-independent, see caveat)",272,-0.7841682097893573,uniform
+188,cyclomatic_complexity_p90,92,-0.7333641582861327,uniform
+188,design_smell_density_per_kloc,91,-0.8229194871386478,uniform
+188,implementation_smell_density_per_kloc,91,-0.8269933667253283,uniform
+188,"pooled (non-independent, see caveat)",274,-0.7765822171019635,uniform
+189,cyclomatic_complexity_p90,92,-0.621996516807176,uniform
+189,design_smell_density_per_kloc,91,-0.8451335714551805,uniform
+189,implementation_smell_density_per_kloc,91,-0.8018617762523989,uniform
+189,"pooled (non-independent, see caveat)",274,-0.7366288855536725,uniform
+190,cyclomatic_complexity_p90,92,-0.6800061649905598,uniform
+190,design_smell_density_per_kloc,91,-0.8350402166122481,uniform
+190,implementation_smell_density_per_kloc,91,-0.8824007198655827,uniform
+190,"pooled (non-independent, see caveat)",274,-0.7934887756999548,uniform
+191,cyclomatic_complexity_p90,91,-0.7004116930378488,uniform
+191,design_smell_density_per_kloc,91,-0.7796766743648961,uniform
+191,implementation_smell_density_per_kloc,91,-0.8329019979455163,uniform
+191,"pooled (non-independent, see caveat)",273,-0.7426128060374253,uniform
+192,cyclomatic_complexity_p90,92,-0.7334432748177487,uniform
+192,design_smell_density_per_kloc,91,-0.9267181651668392,uniform
+192,implementation_smell_density_per_kloc,91,-0.882865163010167,uniform
+192,"pooled (non-independent, see caveat)",274,-0.8153166285499427,uniform
+193,cyclomatic_complexity_p90,92,-0.7125749425889678,uniform
+193,design_smell_density_per_kloc,91,-0.8368400095564227,uniform
+193,implementation_smell_density_per_kloc,91,-0.7676522348481832,uniform
+193,"pooled (non-independent, see caveat)",274,-0.7590588465894622,uniform
+194,cyclomatic_complexity_p90,92,-0.7244298369034744,uniform
+194,design_smell_density_per_kloc,91,-0.7371028111810146,uniform
+194,implementation_smell_density_per_kloc,91,-0.7949657187905621,uniform
+194,"pooled (non-independent, see caveat)",274,-0.7315407807487473,uniform
+195,cyclomatic_complexity_p90,92,-0.7087481890200671,uniform
+195,design_smell_density_per_kloc,91,-0.8528788723421199,uniform
+195,implementation_smell_density_per_kloc,91,-0.8775432198058593,uniform
+195,"pooled (non-independent, see caveat)",274,-0.7929580295340054,uniform
+196,cyclomatic_complexity_p90,91,-0.6431887497113372,uniform
+196,design_smell_density_per_kloc,91,-0.8130763717448435,uniform
+196,implementation_smell_density_per_kloc,91,-0.7968290876659314,uniform
+196,"pooled (non-independent, see caveat)",273,-0.7323311372664052,uniform
+197,cyclomatic_complexity_p90,92,-0.7089530385463064,uniform
+197,design_smell_density_per_kloc,91,-0.7843115393804253,uniform
+197,implementation_smell_density_per_kloc,91,-0.8194284076159232,uniform
+197,"pooled (non-independent, see caveat)",274,-0.7440523814537966,uniform
+198,cyclomatic_complexity_p90,92,-0.6605812134429692,uniform
+198,design_smell_density_per_kloc,91,-0.8953412439276898,uniform
+198,implementation_smell_density_per_kloc,91,-0.7968290876659314,uniform
+198,"pooled (non-independent, see caveat)",274,-0.7482930376411951,uniform
+199,cyclomatic_complexity_p90,92,-0.5975216928933619,uniform
+199,design_smell_density_per_kloc,91,-0.7616453635632686,uniform
+199,implementation_smell_density_per_kloc,91,-0.7662666528639343,uniform
+199,"pooled (non-independent, see caveat)",274,-0.6820868816004322,uniform
+200,cyclomatic_complexity_p90,92,-0.6686471698840211,uniform
+200,design_smell_density_per_kloc,91,-0.8570040614796529,uniform
+200,implementation_smell_density_per_kloc,91,-0.8593873179432867,uniform
+200,"pooled (non-independent, see caveat)",274,-0.7725788329675638,uniform
+201,cyclomatic_complexity_p90,92,-0.6775709937194158,uniform
+201,design_smell_density_per_kloc,91,-0.816978577685753,uniform
+201,implementation_smell_density_per_kloc,91,-0.8314367848127474,uniform
+201,"pooled (non-independent, see caveat)",274,-0.7614587380424851,uniform
+202,cyclomatic_complexity_p90,92,-0.5670932118858252,uniform
+202,design_smell_density_per_kloc,91,-0.8484464778536555,uniform
+202,implementation_smell_density_per_kloc,91,-0.8435884980769078,uniform
+202,"pooled (non-independent, see caveat)",274,-0.7265439189169791,uniform
+203,cyclomatic_complexity_p90,92,-0.6080238588811911,uniform
+203,design_smell_density_per_kloc,91,-0.8333837700087602,uniform
+203,implementation_smell_density_per_kloc,91,-0.7913345384180476,uniform
+203,"pooled (non-independent, see caveat)",274,-0.7158657164041621,uniform
+204,cyclomatic_complexity_p90,92,-0.6867105922244056,uniform
+204,design_smell_density_per_kloc,91,-0.7929441745639884,uniform
+204,implementation_smell_density_per_kloc,91,-0.7898693252852786,uniform
+204,"pooled (non-independent, see caveat)",274,-0.724091322219072,uniform
+205,cyclomatic_complexity_p90,91,-0.729636324544709,uniform
+205,design_smell_density_per_kloc,91,-0.8063550211037668,uniform
+205,implementation_smell_density_per_kloc,91,-0.8107963911163492,uniform
+205,"pooled (non-independent, see caveat)",273,-0.7613408721413559,uniform
+206,cyclomatic_complexity_p90,91,-0.6409750037824795,uniform
+206,design_smell_density_per_kloc,91,-0.7963048498845267,uniform
+206,implementation_smell_density_per_kloc,91,-0.8044418254644486,uniform
+206,"pooled (non-independent, see caveat)",273,-0.7272186534480963,uniform
+207,cyclomatic_complexity_p90,92,-0.648040688937695,uniform
+207,design_smell_density_per_kloc,91,-0.7586190425319201,uniform
+207,implementation_smell_density_per_kloc,91,-0.829286743802706,uniform
+207,"pooled (non-independent, see caveat)",274,-0.7237506260288096,uniform
+208,cyclomatic_complexity_p90,92,-0.6828136800086309,uniform
+208,design_smell_density_per_kloc,91,-0.8265827825117464,uniform
+208,implementation_smell_density_per_kloc,91,-0.8693889901974056,uniform
+208,"pooled (non-independent, see caveat)",274,-0.7667190041736804,uniform
+209,cyclomatic_complexity_p90,91,-0.6258928642527812,uniform
+209,design_smell_density_per_kloc,91,-0.8400573385362746,uniform
+209,implementation_smell_density_per_kloc,91,-0.8167545938350181,uniform
+209,"pooled (non-independent, see caveat)",273,-0.7311604784084721,uniform
+210,cyclomatic_complexity_p90,92,-0.7328576052278717,uniform
+210,design_smell_density_per_kloc,91,-0.8360754957394283,uniform
+210,implementation_smell_density_per_kloc,91,-0.861362170426584,uniform
+210,"pooled (non-independent, see caveat)",274,-0.7862244900191531,uniform
+211,cyclomatic_complexity_p90,92,-0.6822717990213076,uniform
+211,design_smell_density_per_kloc,91,-0.841809349366887,uniform
+211,implementation_smell_density_per_kloc,91,-0.8217217846933005,uniform
+211,"pooled (non-independent, see caveat)",274,-0.7485237960230872,uniform
+212,cyclomatic_complexity_p90,92,-0.6533760769384893,uniform
+212,design_smell_density_per_kloc,91,-0.8787608505216215,uniform
+212,implementation_smell_density_per_kloc,91,-0.7802498825440559,uniform
+212,"pooled (non-independent, see caveat)",274,-0.7298002064526518,uniform
+213,cyclomatic_complexity_p90,92,-0.6894540130235425,uniform
+213,design_smell_density_per_kloc,91,-0.797849804889703,uniform
+213,implementation_smell_density_per_kloc,91,-0.8465507768018539,uniform
+213,"pooled (non-independent, see caveat)",274,-0.7568936034646624,uniform
+214,cyclomatic_complexity_p90,91,-0.606924724675304,uniform
+214,design_smell_density_per_kloc,91,-0.821151548936848,uniform
+214,implementation_smell_density_per_kloc,91,-0.7700093168443768,uniform
+214,"pooled (non-independent, see caveat)",273,-0.7036408573668964,uniform
+215,cyclomatic_complexity_p90,92,-0.7318999730281662,uniform
+215,design_smell_density_per_kloc,91,-0.7673807438082344,uniform
+215,implementation_smell_density_per_kloc,91,-0.7877670629643492,uniform
+215,"pooled (non-independent, see caveat)",274,-0.745946491470627,uniform
+216,cyclomatic_complexity_p90,92,-0.6589681347050437,uniform
+216,design_smell_density_per_kloc,91,-0.8044755913036553,uniform
+216,implementation_smell_density_per_kloc,91,-0.8417251292015385,uniform
+216,"pooled (non-independent, see caveat)",274,-0.745559537829381,uniform
+217,cyclomatic_complexity_p90,92,-0.7825761954302006,uniform
+217,design_smell_density_per_kloc,91,-0.8517133626422735,uniform
+217,implementation_smell_density_per_kloc,91,-0.8473311620573503,uniform
+217,"pooled (non-independent, see caveat)",274,-0.8048573036383149,uniform
+218,cyclomatic_complexity_p90,92,-0.6461268148330815,uniform
+218,design_smell_density_per_kloc,91,-0.8149876562873298,uniform
+218,implementation_smell_density_per_kloc,91,-0.7813169399342247,uniform
+218,"pooled (non-independent, see caveat)",274,-0.7273796686313418,uniform
+219,cyclomatic_complexity_p90,91,-0.7116715374385845,uniform
+219,design_smell_density_per_kloc,91,-0.7947439675081628,uniform
+219,implementation_smell_density_per_kloc,91,-0.8006832352543022,uniform
+219,"pooled (non-independent, see caveat)",273,-0.7496215703569492,uniform
+220,cyclomatic_complexity_p90,92,-0.6143519874235162,uniform
+220,design_smell_density_per_kloc,91,-0.8422712431313212,uniform
+220,implementation_smell_density_per_kloc,91,-0.804967391044681,uniform
+220,"pooled (non-independent, see caveat)",274,-0.7159359687596711,uniform
+221,cyclomatic_complexity_p90,92,-0.6310589830926437,uniform
+221,design_smell_density_per_kloc,91,-0.8656844787767779,uniform
+221,implementation_smell_density_per_kloc,91,-0.8953168921555357,uniform
+221,"pooled (non-independent, see caveat)",274,-0.7629393863998514,uniform
+222,cyclomatic_complexity_p90,91,-0.6254469298210689,uniform
+222,design_smell_density_per_kloc,91,-0.8563669666321574,uniform
+222,implementation_smell_density_per_kloc,91,-0.8638625884901139,uniform
+222,"pooled (non-independent, see caveat)",273,-0.7575715798337823,uniform
+223,cyclomatic_complexity_p90,92,-0.692739238321286,uniform
+223,design_smell_density_per_kloc,91,-0.8233176714183326,uniform
+223,implementation_smell_density_per_kloc,91,-0.8902045724205481,uniform
+223,"pooled (non-independent, see caveat)",274,-0.7891318633912313,uniform
+224,cyclomatic_complexity_p90,92,-0.6658549366542338,uniform
+224,design_smell_density_per_kloc,91,-0.8424959191165572,uniform
+224,implementation_smell_density_per_kloc,91,-0.8211643666536602,uniform
+224,"pooled (non-independent, see caveat)",274,-0.7463235149383389,uniform
+225,cyclomatic_complexity_p90,92,-0.6667822602396638,uniform
+225,design_smell_density_per_kloc,91,-0.8132515728279048,uniform
+225,implementation_smell_density_per_kloc,91,-0.8336664569713088,uniform
+225,"pooled (non-independent, see caveat)",274,-0.758781094788571,uniform
+226,cyclomatic_complexity_p90,92,-0.7013986822332677,uniform
+226,design_smell_density_per_kloc,91,-0.8790156884606195,uniform
+226,implementation_smell_density_per_kloc,91,-0.7848844153879231,uniform
+226,"pooled (non-independent, see caveat)",274,-0.770990914680602,uniform
+227,cyclomatic_complexity_p90,92,-0.6280762458191955,uniform
+227,design_smell_density_per_kloc,91,-0.8847495420880783,uniform
+227,implementation_smell_density_per_kloc,91,-0.823712563406302,uniform
+227,"pooled (non-independent, see caveat)",274,-0.7379935902811532,uniform
+228,cyclomatic_complexity_p90,92,-0.6938643404281553,uniform
+228,design_smell_density_per_kloc,91,-0.8347535239308752,uniform
+228,implementation_smell_density_per_kloc,91,-0.851121604726905,uniform
+228,"pooled (non-independent, see caveat)",274,-0.7698510874932805,uniform
+229,cyclomatic_complexity_p90,92,-0.6567641505798943,uniform
+229,design_smell_density_per_kloc,91,-0.903814605399379,uniform
+229,implementation_smell_density_per_kloc,91,-0.8278374568996409,uniform
+229,"pooled (non-independent, see caveat)",274,-0.7692577386223496,uniform
+230,cyclomatic_complexity_p90,92,-0.7032613051385592,uniform
+230,design_smell_density_per_kloc,91,-0.7104085370709564,uniform
+230,implementation_smell_density_per_kloc,91,-0.8133127354095828,uniform
+230,"pooled (non-independent, see caveat)",274,-0.7226065785455376,uniform
+231,cyclomatic_complexity_p90,92,-0.6058875659846645,uniform
+231,design_smell_density_per_kloc,91,-0.8864378434339412,uniform
+231,implementation_smell_density_per_kloc,91,-0.7733856775416272,uniform
+231,"pooled (non-independent, see caveat)",274,-0.7223044766228326,uniform
+232,cyclomatic_complexity_p90,92,-0.6195430200747505,uniform
+232,design_smell_density_per_kloc,91,-0.857593374213586,uniform
+232,implementation_smell_density_per_kloc,91,-0.830927145462219,uniform
+232,"pooled (non-independent, see caveat)",274,-0.7431871771806459,uniform
+233,cyclomatic_complexity_p90,91,-0.5803245791460288,uniform
+233,design_smell_density_per_kloc,91,-0.7999044326016844,uniform
+233,implementation_smell_density_per_kloc,91,-0.8430947849560835,uniform
+233,"pooled (non-independent, see caveat)",273,-0.718374714683013,uniform
+234,cyclomatic_complexity_p90,92,-0.7180287442684853,uniform
+234,design_smell_density_per_kloc,91,-0.7985187544795731,uniform
+234,implementation_smell_density_per_kloc,91,-0.8752851801930366,uniform
+234,"pooled (non-independent, see caveat)",274,-0.7845232284187957,uniform
+235,cyclomatic_complexity_p90,92,-0.671560127923554,uniform
+235,design_smell_density_per_kloc,91,-0.8321732897985187,uniform
+235,implementation_smell_density_per_kloc,91,-0.829350448721522,uniform
+235,"pooled (non-independent, see caveat)",274,-0.7588096796511946,uniform
+236,cyclomatic_complexity_p90,92,-0.8172094385278116,uniform
+236,design_smell_density_per_kloc,91,-0.8190172811977383,uniform
+236,implementation_smell_density_per_kloc,91,-0.8210528830457323,uniform
+236,"pooled (non-independent, see caveat)",274,-0.8099778059024224,uniform
+237,cyclomatic_complexity_p90,92,-0.6540669672099564,uniform
+237,design_smell_density_per_kloc,91,-0.811770327307478,uniform
+237,implementation_smell_density_per_kloc,91,-0.8793906624515245,uniform
+237,"pooled (non-independent, see caveat)",274,-0.7627290168635934,uniform
+238,cyclomatic_complexity_p90,92,-0.7431202558471082,uniform
+238,design_smell_density_per_kloc,91,-0.7905869236282552,uniform
+238,implementation_smell_density_per_kloc,91,-0.8534627604933945,uniform
+238,"pooled (non-independent, see caveat)",274,-0.7849321605372555,uniform
+239,cyclomatic_complexity_p90,91,-0.6074790170252751,uniform
+239,design_smell_density_per_kloc,90,-0.8794649104754064,uniform
+239,implementation_smell_density_per_kloc,90,-0.8358137697145304,uniform
+239,"pooled (non-independent, see caveat)",271,-0.7454935949672948,uniform
+240,cyclomatic_complexity_p90,91,-0.659818442427138,uniform
+240,design_smell_density_per_kloc,91,-0.8001433463406864,uniform
+240,implementation_smell_density_per_kloc,91,-0.8196513748317792,uniform
+240,"pooled (non-independent, see caveat)",273,-0.7437454806681711,uniform
+241,cyclomatic_complexity_p90,91,-0.6957636566332219,uniform
+241,design_smell_density_per_kloc,91,-0.8750657004061481,uniform
+241,implementation_smell_density_per_kloc,91,-0.8418525390391706,uniform
+241,"pooled (non-independent, see caveat)",273,-0.7731835087590992,uniform
+242,cyclomatic_complexity_p90,92,-0.7069031949817364,uniform
+242,design_smell_density_per_kloc,91,-0.8108783945209843,uniform
+242,implementation_smell_density_per_kloc,91,-0.7936756941845373,uniform
+242,"pooled (non-independent, see caveat)",274,-0.7363105528573333,uniform
+243,cyclomatic_complexity_p90,92,-0.6859732133224419,uniform
+243,design_smell_density_per_kloc,91,-0.7540813888667675,uniform
+243,implementation_smell_density_per_kloc,91,-0.7830051202828499,uniform
+243,"pooled (non-independent, see caveat)",274,-0.722463232731175,uniform
+244,cyclomatic_complexity_p90,90,-0.5764086101164753,uniform
+244,design_smell_density_per_kloc,90,-0.7339699526651574,uniform
+244,implementation_smell_density_per_kloc,90,-0.8063728819208347,uniform
+244,"pooled (non-independent, see caveat)",270,-0.6861835479039968,uniform
+245,cyclomatic_complexity_p90,90,-0.5871259826316005,uniform
+245,design_smell_density_per_kloc,90,-0.8089154146943816,uniform
+245,implementation_smell_density_per_kloc,90,-0.7648414606038655,uniform
+245,"pooled (non-independent, see caveat)",270,-0.6937013229102743,uniform
+246,cyclomatic_complexity_p90,92,-0.7261048819018994,uniform
+246,design_smell_density_per_kloc,91,-0.8883809827188022,uniform
+246,implementation_smell_density_per_kloc,91,-0.8592917605650626,uniform
+246,"pooled (non-independent, see caveat)",274,-0.7934356895187691,uniform
+247,cyclomatic_complexity_p90,91,-0.6776397515527951,uniform
+247,design_smell_density_per_kloc,91,-0.8530222186828064,uniform
+247,implementation_smell_density_per_kloc,91,-0.8880226789510985,uniform
+247,"pooled (non-independent, see caveat)",273,-0.7867677502839882,uniform
+248,cyclomatic_complexity_p90,92,-0.6928163001094276,uniform
+248,design_smell_density_per_kloc,91,-0.8295612009237876,uniform
+248,implementation_smell_density_per_kloc,91,-0.8678441459161166,uniform
+248,"pooled (non-independent, see caveat)",274,-0.7577270257254939,uniform
+249,cyclomatic_complexity_p90,92,-0.7048950402268733,uniform
+249,design_smell_density_per_kloc,91,-0.8598709882933823,uniform
+249,implementation_smell_density_per_kloc,91,-0.862795531099945,uniform
+249,"pooled (non-independent, see caveat)",274,-0.7802142494727559,uniform
+250,cyclomatic_complexity_p90,91,-0.6204749239516475,uniform
+250,design_smell_density_per_kloc,91,-0.8129648801465318,uniform
+250,implementation_smell_density_per_kloc,91,-0.790474522014031,uniform
+250,"pooled (non-independent, see caveat)",273,-0.7141711458217755,uniform
+251,cyclomatic_complexity_p90,92,-0.6840774933341554,uniform
+251,design_smell_density_per_kloc,91,-0.8088715457513738,uniform
+251,implementation_smell_density_per_kloc,91,-0.799106538513605,uniform
+251,"pooled (non-independent, see caveat)",274,-0.7458413770784807,uniform
+252,cyclomatic_complexity_p90,92,-0.5942542730761525,uniform
+252,design_smell_density_per_kloc,91,-0.8375521125817474,uniform
+252,implementation_smell_density_per_kloc,91,-0.7834510547145622,uniform
+252,"pooled (non-independent, see caveat)",274,-0.7118233537418603,uniform
+253,cyclomatic_complexity_p90,92,-0.7299685199010758,uniform
+253,design_smell_density_per_kloc,91,-0.8303894242255316,uniform
+253,implementation_smell_density_per_kloc,91,-0.8103186042252287,uniform
+253,"pooled (non-independent, see caveat)",274,-0.7807906778332463,uniform
+254,cyclomatic_complexity_p90,92,-0.6127645145877963,uniform
+254,design_smell_density_per_kloc,91,-0.8013697539221152,uniform
+254,implementation_smell_density_per_kloc,91,-0.7950946627152391,uniform
+254,"pooled (non-independent, see caveat)",274,-0.7074399749069057,uniform
+255,cyclomatic_complexity_p90,92,-0.7137749007821831,uniform
+255,design_smell_density_per_kloc,91,-0.8279525364338617,uniform
+255,implementation_smell_density_per_kloc,91,-0.7997435877017656,uniform
+255,"pooled (non-independent, see caveat)",274,-0.7481271081336185,uniform
+256,cyclomatic_complexity_p90,92,-0.7035256039764187,uniform
+256,design_smell_density_per_kloc,91,-0.8621804571155531,uniform
+256,implementation_smell_density_per_kloc,91,-0.8083756042013395,uniform
+256,"pooled (non-independent, see caveat)",274,-0.7685088106289117,uniform
+257,cyclomatic_complexity_p90,92,-0.658952722228644,uniform
+257,design_smell_density_per_kloc,91,-0.7927049741481608,uniform
+257,implementation_smell_density_per_kloc,91,-0.7879263252613892,uniform
+257,"pooled (non-independent, see caveat)",274,-0.7153835888876015,uniform
+258,cyclomatic_complexity_p90,92,-0.6949123807468828,uniform
+258,design_smell_density_per_kloc,91,-0.8087441267818746,uniform
+258,implementation_smell_density_per_kloc,91,-0.8624770065058648,uniform
+258,"pooled (non-independent, see caveat)",274,-0.7741208442392186,uniform
+259,cyclomatic_complexity_p90,92,-0.6929704236857112,uniform
+259,design_smell_density_per_kloc,91,-0.8073425181173847,uniform
+259,implementation_smell_density_per_kloc,91,-0.7508819149698596,uniform
+259,"pooled (non-independent, see caveat)",274,-0.7342086910207681,uniform
+260,cyclomatic_complexity_p90,92,-0.7354428038593137,uniform
+260,design_smell_density_per_kloc,91,-0.871015652693266,uniform
+260,implementation_smell_density_per_kloc,91,-0.7930067925369688,uniform
+260,"pooled (non-independent, see caveat)",274,-0.7795349211648185,uniform
+261,cyclomatic_complexity_p90,91,-0.6793280696988433,uniform
+261,design_smell_density_per_kloc,91,-0.8182527673807437,uniform
+261,implementation_smell_density_per_kloc,91,-0.8777821132514195,uniform
+261,"pooled (non-independent, see caveat)",273,-0.7712334996370123,uniform
+262,cyclomatic_complexity_p90,92,-0.6382845913767194,uniform
+262,design_smell_density_per_kloc,91,-0.8833797881659633,uniform
+262,implementation_smell_density_per_kloc,91,-0.8143160878809356,uniform
+262,"pooled (non-independent, see caveat)",274,-0.7434835263686608,uniform
+263,cyclomatic_complexity_p90,92,-0.6345239471352058,uniform
+263,design_smell_density_per_kloc,91,-0.7162220275543522,uniform
+263,implementation_smell_density_per_kloc,91,-0.809299325524172,uniform
+263,"pooled (non-independent, see caveat)",274,-0.7092429444975307,uniform
+264,cyclomatic_complexity_p90,92,-0.5990444264632219,uniform
+264,design_smell_density_per_kloc,91,-0.8500756550131401,uniform
+264,implementation_smell_density_per_kloc,91,-0.8658215147437073,uniform
+264,"pooled (non-independent, see caveat)",274,-0.741014727621261,uniform
+265,cyclomatic_complexity_p90,92,-0.7166416213925172,uniform
+265,design_smell_density_per_kloc,91,-0.8933662499004541,uniform
+265,implementation_smell_density_per_kloc,91,-0.8969572938150487,uniform
+265,"pooled (non-independent, see caveat)",274,-0.8054315905900965,uniform
+266,cyclomatic_complexity_p90,92,-0.7428448129710401,uniform
+266,design_smell_density_per_kloc,91,-0.7946961853946007,uniform
+266,implementation_smell_density_per_kloc,91,-0.8571894982441333,uniform
+266,"pooled (non-independent, see caveat)",274,-0.7831243770762303,uniform
+267,cyclomatic_complexity_p90,92,-0.5832774631063845,uniform
+267,design_smell_density_per_kloc,91,-0.7698494863422792,uniform
+267,implementation_smell_density_per_kloc,91,-0.7780679890746064,uniform
+267,"pooled (non-independent, see caveat)",274,-0.6724758107892106,uniform
+268,cyclomatic_complexity_p90,92,-0.700794895412687,uniform
+268,design_smell_density_per_kloc,91,-0.7877518515569005,uniform
+268,implementation_smell_density_per_kloc,91,-0.7609472921427946,uniform
+268,"pooled (non-independent, see caveat)",274,-0.7359518910998643,uniform
+269,cyclomatic_complexity_p90,91,-0.7013330360413448,uniform
+269,design_smell_density_per_kloc,91,-0.8417615672533248,uniform
+269,implementation_smell_density_per_kloc,91,-0.8758550394572342,uniform
+269,"pooled (non-independent, see caveat)",273,-0.7911262387989807,uniform
+270,cyclomatic_complexity_p90,92,-0.6321966631988594,uniform
+270,design_smell_density_per_kloc,91,-0.8341436415756243,uniform
+270,implementation_smell_density_per_kloc,91,-0.8291148564509472,uniform
+270,"pooled (non-independent, see caveat)",274,-0.7397782105696082,uniform
+271,cyclomatic_complexity_p90,92,-0.6835664470388779,uniform
+271,design_smell_density_per_kloc,91,-0.8663056462530859,uniform
+271,implementation_smell_density_per_kloc,91,-0.8633688753692895,uniform
+271,"pooled (non-independent, see caveat)",274,-0.7805254247768922,uniform
+272,cyclomatic_complexity_p90,92,-0.6745963857742842,uniform
+272,design_smell_density_per_kloc,91,-0.8362825515648642,uniform
+272,implementation_smell_density_per_kloc,91,-0.7806002595975442,uniform
+272,"pooled (non-independent, see caveat)",274,-0.7362222035869711,uniform
+273,cyclomatic_complexity_p90,91,-0.672591176939003,uniform
+273,design_smell_density_per_kloc,91,-0.8056542167715218,uniform
+273,implementation_smell_density_per_kloc,91,-0.7944560794400338,uniform
+273,"pooled (non-independent, see caveat)",273,-0.7371356076754033,uniform
+274,cyclomatic_complexity_p90,92,-0.6965615030131159,uniform
+274,design_smell_density_per_kloc,91,-0.7620291470892729,uniform
+274,implementation_smell_density_per_kloc,91,-0.8393361947459367,uniform
+274,"pooled (non-independent, see caveat)",274,-0.7411769784583956,uniform
+275,cyclomatic_complexity_p90,92,-0.7547672899809044,uniform
+275,design_smell_density_per_kloc,91,-0.7449709325475831,uniform
+275,implementation_smell_density_per_kloc,91,-0.7988357926086368,uniform
+275,"pooled (non-independent, see caveat)",274,-0.753605011102166,uniform
+276,cyclomatic_complexity_p90,92,-0.5487843409239779,uniform
+276,design_smell_density_per_kloc,91,-0.8511587162538823,uniform
+276,implementation_smell_density_per_kloc,91,-0.7902993334872869,uniform
+276,"pooled (non-independent, see caveat)",274,-0.6950070995464923,uniform
+277,cyclomatic_complexity_p90,92,-0.6790222400320577,uniform
+277,design_smell_density_per_kloc,91,-0.862387512940989,uniform
+277,implementation_smell_density_per_kloc,91,-0.8099523009420365,uniform
+277,"pooled (non-independent, see caveat)",274,-0.7654262687227149,uniform
+278,cyclomatic_complexity_p90,92,-0.7567005224789236,uniform
+278,design_smell_density_per_kloc,91,-0.8430994664330652,uniform
+278,implementation_smell_density_per_kloc,91,-0.8561702195430766,uniform
+278,"pooled (non-independent, see caveat)",274,-0.7978319780073373,uniform
+279,cyclomatic_complexity_p90,91,-0.7185698359611404,uniform
+279,design_smell_density_per_kloc,90,-0.7541551759621321,uniform
+279,implementation_smell_density_per_kloc,90,-0.8636881856069661,uniform
+279,"pooled (non-independent, see caveat)",271,-0.7721067285820222,uniform
+280,cyclomatic_complexity_p90,91,-0.5802005112319736,uniform
+280,design_smell_density_per_kloc,91,-0.8106394839531736,uniform
+280,implementation_smell_density_per_kloc,91,-0.7660130199029477,uniform
+280,"pooled (non-independent, see caveat)",273,-0.6950174971756068,uniform
+281,cyclomatic_complexity_p90,91,-0.6868768912247173,uniform
+281,design_smell_density_per_kloc,91,-0.8172334156247512,uniform
+281,implementation_smell_density_per_kloc,91,-0.83791876030228,uniform
+281,"pooled (non-independent, see caveat)",273,-0.7621867137247316,uniform
+282,cyclomatic_complexity_p90,92,-0.7470947258099317,uniform
+282,design_smell_density_per_kloc,91,-0.8153221310822649,uniform
+282,implementation_smell_density_per_kloc,91,-0.8415817931342024,uniform
+282,"pooled (non-independent, see caveat)",274,-0.7914676481196121,uniform
+283,cyclomatic_complexity_p90,92,-0.5930281394416135,uniform
+283,design_smell_density_per_kloc,91,-0.7930394622621518,uniform
+283,implementation_smell_density_per_kloc,91,-0.8104619402925648,uniform
+283,"pooled (non-independent, see caveat)",274,-0.7112712516769227,uniform
+284,cyclomatic_complexity_p90,91,-0.718121660468709,uniform
+284,design_smell_density_per_kloc,91,-0.7952377160149716,uniform
+284,implementation_smell_density_per_kloc,91,-0.7999824811473256,uniform
+284,"pooled (non-independent, see caveat)",273,-0.7514762711424108,uniform
+285,cyclomatic_complexity_p90,92,-0.7200786036296382,uniform
+285,design_smell_density_per_kloc,91,-0.7995540336067533,uniform
+285,implementation_smell_density_per_kloc,91,-0.8181401923698863,uniform
+285,"pooled (non-independent, see caveat)",274,-0.7690081925102084,uniform
+286,cyclomatic_complexity_p90,92,-0.6903120653234511,uniform
+286,design_smell_density_per_kloc,91,-0.8460301027315442,uniform
+286,implementation_smell_density_per_kloc,91,-0.8652640967040668,uniform
+286,"pooled (non-independent, see caveat)",274,-0.7807262736897889,uniform
+287,cyclomatic_complexity_p90,92,-0.7790758607934404,uniform
+287,design_smell_density_per_kloc,91,-0.8254519391574421,uniform
+287,implementation_smell_density_per_kloc,91,-0.8950461462505673,uniform
+287,"pooled (non-independent, see caveat)",274,-0.8150331336573148,uniform
+288,cyclomatic_complexity_p90,92,-0.6604965861627853,uniform
+288,design_smell_density_per_kloc,91,-0.7680019112845424,uniform
+288,implementation_smell_density_per_kloc,91,-0.8646429737456103,uniform
+288,"pooled (non-independent, see caveat)",274,-0.748057761240046,uniform
+289,cyclomatic_complexity_p90,92,-0.5379766345057181,uniform
+289,design_smell_density_per_kloc,91,-0.7532850203073983,uniform
+289,implementation_smell_density_per_kloc,91,-0.7620780544517793,uniform
+289,"pooled (non-independent, see caveat)",274,-0.6571851427508038,uniform
+290,cyclomatic_complexity_p90,91,-0.7454212454212454,uniform
+290,design_smell_density_per_kloc,90,-0.7504836386087672,uniform
+290,implementation_smell_density_per_kloc,90,-0.7949688847914127,uniform
+290,"pooled (non-independent, see caveat)",271,-0.7506971276937237,uniform
+291,cyclomatic_complexity_p90,92,-0.6560243517127115,uniform
+291,design_smell_density_per_kloc,91,-0.8462530859281676,uniform
+291,implementation_smell_density_per_kloc,91,-0.8544024080459314,uniform
+291,"pooled (non-independent, see caveat)",274,-0.7774395397253164,uniform
+292,cyclomatic_complexity_p90,92,-0.6242154056047786,uniform
+292,design_smell_density_per_kloc,91,-0.813920522417775,uniform
+292,implementation_smell_density_per_kloc,91,-0.747107398530009,uniform
+292,"pooled (non-independent, see caveat)",274,-0.6972846564164714,uniform
+293,cyclomatic_complexity_p90,91,-0.6511546424589902,uniform
+293,design_smell_density_per_kloc,91,-0.8335908258341961,uniform
+293,implementation_smell_density_per_kloc,91,-0.8143479403403435,uniform
+293,"pooled (non-independent, see caveat)",273,-0.7433237746639034,uniform
+294,cyclomatic_complexity_p90,92,-0.6213646101444138,uniform
+294,design_smell_density_per_kloc,91,-0.8163733375806324,uniform
+294,implementation_smell_density_per_kloc,91,-0.8151761042849522,uniform
+294,"pooled (non-independent, see caveat)",274,-0.7422036997551912,uniform
+295,cyclomatic_complexity_p90,92,-0.6841263664121742,uniform
+295,design_smell_density_per_kloc,91,-0.9241220036632954,uniform
+295,implementation_smell_density_per_kloc,91,-0.7598006036041058,uniform
+295,"pooled (non-independent, see caveat)",274,-0.7512113564742701,uniform
+296,cyclomatic_complexity_p90,92,-0.6551484980657492,uniform
+296,design_smell_density_per_kloc,91,-0.8457593374213587,uniform
+296,implementation_smell_density_per_kloc,91,-0.7655499725272537,uniform
+296,"pooled (non-independent, see caveat)",274,-0.7293103931060623,uniform
+297,cyclomatic_complexity_p90,92,-0.6492657796732165,uniform
+297,design_smell_density_per_kloc,91,-0.8816914868201003,uniform
+297,implementation_smell_density_per_kloc,91,-0.8910964412839727,uniform
+297,"pooled (non-independent, see caveat)",274,-0.7877606565070854,uniform
+298,cyclomatic_complexity_p90,91,-0.693672458551657,uniform
+298,design_smell_density_per_kloc,91,-0.7863343155212232,uniform
+298,implementation_smell_density_per_kloc,91,-0.8570143097173891,uniform
+298,"pooled (non-independent, see caveat)",273,-0.7645133303410867,uniform
+299,cyclomatic_complexity_p90,92,-0.6956344160598003,uniform
+299,design_smell_density_per_kloc,91,-0.7622680576570836,uniform
+299,implementation_smell_density_per_kloc,91,-0.8648977934208746,uniform
+299,"pooled (non-independent, see caveat)",274,-0.7580174706013438,uniform
+0,cyclomatic_complexity_p90,86,-0.7213348303157816,split_matched
+0,design_smell_density_per_kloc,87,-0.713176457721962,split_matched
+0,implementation_smell_density_per_kloc,87,-0.744730487082517,split_matched
+0,"pooled (non-independent, see caveat)",260,-0.7466955705385336,split_matched
+1,cyclomatic_complexity_p90,86,-0.6671478305171096,split_matched
+1,design_smell_density_per_kloc,87,-0.709294059748829,split_matched
+1,implementation_smell_density_per_kloc,87,-0.7685515104570101,split_matched
+1,"pooled (non-independent, see caveat)",260,-0.7336507750101392,split_matched
+2,cyclomatic_complexity_p90,86,-0.6253219491485447,split_matched
+2,design_smell_density_per_kloc,87,-0.6654029127098409,split_matched
+2,implementation_smell_density_per_kloc,87,-0.7216020412812685,split_matched
+2,"pooled (non-independent, see caveat)",260,-0.6719123708630252,split_matched
+3,cyclomatic_complexity_p90,86,-0.6124120233220748,split_matched
+3,design_smell_density_per_kloc,87,-0.7208318903450412,split_matched
+3,implementation_smell_density_per_kloc,87,-0.7294755547455232,split_matched
+3,"pooled (non-independent, see caveat)",260,-0.7000847485834799,split_matched
+4,cyclomatic_complexity_p90,86,-0.6886586850075005,split_matched
+4,design_smell_density_per_kloc,87,-0.7100231485700745,split_matched
+4,implementation_smell_density_per_kloc,87,-0.8131883154035633,split_matched
+4,"pooled (non-independent, see caveat)",260,-0.75102616155552,split_matched
+5,cyclomatic_complexity_p90,86,-0.6180197179112222,split_matched
+5,design_smell_density_per_kloc,87,-0.7804713559229354,split_matched
+5,implementation_smell_density_per_kloc,87,-0.7248097689889279,split_matched
+5,"pooled (non-independent, see caveat)",260,-0.6996798502280788,split_matched
+6,cyclomatic_complexity_p90,86,-0.6286239916977215,split_matched
+6,design_smell_density_per_kloc,87,-0.6952044182782567,split_matched
+6,implementation_smell_density_per_kloc,87,-0.7469175741559211,split_matched
+6,"pooled (non-independent, see caveat)",260,-0.6835058266794354,split_matched
+7,cyclomatic_complexity_p90,86,-0.6571849084373497,split_matched
+7,design_smell_density_per_kloc,87,-0.7385122942602482,split_matched
+7,implementation_smell_density_per_kloc,87,-0.7850457921355994,split_matched
+7,"pooled (non-independent, see caveat)",260,-0.7306390846536932,split_matched
+8,cyclomatic_complexity_p90,86,-0.6772458818423684,split_matched
+8,design_smell_density_per_kloc,87,-0.6960610976432204,split_matched
+8,implementation_smell_density_per_kloc,87,-0.7193602770310292,split_matched
+8,"pooled (non-independent, see caveat)",260,-0.7070338410509437,split_matched
+9,cyclomatic_complexity_p90,86,-0.6555998981064788,split_matched
+9,design_smell_density_per_kloc,87,-0.7206860725807922,split_matched
+9,implementation_smell_density_per_kloc,87,-0.7744930970064245,split_matched
+9,"pooled (non-independent, see caveat)",260,-0.7239665968181949,split_matched
+10,cyclomatic_complexity_p90,86,-0.6615312043020897,split_matched
+10,design_smell_density_per_kloc,87,-0.7327342653518766,split_matched
+10,implementation_smell_density_per_kloc,87,-0.7557023739007609,split_matched
+10,"pooled (non-independent, see caveat)",260,-0.7313036015313116,split_matched
+11,cyclomatic_complexity_p90,86,-0.7439289016359417,split_matched
+11,design_smell_density_per_kloc,87,-0.7996099374806335,split_matched
+11,implementation_smell_density_per_kloc,87,-0.7704652116462386,split_matched
+11,"pooled (non-independent, see caveat)",260,-0.7778457511181179,split_matched
+12,cyclomatic_complexity_p90,86,-0.6045475988300784,split_matched
+12,design_smell_density_per_kloc,87,-0.7439804604195905,split_matched
+12,implementation_smell_density_per_kloc,87,-0.6985104822789868,split_matched
+12,"pooled (non-independent, see caveat)",260,-0.6827603829503295,split_matched
+13,cyclomatic_complexity_p90,86,-0.6366175124772391,split_matched
+13,design_smell_density_per_kloc,87,-0.7279040519111241,split_matched
+13,implementation_smell_density_per_kloc,87,-0.7487219209914794,split_matched
+13,"pooled (non-independent, see caveat)",260,-0.7145325837449289,split_matched
+14,cyclomatic_complexity_p90,86,-0.6486970960620412,split_matched
+14,design_smell_density_per_kloc,87,-0.7406084246213295,split_matched
+14,implementation_smell_density_per_kloc,87,-0.7194514056590878,split_matched
+14,"pooled (non-independent, see caveat)",260,-0.7119094868213841,split_matched
+15,cyclomatic_complexity_p90,86,-0.7221514628324511,split_matched
+15,design_smell_density_per_kloc,87,-0.7125202777828409,split_matched
+15,implementation_smell_density_per_kloc,87,-0.6811956076001275,split_matched
+15,"pooled (non-independent, see caveat)",260,-0.7123415807175348,split_matched
+16,cyclomatic_complexity_p90,86,-0.6209408079702624,split_matched
+16,design_smell_density_per_kloc,87,-0.7471702240125403,split_matched
+16,implementation_smell_density_per_kloc,87,-0.777208730122568,split_matched
+16,"pooled (non-independent, see caveat)",260,-0.7114889017780301,split_matched
+17,cyclomatic_complexity_p90,86,-0.5670698341415552,split_matched
+17,design_smell_density_per_kloc,87,-0.7310938155040737,split_matched
+17,implementation_smell_density_per_kloc,87,-0.7089351619811364,split_matched
+17,"pooled (non-independent, see caveat)",260,-0.6623446318907927,split_matched
+18,cyclomatic_complexity_p90,86,-0.5951091571221012,split_matched
+18,design_smell_density_per_kloc,87,-0.7300184094927366,split_matched
+18,implementation_smell_density_per_kloc,87,-0.705727434273477,split_matched
+18,"pooled (non-independent, see caveat)",260,-0.6822234201006195,split_matched
+19,cyclomatic_complexity_p90,86,-0.6259192694030176,split_matched
+19,design_smell_density_per_kloc,87,-0.6796383719446621,split_matched
+19,implementation_smell_density_per_kloc,87,-0.7750945459516106,split_matched
+19,"pooled (non-independent, see caveat)",260,-0.6974169357483161,split_matched
+20,cyclomatic_complexity_p90,86,-0.6209443841690645,split_matched
+20,design_smell_density_per_kloc,87,-0.7214698430636313,split_matched
+20,implementation_smell_density_per_kloc,87,-0.7878707796054131,split_matched
+20,"pooled (non-independent, see caveat)",260,-0.7066051629527519,split_matched
+21,cyclomatic_complexity_p90,86,-0.6180951931694891,split_matched
+21,design_smell_density_per_kloc,87,-0.669157720139256,split_matched
+21,implementation_smell_density_per_kloc,87,-0.7433088804848043,split_matched
+21,"pooled (non-independent, see caveat)",260,-0.6883308856111489,split_matched
+22,cyclomatic_complexity_p90,86,-0.6182048040455119,split_matched
+22,design_smell_density_per_kloc,87,-0.7702276579844339,split_matched
+22,implementation_smell_density_per_kloc,87,-0.771905043969563,split_matched
+22,"pooled (non-independent, see caveat)",260,-0.7072045330328244,split_matched
+23,cyclomatic_complexity_p90,86,-0.5999396192237296,split_matched
+23,design_smell_density_per_kloc,87,-0.7311484971656673,split_matched
+23,implementation_smell_density_per_kloc,87,-0.7696268282681004,split_matched
+23,"pooled (non-independent, see caveat)",260,-0.7008213356784135,split_matched
+24,cyclomatic_complexity_p90,86,-0.6915514882777489,split_matched
+24,design_smell_density_per_kloc,87,-0.7129395038550571,split_matched
+24,implementation_smell_density_per_kloc,87,-0.7197976944457101,split_matched
+24,"pooled (non-independent, see caveat)",260,-0.71679205695375,split_matched
+25,cyclomatic_complexity_p90,86,-0.6109365712830093,split_matched
+25,design_smell_density_per_kloc,87,-0.713449866029929,split_matched
+25,implementation_smell_density_per_kloc,87,-0.6969244088030254,split_matched
+25,"pooled (non-independent, see caveat)",260,-0.684480607014779,split_matched
+26,cyclomatic_complexity_p90,86,-0.6141508677487232,split_matched
+26,design_smell_density_per_kloc,87,-0.676375699469588,split_matched
+26,implementation_smell_density_per_kloc,87,-0.7023374493097007,split_matched
+26,"pooled (non-independent, see caveat)",260,-0.6727658336043167,split_matched
+27,cyclomatic_complexity_p90,86,-0.6826394195843122,split_matched
+27,design_smell_density_per_kloc,87,-0.6940014217232015,split_matched
+27,implementation_smell_density_per_kloc,87,-0.7086070989201257,split_matched
+27,"pooled (non-independent, see caveat)",260,-0.7037598677068413,split_matched
+28,cyclomatic_complexity_p90,86,-0.5971130713712911,split_matched
+28,design_smell_density_per_kloc,87,-0.6748810673860343,split_matched
+28,implementation_smell_density_per_kloc,87,-0.739116963594113,split_matched
+28,"pooled (non-independent, see caveat)",260,-0.6696121265004675,split_matched
+29,cyclomatic_complexity_p90,86,-0.6579396752615738,split_matched
+29,design_smell_density_per_kloc,87,-0.6999799500574158,split_matched
+29,implementation_smell_density_per_kloc,87,-0.8129858294983369,split_matched
+29,"pooled (non-independent, see caveat)",260,-0.7373677648764941,split_matched
+30,cyclomatic_complexity_p90,86,-0.6734562951082598,split_matched
+30,design_smell_density_per_kloc,87,-0.6879135300658002,split_matched
+30,implementation_smell_density_per_kloc,87,-0.7079145213468812,split_matched
+30,"pooled (non-independent, see caveat)",260,-0.6877061531707391,split_matched
+31,cyclomatic_complexity_p90,86,-0.64862493513845,split_matched
+31,design_smell_density_per_kloc,87,-0.6598436104478429,split_matched
+31,implementation_smell_density_per_kloc,87,-0.7199981774274388,split_matched
+31,"pooled (non-independent, see caveat)",260,-0.6931185709942924,split_matched
+32,cyclomatic_complexity_p90,86,-0.6286204879521482,split_matched
+32,design_smell_density_per_kloc,87,-0.6918323824799956,split_matched
+32,implementation_smell_density_per_kloc,87,-0.7303868410261083,split_matched
+32,"pooled (non-independent, see caveat)",260,-0.6893767796772761,split_matched
+33,cyclomatic_complexity_p90,86,-0.5523562432190198,split_matched
+33,design_smell_density_per_kloc,87,-0.6532271293950385,split_matched
+33,implementation_smell_density_per_kloc,87,-0.7786850138971158,split_matched
+33,"pooled (non-independent, see caveat)",260,-0.6645377969954126,split_matched
+34,cyclomatic_complexity_p90,86,-0.7637790818348207,split_matched
+34,design_smell_density_per_kloc,87,-0.7187904416455535,split_matched
+34,implementation_smell_density_per_kloc,87,-0.818708707340411,split_matched
+34,"pooled (non-independent, see caveat)",260,-0.7730342855328645,split_matched
+35,cyclomatic_complexity_p90,86,-0.5559748665018774,split_matched
+35,design_smell_density_per_kloc,87,-0.6654940488124966,split_matched
+35,implementation_smell_density_per_kloc,87,-0.7522577117601495,split_matched
+35,"pooled (non-independent, see caveat)",260,-0.6518463922372019,split_matched
+36,cyclomatic_complexity_p90,86,-0.648451799158443,split_matched
+36,design_smell_density_per_kloc,87,-0.6308441025827972,split_matched
+36,implementation_smell_density_per_kloc,87,-0.7714129493780472,split_matched
+36,"pooled (non-independent, see caveat)",260,-0.6987361624277588,split_matched
+37,cyclomatic_complexity_p90,86,-0.5188218201030247,split_matched
+37,design_smell_density_per_kloc,87,-0.6501285019047446,split_matched
+37,implementation_smell_density_per_kloc,87,-0.7897480293434183,split_matched
+37,"pooled (non-independent, see caveat)",260,-0.6637668374838227,split_matched
+38,cyclomatic_complexity_p90,86,-0.6351114214012114,split_matched
+38,design_smell_density_per_kloc,87,-0.7081092904143048,split_matched
+38,implementation_smell_density_per_kloc,87,-0.7334314498992489,split_matched
+38,"pooled (non-independent, see caveat)",260,-0.6939404982732087,split_matched
+39,cyclomatic_complexity_p90,86,-0.6628897589508939,split_matched
+39,design_smell_density_per_kloc,87,-0.6773417421577382,split_matched
+39,implementation_smell_density_per_kloc,87,-0.7233881623912152,split_matched
+39,"pooled (non-independent, see caveat)",260,-0.7082205913177895,split_matched
+40,cyclomatic_complexity_p90,86,-0.6587699187682206,split_matched
+40,design_smell_density_per_kloc,87,-0.6941472394874505,split_matched
+40,implementation_smell_density_per_kloc,87,-0.7356540757278899,split_matched
+40,"pooled (non-independent, see caveat)",260,-0.7190477295910356,split_matched
+41,cyclomatic_complexity_p90,86,-0.5776056457623762,split_matched
+41,design_smell_density_per_kloc,87,-0.7209594808887593,split_matched
+41,implementation_smell_density_per_kloc,87,-0.7186494737321729,split_matched
+41,"pooled (non-independent, see caveat)",260,-0.6799542545020055,split_matched
+42,cyclomatic_complexity_p90,86,-0.7517784025510879,split_matched
+42,design_smell_density_per_kloc,87,-0.7271931903104095,split_matched
+42,implementation_smell_density_per_kloc,87,-0.7801066204948284,split_matched
+42,"pooled (non-independent, see caveat)",260,-0.7674704096914812,split_matched
+43,cyclomatic_complexity_p90,86,-0.6625469366190538,split_matched
+43,design_smell_density_per_kloc,87,-0.775404188615278,split_matched
+43,implementation_smell_density_per_kloc,87,-0.732901991160523,split_matched
+43,"pooled (non-independent, see caveat)",260,-0.7273018069794587,split_matched
+44,cyclomatic_complexity_p90,86,-0.6371526958818812,split_matched
+44,design_smell_density_per_kloc,87,-0.6876401217578332,split_matched
+44,implementation_smell_density_per_kloc,87,-0.7575067207363193,split_matched
+44,"pooled (non-independent, see caveat)",260,-0.7000949729862963,split_matched
+45,cyclomatic_complexity_p90,86,-0.6499957544366138,split_matched
+45,design_smell_density_per_kloc,87,-0.6983030457685508,split_matched
+45,implementation_smell_density_per_kloc,87,-0.7012079265419298,split_matched
+45,"pooled (non-independent, see caveat)",260,-0.6820465297971626,split_matched
+46,cyclomatic_complexity_p90,86,-0.7256825858067437,split_matched
+46,design_smell_density_per_kloc,87,-0.7510161675446111,split_matched
+46,implementation_smell_density_per_kloc,87,-0.7236797740010024,split_matched
+46,"pooled (non-independent, see caveat)",260,-0.744227219157856,split_matched
+47,cyclomatic_complexity_p90,86,-0.6373602528421152,split_matched
+47,design_smell_density_per_kloc,87,-0.7201392559648578,split_matched
+47,implementation_smell_density_per_kloc,87,-0.7874333621907322,split_matched
+47,"pooled (non-independent, see caveat)",260,-0.7190055898191144,split_matched
+48,cyclomatic_complexity_p90,86,-0.6524708945789385,split_matched
+48,design_smell_density_per_kloc,87,-0.6981025463427082,split_matched
+48,implementation_smell_density_per_kloc,87,-0.7937030118011573,split_matched
+48,"pooled (non-independent, see caveat)",260,-0.7206782753145597,split_matched
+49,cyclomatic_complexity_p90,86,-0.6280886473635052,split_matched
+49,design_smell_density_per_kloc,87,-0.7581612379928185,split_matched
+49,implementation_smell_density_per_kloc,87,-0.7580547417859783,split_matched
+49,"pooled (non-independent, see caveat)",260,-0.7191551123434288,split_matched
+50,cyclomatic_complexity_p90,86,-0.6311111949733004,split_matched
+50,design_smell_density_per_kloc,87,-0.6856898091610011,split_matched
+50,implementation_smell_density_per_kloc,87,-0.746553059643687,split_matched
+50,"pooled (non-independent, see caveat)",260,-0.7023452736926444,split_matched
+51,cyclomatic_complexity_p90,86,-0.7060588335188784,split_matched
+51,design_smell_density_per_kloc,87,-0.7040263930153291,split_matched
+51,implementation_smell_density_per_kloc,87,-0.746006287875336,split_matched
+51,"pooled (non-independent, see caveat)",260,-0.7312782473893514,split_matched
+52,cyclomatic_complexity_p90,86,-0.7077031935468654,split_matched
+52,design_smell_density_per_kloc,87,-0.6828828171992052,split_matched
+52,implementation_smell_density_per_kloc,87,-0.777700824714084,split_matched
+52,"pooled (non-independent, see caveat)",260,-0.744305546736473,split_matched
+53,cyclomatic_complexity_p90,86,-0.6161292148612185,split_matched
+53,design_smell_density_per_kloc,87,-0.7378561143211272,split_matched
+53,implementation_smell_density_per_kloc,87,-0.717811789538829,split_matched
+53,"pooled (non-independent, see caveat)",260,-0.6901060598475501,split_matched
+54,cyclomatic_complexity_p90,86,-0.5822743011330938,split_matched
+54,design_smell_density_per_kloc,87,-0.6704518527969671,split_matched
+54,implementation_smell_density_per_kloc,87,-0.8032916111145223,split_matched
+54,"pooled (non-independent, see caveat)",260,-0.6919856215382114,split_matched
+55,cyclomatic_complexity_p90,86,-0.6234692529765836,split_matched
+55,design_smell_density_per_kloc,87,-0.6642728250369102,split_matched
+55,implementation_smell_density_per_kloc,87,-0.7043422791269878,split_matched
+55,"pooled (non-independent, see caveat)",260,-0.6703289200352445,split_matched
+56,cyclomatic_complexity_p90,86,-0.6213523534573038,split_matched
+56,design_smell_density_per_kloc,87,-0.658057342835791,split_matched
+56,implementation_smell_density_per_kloc,87,-0.7408666332528364,split_matched
+56,"pooled (non-independent, see caveat)",260,-0.689519372181021,split_matched
+57,cyclomatic_complexity_p90,86,-0.6463573409815649,split_matched
+57,design_smell_density_per_kloc,87,-0.7147622259081713,split_matched
+57,implementation_smell_density_per_kloc,87,-0.7609149314257073,split_matched
+57,"pooled (non-independent, see caveat)",260,-0.7218282542376004,split_matched
+58,cyclomatic_complexity_p90,86,-0.6570404264352092,split_matched
+58,design_smell_density_per_kloc,87,-0.7199569837595465,split_matched
+58,implementation_smell_density_per_kloc,87,-0.7993165352895611,split_matched
+58,"pooled (non-independent, see caveat)",260,-0.7275094614533257,split_matched
+59,cyclomatic_complexity_p90,86,-0.5694661961997849,split_matched
+59,design_smell_density_per_kloc,87,-0.7965477644314019,split_matched
+59,implementation_smell_density_per_kloc,87,-0.7302410352212148,split_matched
+59,"pooled (non-independent, see caveat)",260,-0.6951325133062934,split_matched
+60,cyclomatic_complexity_p90,86,-0.7128921175527148,split_matched
+60,design_smell_density_per_kloc,87,-0.759674097296903,split_matched
+60,implementation_smell_density_per_kloc,87,-0.7407937303503895,split_matched
+60,"pooled (non-independent, see caveat)",260,-0.7523608399954392,split_matched
+61,cyclomatic_complexity_p90,86,-0.6516751106205126,split_matched
+61,design_smell_density_per_kloc,87,-0.7124473689007162,split_matched
+61,implementation_smell_density_per_kloc,87,-0.7569599489679684,split_matched
+61,"pooled (non-independent, see caveat)",260,-0.728487123758418,split_matched
+62,cyclomatic_complexity_p90,86,-0.6102080286805981,split_matched
+62,design_smell_density_per_kloc,87,-0.7541512494759675,split_matched
+62,implementation_smell_density_per_kloc,87,-0.7619355720599627,split_matched
+62,"pooled (non-independent, see caveat)",260,-0.6924166856846052,split_matched
+63,cyclomatic_complexity_p90,86,-0.6631130063965884,split_matched
+63,design_smell_density_per_kloc,87,-0.7356688478573903,split_matched
+63,implementation_smell_density_per_kloc,87,-0.8130040552239486,split_matched
+63,"pooled (non-independent, see caveat)",260,-0.753592097620522,split_matched
+64,cyclomatic_complexity_p90,86,-0.6004868200086797,split_matched
+64,design_smell_density_per_kloc,87,-0.7526383901718827,split_matched
+64,implementation_smell_density_per_kloc,87,-0.7159338406160295,split_matched
+64,"pooled (non-independent, see caveat)",260,-0.6939779527408524,split_matched
+65,cyclomatic_complexity_p90,86,-0.6428477083608507,split_matched
+65,design_smell_density_per_kloc,87,-0.69781091081421,split_matched
+65,implementation_smell_density_per_kloc,87,-0.7529867407846174,split_matched
+65,"pooled (non-independent, see caveat)",260,-0.7028484736552287,split_matched
+66,cyclomatic_complexity_p90,86,-0.5879050898627294,split_matched
+66,design_smell_density_per_kloc,87,-0.6583854328053516,split_matched
+66,implementation_smell_density_per_kloc,87,-0.7691529594021962,split_matched
+66,"pooled (non-independent, see caveat)",260,-0.6783515529892594,split_matched
+67,cyclomatic_complexity_p90,86,-0.5892825133261003,split_matched
+67,design_smell_density_per_kloc,87,-0.7645954468403113,split_matched
+67,implementation_smell_density_per_kloc,87,-0.760150728882184,split_matched
+67,"pooled (non-independent, see caveat)",260,-0.7014834447324367,split_matched
+68,cyclomatic_complexity_p90,86,-0.5086749374970517,split_matched
+68,design_smell_density_per_kloc,87,-0.7252611049341087,split_matched
+68,implementation_smell_density_per_kloc,87,-0.8201849911149588,split_matched
+68,"pooled (non-independent, see caveat)",260,-0.6759236310678419,split_matched
+69,cyclomatic_complexity_p90,86,-0.6678837281707284,split_matched
+69,design_smell_density_per_kloc,87,-0.6736598436104478,split_matched
+69,implementation_smell_density_per_kloc,87,-0.7335772576972458,split_matched
+69,"pooled (non-independent, see caveat)",260,-0.7075077285410967,split_matched
+70,cyclomatic_complexity_p90,86,-0.6092461552976696,split_matched
+70,design_smell_density_per_kloc,87,-0.6700143995042196,split_matched
+70,implementation_smell_density_per_kloc,87,-0.7213104296714814,split_matched
+70,"pooled (non-independent, see caveat)",260,-0.6652493523083902,split_matched
+71,cyclomatic_complexity_p90,86,-0.6031624729934997,split_matched
+71,design_smell_density_per_kloc,87,-0.6649290049760312,split_matched
+71,implementation_smell_density_per_kloc,87,-0.7843532145623549,split_matched
+71,"pooled (non-independent, see caveat)",260,-0.7028476894442678,split_matched
+72,cyclomatic_complexity_p90,86,-0.6188274808008001,split_matched
+72,design_smell_density_per_kloc,87,-0.7222353863259391,split_matched
+72,implementation_smell_density_per_kloc,87,-0.7650521711395635,split_matched
+72,"pooled (non-independent, see caveat)",260,-0.7074933438661666,split_matched
+73,cyclomatic_complexity_p90,86,-0.7084013396858342,split_matched
+73,design_smell_density_per_kloc,87,-0.7127754588702768,split_matched
+73,implementation_smell_density_per_kloc,87,-0.8093589101016084,split_matched
+73,"pooled (non-independent, see caveat)",260,-0.7543463284508618,split_matched
+74,cyclomatic_complexity_p90,86,-0.6522600549092865,split_matched
+74,design_smell_density_per_kloc,87,-0.747534768423163,split_matched
+74,implementation_smell_density_per_kloc,87,-0.7217842985373855,split_matched
+74,"pooled (non-independent, see caveat)",260,-0.7016398725681506,split_matched
+75,cyclomatic_complexity_p90,86,-0.6476215634847255,split_matched
+75,design_smell_density_per_kloc,87,-0.6796930536062555,split_matched
+75,implementation_smell_density_per_kloc,87,-0.7524946461931016,split_matched
+75,"pooled (non-independent, see caveat)",260,-0.7086806772921287,split_matched
+76,cyclomatic_complexity_p90,86,-0.6055625790139064,split_matched
+76,design_smell_density_per_kloc,87,-0.7420666022638207,split_matched
+76,implementation_smell_density_per_kloc,87,-0.7284549141112681,split_matched
+76,"pooled (non-independent, see caveat)",260,-0.6902937370039393,split_matched
+77,cyclomatic_complexity_p90,86,-0.5727534317656493,split_matched
+77,design_smell_density_per_kloc,87,-0.6887155277691704,split_matched
+77,implementation_smell_density_per_kloc,87,-0.7109946689752585,split_matched
+77,"pooled (non-independent, see caveat)",260,-0.6703317636504039,split_matched
+78,cyclomatic_complexity_p90,86,-0.7468748525873863,split_matched
+78,design_smell_density_per_kloc,87,-0.7509250314419554,split_matched
+78,implementation_smell_density_per_kloc,87,-0.7182485077687155,split_matched
+78,"pooled (non-independent, see caveat)",260,-0.7518876819831944,split_matched
+79,cyclomatic_complexity_p90,86,-0.6092875810210302,split_matched
+79,design_smell_density_per_kloc,87,-0.7013652188177825,split_matched
+79,implementation_smell_density_per_kloc,87,-0.7417596938078097,split_matched
+79,"pooled (non-independent, see caveat)",260,-0.6922256550311513,split_matched
+80,cyclomatic_complexity_p90,86,-0.5725418419910561,split_matched
+80,design_smell_density_per_kloc,87,-0.7011282649508777,split_matched
+80,implementation_smell_density_per_kloc,87,-0.7132182074998861,split_matched
+80,"pooled (non-independent, see caveat)",260,-0.65224103209931,split_matched
+81,cyclomatic_complexity_p90,86,-0.6459422231447063,split_matched
+81,design_smell_density_per_kloc,87,-0.6937097861947031,split_matched
+81,implementation_smell_density_per_kloc,87,-0.7690618307741378,split_matched
+81,"pooled (non-independent, see caveat)",260,-0.7062351231244253,split_matched
+82,cyclomatic_complexity_p90,86,-0.6299224484404777,split_matched
+82,design_smell_density_per_kloc,87,-0.7038076663689554,split_matched
+82,implementation_smell_density_per_kloc,87,-0.7284002369344329,split_matched
+82,"pooled (non-independent, see caveat)",260,-0.6840491415388156,split_matched
+83,cyclomatic_complexity_p90,86,-0.6463162661685204,split_matched
+83,design_smell_density_per_kloc,87,-0.6976104113883673,split_matched
+83,implementation_smell_density_per_kloc,87,-0.7255023465621725,split_matched
+83,"pooled (non-independent, see caveat)",260,-0.6934029574785646,split_matched
+84,cyclomatic_complexity_p90,86,-0.6502287843766216,split_matched
+84,design_smell_density_per_kloc,87,-0.694712283323916,split_matched
+84,implementation_smell_density_per_kloc,87,-0.7942862350207317,split_matched
+84,"pooled (non-independent, see caveat)",260,-0.7186573782949517,split_matched
+85,cyclomatic_complexity_p90,86,-0.6264022416997671,split_matched
+85,design_smell_density_per_kloc,87,-0.646173195049487,split_matched
+85,implementation_smell_density_per_kloc,87,-0.7351073039595388,split_matched
+85,"pooled (non-independent, see caveat)",260,-0.6836125288043013,split_matched
+86,cyclomatic_complexity_p90,86,-0.6187708738230466,split_matched
+86,design_smell_density_per_kloc,87,-0.731385451032572,split_matched
+86,implementation_smell_density_per_kloc,87,-0.7653802342005741,split_matched
+86,"pooled (non-independent, see caveat)",260,-0.7054245570457724,split_matched
+87,cyclomatic_complexity_p90,86,-0.6121253290311625,split_matched
+87,design_smell_density_per_kloc,87,-0.729945500610612,split_matched
+87,implementation_smell_density_per_kloc,87,-0.6996582676447806,split_matched
+87,"pooled (non-independent, see caveat)",260,-0.6802275802832943,split_matched
+88,cyclomatic_complexity_p90,86,-0.6476593014698946,split_matched
+88,design_smell_density_per_kloc,87,-0.7302006816980479,split_matched
+88,implementation_smell_density_per_kloc,87,-0.749359821387889,split_matched
+88,"pooled (non-independent, see caveat)",260,-0.7050966074109454,split_matched
+89,cyclomatic_complexity_p90,86,-0.6292774051116583,split_matched
+89,design_smell_density_per_kloc,87,-0.6646738238885952,split_matched
+89,implementation_smell_density_per_kloc,87,-0.7066574929920646,split_matched
+89,"pooled (non-independent, see caveat)",260,-0.6757042736192002,split_matched
+90,cyclomatic_complexity_p90,86,-0.7015708288126798,split_matched
+90,design_smell_density_per_kloc,87,-0.7356688478573903,split_matched
+90,implementation_smell_density_per_kloc,87,-0.7466259625461339,split_matched
+90,"pooled (non-independent, see caveat)",260,-0.7252269690508233,split_matched
+91,cyclomatic_complexity_p90,86,-0.6368936985215726,split_matched
+91,design_smell_density_per_kloc,87,-0.7491934454914969,split_matched
+91,implementation_smell_density_per_kloc,87,-0.7056180799198069,split_matched
+91,"pooled (non-independent, see caveat)",260,-0.698537850985747,split_matched
+92,cyclomatic_complexity_p90,86,-0.6627388084343601,split_matched
+92,design_smell_density_per_kloc,87,-0.7387674753476842,split_matched
+92,implementation_smell_density_per_kloc,87,-0.6408985282726568,split_matched
+92,"pooled (non-independent, see caveat)",260,-0.6885568817180076,split_matched
+93,cyclomatic_complexity_p90,86,-0.6093704301227441,split_matched
+93,design_smell_density_per_kloc,87,-0.7331170369830304,split_matched
+93,implementation_smell_density_per_kloc,87,-0.6977992436323872,split_matched
+93,"pooled (non-independent, see caveat)",260,-0.6845768134663731,split_matched
+94,cyclomatic_complexity_p90,86,-0.6642074079664887,split_matched
+94,design_smell_density_per_kloc,87,-0.6498368663762463,split_matched
+94,implementation_smell_density_per_kloc,87,-0.7086070989201257,split_matched
+94,"pooled (non-independent, see caveat)",260,-0.6988154787502746,split_matched
+95,cyclomatic_complexity_p90,86,-0.5650697209275997,split_matched
+95,design_smell_density_per_kloc,87,-0.7083826987222719,split_matched
+95,implementation_smell_density_per_kloc,87,-0.8217888549687884,split_matched
+95,"pooled (non-independent, see caveat)",260,-0.6876951222717873,split_matched
+96,cyclomatic_complexity_p90,86,-0.5837728194726166,split_matched
+96,design_smell_density_per_kloc,87,-0.6453165156845233,split_matched
+96,implementation_smell_density_per_kloc,87,-0.7483574064792454,split_matched
+96,"pooled (non-independent, see caveat)",260,-0.6669364737466487,split_matched
+97,cyclomatic_complexity_p90,86,-0.636001698193311,split_matched
+97,design_smell_density_per_kloc,87,-0.6968995497876529,split_matched
+97,implementation_smell_density_per_kloc,87,-0.7736014982473998,split_matched
+97,"pooled (non-independent, see caveat)",260,-0.7211367030475859,split_matched
+98,cyclomatic_complexity_p90,86,-0.6193639082563615,split_matched
+98,design_smell_density_per_kloc,87,-0.7313489965915098,split_matched
+98,implementation_smell_density_per_kloc,87,-0.7090080648835831,split_matched
+98,"pooled (non-independent, see caveat)",260,-0.6731156439361611,split_matched
+99,cyclomatic_complexity_p90,86,-0.5933732098043285,split_matched
+99,design_smell_density_per_kloc,87,-0.6947669649855094,split_matched
+99,implementation_smell_density_per_kloc,87,-0.7642333472260977,split_matched
+99,"pooled (non-independent, see caveat)",260,-0.6946451173001459,split_matched
+100,cyclomatic_complexity_p90,86,-0.6205822971111573,split_matched
+100,design_smell_density_per_kloc,87,-0.6464283761369228,split_matched
+100,implementation_smell_density_per_kloc,87,-0.7241179768021957,split_matched
+100,"pooled (non-independent, see caveat)",260,-0.6637265436413989,split_matched
+101,cyclomatic_complexity_p90,86,-0.5852029360152461,split_matched
+101,design_smell_density_per_kloc,87,-0.7157282685963217,split_matched
+101,implementation_smell_density_per_kloc,87,-0.7969471909600401,split_matched
+101,"pooled (non-independent, see caveat)",260,-0.7083065204678463,split_matched
+102,cyclomatic_complexity_p90,86,-0.5841651414230994,split_matched
+102,design_smell_density_per_kloc,87,-0.661155970326085,split_matched
+102,implementation_smell_density_per_kloc,87,-0.7530061467803351,split_matched
+102,"pooled (non-independent, see caveat)",260,-0.6761406745985437,split_matched
+103,cyclomatic_complexity_p90,86,-0.6683963243202445,split_matched
+103,design_smell_density_per_kloc,87,-0.7665457594371434,split_matched
+103,implementation_smell_density_per_kloc,87,-0.7674215154690847,split_matched
+103,"pooled (non-independent, see caveat)",260,-0.7359217520644341,split_matched
+104,cyclomatic_complexity_p90,86,-0.7115524317184773,split_matched
+104,design_smell_density_per_kloc,87,-0.7577420119206022,split_matched
+104,implementation_smell_density_per_kloc,87,-0.7002050394131316,split_matched
+104,"pooled (non-independent, see caveat)",260,-0.7367186321158904,split_matched
+105,cyclomatic_complexity_p90,86,-0.7228247281727713,split_matched
+105,design_smell_density_per_kloc,87,-0.8026721105298653,split_matched
+105,implementation_smell_density_per_kloc,87,-0.6812867362281861,split_matched
+105,"pooled (non-independent, see caveat)",260,-0.7433974173948641,split_matched
+106,cyclomatic_complexity_p90,86,-0.6143330219920183,split_matched
+106,design_smell_density_per_kloc,87,-0.6925614713012412,split_matched
+106,implementation_smell_density_per_kloc,87,-0.7790677541349614,split_matched
+106,"pooled (non-independent, see caveat)",260,-0.6943349360177957,split_matched
+107,cyclomatic_complexity_p90,86,-0.611453370442002,split_matched
+107,design_smell_density_per_kloc,87,-0.7160381313453511,split_matched
+107,implementation_smell_density_per_kloc,87,-0.7501982047660273,split_matched
+107,"pooled (non-independent, see caveat)",260,-0.6883668484137784,split_matched
+108,cyclomatic_complexity_p90,86,-0.5924863671528576,split_matched
+108,design_smell_density_per_kloc,87,-0.6675172702914531,split_matched
+108,implementation_smell_density_per_kloc,87,-0.7560486626873832,split_matched
+108,"pooled (non-independent, see caveat)",260,-0.6754196377028546,split_matched
+109,cyclomatic_complexity_p90,86,-0.6296016755665416,split_matched
+109,design_smell_density_per_kloc,87,-0.7661994422470518,split_matched
+109,implementation_smell_density_per_kloc,87,-0.7545359274616119,split_matched
+109,"pooled (non-independent, see caveat)",260,-0.7101404351211726,split_matched
+110,cyclomatic_complexity_p90,86,-0.6112269446672013,split_matched
+110,design_smell_density_per_kloc,87,-0.7079816998705867,split_matched
+110,implementation_smell_density_per_kloc,87,-0.7396455096368524,split_matched
+110,"pooled (non-independent, see caveat)",260,-0.6825717401085738,split_matched
+111,cyclomatic_complexity_p90,86,-0.523128449455163,split_matched
+111,design_smell_density_per_kloc,87,-0.7281227785574977,split_matched
+111,implementation_smell_density_per_kloc,87,-0.6708980726295165,split_matched
+111,"pooled (non-independent, see caveat)",260,-0.6375001962957123,split_matched
+112,cyclomatic_complexity_p90,86,-0.6636192956138612,split_matched
+112,design_smell_density_per_kloc,87,-0.7065052950075643,split_matched
+112,implementation_smell_density_per_kloc,87,-0.7839157971476738,split_matched
+112,"pooled (non-independent, see caveat)",260,-0.7362186660621893,split_matched
+113,cyclomatic_complexity_p90,86,-0.703961582368647,split_matched
+113,design_smell_density_per_kloc,87,-0.765324535661557,split_matched
+113,implementation_smell_density_per_kloc,87,-0.7791771084886318,split_matched
+113,"pooled (non-independent, see caveat)",260,-0.7492977729468139,split_matched
+114,cyclomatic_complexity_p90,86,-0.6547917806668302,split_matched
+114,design_smell_density_per_kloc,87,-0.7048283907186992,split_matched
+114,implementation_smell_density_per_kloc,87,-0.7907868957032852,split_matched
+114,"pooled (non-independent, see caveat)",260,-0.7212258551924331,split_matched
+115,cyclomatic_complexity_p90,86,-0.6226696354441845,split_matched
+115,design_smell_density_per_kloc,87,-0.7049924357034796,split_matched
+115,implementation_smell_density_per_kloc,87,-0.7014261630291155,split_matched
+115,"pooled (non-independent, see caveat)",260,-0.6816462638401419,split_matched
+116,cyclomatic_complexity_p90,86,-0.6677359095797875,split_matched
+116,design_smell_density_per_kloc,87,-0.6422907970763537,split_matched
+116,implementation_smell_density_per_kloc,87,-0.798625761578621,split_matched
+116,"pooled (non-independent, see caveat)",260,-0.7202524202122407,split_matched
+117,cyclomatic_complexity_p90,86,-0.6724342887333246,split_matched
+117,design_smell_density_per_kloc,87,-0.6986129085175802,split_matched
+117,implementation_smell_density_per_kloc,87,-0.789274160477514,split_matched
+117,"pooled (non-independent, see caveat)",260,-0.727210998845098,split_matched
+118,cyclomatic_complexity_p90,86,-0.7021473318741037,split_matched
+118,design_smell_density_per_kloc,87,-0.6932723329019557,split_matched
+118,implementation_smell_density_per_kloc,87,-0.7512370711258942,split_matched
+118,"pooled (non-independent, see caveat)",260,-0.7358459100715461,split_matched
+119,cyclomatic_complexity_p90,86,-0.6074080363797609,split_matched
+119,design_smell_density_per_kloc,87,-0.7292164117893662,split_matched
+119,implementation_smell_density_per_kloc,87,-0.6829817287100742,split_matched
+119,"pooled (non-independent, see caveat)",260,-0.6742294619923449,split_matched
+120,cyclomatic_complexity_p90,86,-0.6465648998999942,split_matched
+120,design_smell_density_per_kloc,87,-0.7267739642381932,split_matched
+120,implementation_smell_density_per_kloc,87,-0.7287465257210554,split_matched
+120,"pooled (non-independent, see caveat)",260,-0.7096584009643414,split_matched
+121,cyclomatic_complexity_p90,86,-0.576273904880511,split_matched
+121,design_smell_density_per_kloc,87,-0.7398428813590217,split_matched
+121,implementation_smell_density_per_kloc,87,-0.7136191734633435,split_matched
+121,"pooled (non-independent, see caveat)",260,-0.6801074130870272,split_matched
+122,cyclomatic_complexity_p90,86,-0.525270536733558,split_matched
+122,design_smell_density_per_kloc,87,-0.7211417530940707,split_matched
+122,implementation_smell_density_per_kloc,87,-0.7134186904816149,split_matched
+122,"pooled (non-independent, see caveat)",260,-0.6514427574001829,split_matched
+123,cyclomatic_complexity_p90,86,-0.6470554937071911,split_matched
+123,design_smell_density_per_kloc,87,-0.6932358784608934,split_matched
+123,implementation_smell_density_per_kloc,87,-0.7303148082170646,split_matched
+123,"pooled (non-independent, see caveat)",260,-0.7029086871480351,split_matched
+124,cyclomatic_complexity_p90,86,-0.5421729941882406,split_matched
+124,design_smell_density_per_kloc,87,-0.6625230118659207,split_matched
+124,implementation_smell_density_per_kloc,87,-0.7613888002916116,split_matched
+124,"pooled (non-independent, see caveat)",260,-0.6549199778373378,split_matched
+125,cyclomatic_complexity_p90,86,-0.6728682755627677,split_matched
+125,design_smell_density_per_kloc,87,-0.7194466215846745,split_matched
+125,implementation_smell_density_per_kloc,87,-0.7669476466031804,split_matched
+125,"pooled (non-independent, see caveat)",260,-0.7333040198303117,split_matched
+126,cyclomatic_complexity_p90,86,-0.6424703285091609,split_matched
+126,design_smell_density_per_kloc,87,-0.6974645936241183,split_matched
+126,implementation_smell_density_per_kloc,87,-0.7470087027839796,split_matched
+126,"pooled (non-independent, see caveat)",260,-0.7023186457434711,split_matched
+127,cyclomatic_complexity_p90,86,-0.6306737237364731,split_matched
+127,design_smell_density_per_kloc,87,-0.7360880739296065,split_matched
+127,implementation_smell_density_per_kloc,87,-0.7068027520845674,split_matched
+127,"pooled (non-independent, see caveat)",260,-0.6850438268882296,split_matched
+128,cyclomatic_complexity_p90,86,-0.6639589406847621,split_matched
+128,design_smell_density_per_kloc,87,-0.7315859504584146,split_matched
+128,implementation_smell_density_per_kloc,87,-0.7935936574474871,split_matched
+128,"pooled (non-independent, see caveat)",260,-0.7439776434393491,split_matched
+129,cyclomatic_complexity_p90,86,-0.6298057418886153,split_matched
+129,design_smell_density_per_kloc,87,-0.691230884202468,split_matched
+129,implementation_smell_density_per_kloc,87,-0.759839613614617,split_matched
+129,"pooled (non-independent, see caveat)",260,-0.7053363793896873,split_matched
+130,cyclomatic_complexity_p90,86,-0.6191257913258422,split_matched
+130,design_smell_density_per_kloc,87,-0.6567449829575488,split_matched
+130,implementation_smell_density_per_kloc,87,-0.8032897434729119,split_matched
+130,"pooled (non-independent, see caveat)",260,-0.7091073079407304,split_matched
+131,cyclomatic_complexity_p90,86,-0.7430609279770553,split_matched
+131,design_smell_density_per_kloc,87,-0.6918323824799956,split_matched
+131,implementation_smell_density_per_kloc,87,-0.7329931197885816,split_matched
+131,"pooled (non-independent, see caveat)",260,-0.7345978650529674,split_matched
+132,cyclomatic_complexity_p90,86,-0.6066003736060531,split_matched
+132,design_smell_density_per_kloc,87,-0.6763939266901191,split_matched
+132,implementation_smell_density_per_kloc,87,-0.6945007678340716,split_matched
+132,"pooled (non-independent, see caveat)",260,-0.656179604994022,split_matched
+133,cyclomatic_complexity_p90,86,-0.7484739558272716,split_matched
+133,design_smell_density_per_kloc,87,-0.7511073036472669,split_matched
+133,implementation_smell_density_per_kloc,87,-0.716207226500205,split_matched
+133,"pooled (non-independent, see caveat)",260,-0.7593337821396045,split_matched
+134,cyclomatic_complexity_p90,86,-0.5994678944091174,split_matched
+134,design_smell_density_per_kloc,87,-0.726099557078541,split_matched
+134,implementation_smell_density_per_kloc,87,-0.678552877386431,split_matched
+134,"pooled (non-independent, see caveat)",260,-0.669267898675874,split_matched
+135,cyclomatic_complexity_p90,86,-0.6318470856840953,split_matched
+135,design_smell_density_per_kloc,87,-0.6761752000437453,split_matched
+135,implementation_smell_density_per_kloc,87,-0.801594750991024,split_matched
+135,"pooled (non-independent, see caveat)",260,-0.7174965767723034,split_matched
+136,cyclomatic_complexity_p90,86,-0.5885050097175312,split_matched
+136,design_smell_density_per_kloc,87,-0.7293986839946776,split_matched
+136,implementation_smell_density_per_kloc,87,-0.730660226910284,split_matched
+136,"pooled (non-independent, see caveat)",260,-0.6908960562464416,split_matched
+137,cyclomatic_complexity_p90,86,-0.5447735495770295,split_matched
+137,design_smell_density_per_kloc,87,-0.6694493556677542,split_matched
+137,implementation_smell_density_per_kloc,87,-0.7390805121428896,split_matched
+137,"pooled (non-independent, see caveat)",260,-0.650313467236628,split_matched
+138,cyclomatic_complexity_p90,86,-0.6539804139856973,split_matched
+138,design_smell_density_per_kloc,87,-0.6897180248983833,split_matched
+138,implementation_smell_density_per_kloc,87,-0.7953251013805988,split_matched
+138,"pooled (non-independent, see caveat)",260,-0.7273527973433601,split_matched
+139,cyclomatic_complexity_p90,86,-0.6873407928750684,split_matched
+139,design_smell_density_per_kloc,87,-0.7314219054736343,split_matched
+139,implementation_smell_density_per_kloc,87,-0.8066068255342417,split_matched
+139,"pooled (non-independent, see caveat)",260,-0.7503445417654261,split_matched
+140,cyclomatic_complexity_p90,86,-0.6452029851027897,split_matched
+140,design_smell_density_per_kloc,87,-0.674698795180723,split_matched
+140,implementation_smell_density_per_kloc,87,-0.7763885724700414,split_matched
+140,"pooled (non-independent, see caveat)",260,-0.7118869786360204,split_matched
+141,cyclomatic_complexity_p90,86,-0.5621450270770043,split_matched
+141,design_smell_density_per_kloc,87,-0.722982702367716,split_matched
+141,implementation_smell_density_per_kloc,87,-0.7941404292158383,split_matched
+141,"pooled (non-independent, see caveat)",260,-0.6940619331959377,split_matched
+142,cyclomatic_complexity_p90,86,-0.7070372571773608,split_matched
+142,design_smell_density_per_kloc,87,-0.7866503836829922,split_matched
+142,implementation_smell_density_per_kloc,87,-0.7511470973558744,split_matched
+142,"pooled (non-independent, see caveat)",260,-0.7382242126550143,split_matched
+143,cyclomatic_complexity_p90,86,-0.7287745417150189,split_matched
+143,design_smell_density_per_kloc,87,-0.7740553742959736,split_matched
+143,implementation_smell_density_per_kloc,87,-0.6970702146079191,split_matched
+143,"pooled (non-independent, see caveat)",260,-0.7470189808570097,split_matched
+144,cyclomatic_complexity_p90,86,-0.6558673132441458,split_matched
+144,design_smell_density_per_kloc,87,-0.6747534768423163,split_matched
+144,implementation_smell_density_per_kloc,87,-0.7495056271927827,split_matched
+144,"pooled (non-independent, see caveat)",260,-0.7129945267606772,split_matched
+145,cyclomatic_complexity_p90,86,-0.6688303111496876,split_matched
+145,design_smell_density_per_kloc,87,-0.7336273991579024,split_matched
+145,implementation_smell_density_per_kloc,87,-0.7378593885269057,split_matched
+145,"pooled (non-independent, see caveat)",260,-0.7170616536024713,split_matched
+146,cyclomatic_complexity_p90,86,-0.6169405815423513,split_matched
+146,design_smell_density_per_kloc,87,-0.6696316278730656,split_matched
+146,implementation_smell_density_per_kloc,87,-0.7493233699366656,split_matched
+146,"pooled (non-independent, see caveat)",260,-0.6884234117748571,split_matched
+147,cyclomatic_complexity_p90,86,-0.6378885796499835,split_matched
+147,design_smell_density_per_kloc,87,-0.7380383865264385,split_matched
+147,implementation_smell_density_per_kloc,87,-0.732592153825124,split_matched
+147,"pooled (non-independent, see caveat)",260,-0.72443086191911,split_matched
+148,cyclomatic_complexity_p90,86,-0.6330135008915684,split_matched
+148,design_smell_density_per_kloc,87,-0.7058126606273809,split_matched
+148,implementation_smell_density_per_kloc,87,-0.7494509500159475,split_matched
+148,"pooled (non-independent, see caveat)",260,-0.7029002625926347,split_matched
+149,cyclomatic_complexity_p90,86,-0.6913061936883814,split_matched
+149,design_smell_density_per_kloc,87,-0.6214753112297906,split_matched
+149,implementation_smell_density_per_kloc,87,-0.8327060646101972,split_matched
+149,"pooled (non-independent, see caveat)",260,-0.736991739193665,split_matched
+150,cyclomatic_complexity_p90,86,-0.6805887070144817,split_matched
+150,design_smell_density_per_kloc,87,-0.7989173031004502,split_matched
+150,implementation_smell_density_per_kloc,87,-0.7648152367066113,split_matched
+150,"pooled (non-independent, see caveat)",260,-0.7463859399014221,split_matched
+151,cyclomatic_complexity_p90,86,-0.685151989735268,split_matched
+151,design_smell_density_per_kloc,87,-0.7146346353644532,split_matched
+151,implementation_smell_density_per_kloc,87,-0.7250649291474917,split_matched
+151,"pooled (non-independent, see caveat)",260,-0.7280603621469364,split_matched
+152,cyclomatic_complexity_p90,86,-0.5998490494834662,split_matched
+152,design_smell_density_per_kloc,87,-0.6600076554326231,split_matched
+152,implementation_smell_density_per_kloc,87,-0.7167722239941677,split_matched
+152,"pooled (non-independent, see caveat)",260,-0.6710397937495349,split_matched
+153,cyclomatic_complexity_p90,86,-0.7050426906929571,split_matched
+153,design_smell_density_per_kloc,87,-0.7716129267448006,split_matched
+153,implementation_smell_density_per_kloc,87,-0.7493415956622773,split_matched
+153,"pooled (non-independent, see caveat)",260,-0.7415464824832535,split_matched
+154,cyclomatic_complexity_p90,86,-0.5800854773428434,split_matched
+154,design_smell_density_per_kloc,87,-0.6655305032535589,split_matched
+154,implementation_smell_density_per_kloc,87,-0.7257575067207362,split_matched
+154,"pooled (non-independent, see caveat)",260,-0.6597090315206751,split_matched
+155,cyclomatic_complexity_p90,86,-0.6264918156516817,split_matched
+155,design_smell_density_per_kloc,87,-0.7184076700143994,split_matched
+155,implementation_smell_density_per_kloc,87,-0.7183943135736092,split_matched
+155,"pooled (non-independent, see caveat)",260,-0.7036782579589067,split_matched
+156,cyclomatic_complexity_p90,86,-0.6011698665031369,split_matched
+156,design_smell_density_per_kloc,87,-0.6965714598180922,split_matched
+156,implementation_smell_density_per_kloc,87,-0.7046521164623867,split_matched
+156,"pooled (non-independent, see caveat)",260,-0.6692222661469439,split_matched
+157,cyclomatic_complexity_p90,86,-0.6059977073484386,split_matched
+157,design_smell_density_per_kloc,87,-0.6848513570165685,split_matched
+157,implementation_smell_density_per_kloc,87,-0.6833644689479199,split_matched
+157,"pooled (non-independent, see caveat)",260,-0.6616486577876101,split_matched
+158,cyclomatic_complexity_p90,86,-0.6232204013472588,split_matched
+158,design_smell_density_per_kloc,87,-0.8195687439622332,split_matched
+158,implementation_smell_density_per_kloc,87,-0.7138561078962957,split_matched
+158,"pooled (non-independent, see caveat)",260,-0.7139824422170165,split_matched
+159,cyclomatic_complexity_p90,86,-0.6856843634716809,split_matched
+159,design_smell_density_per_kloc,87,-0.7813098080673678,split_matched
+159,implementation_smell_density_per_kloc,87,-0.7594204219255479,split_matched
+159,"pooled (non-independent, see caveat)",260,-0.7447549678279205,split_matched
+160,cyclomatic_complexity_p90,86,-0.6179029001641602,split_matched
+160,design_smell_density_per_kloc,87,-0.7622988170533874,split_matched
+160,implementation_smell_density_per_kloc,87,-0.8356221807080695,split_matched
+160,"pooled (non-independent, see caveat)",260,-0.737651885992777,split_matched
+161,cyclomatic_complexity_p90,86,-0.6056606443700174,split_matched
+161,design_smell_density_per_kloc,87,-0.7482274028033465,split_matched
+161,implementation_smell_density_per_kloc,87,-0.7102474142251788,split_matched
+161,"pooled (non-independent, see caveat)",260,-0.679697970882689,split_matched
+162,cyclomatic_complexity_p90,86,-0.7196822461648772,split_matched
+162,design_smell_density_per_kloc,87,-0.7437252793321547,split_matched
+162,implementation_smell_density_per_kloc,87,-0.7593657447487128,split_matched
+162,"pooled (non-independent, see caveat)",260,-0.7518819220944704,split_matched
+163,cyclomatic_complexity_p90,86,-0.6793592090118309,split_matched
+163,design_smell_density_per_kloc,87,-0.7393142919636185,split_matched
+163,implementation_smell_density_per_kloc,87,-0.7382239030391398,split_matched
+163,"pooled (non-independent, see caveat)",260,-0.724769544448637,split_matched
+164,cyclomatic_complexity_p90,86,-0.6277902522784309,split_matched
+164,design_smell_density_per_kloc,87,-0.6572735723529519,split_matched
+164,implementation_smell_density_per_kloc,87,-0.7326103795507357,split_matched
+164,"pooled (non-independent, see caveat)",260,-0.6867624612827913,split_matched
+165,cyclomatic_complexity_p90,86,-0.6287113299934902,split_matched
+165,design_smell_density_per_kloc,87,-0.7718316533911743,split_matched
+165,implementation_smell_density_per_kloc,87,-0.7649077082918335,split_matched
+165,"pooled (non-independent, see caveat)",260,-0.7144269258828421,split_matched
+166,cyclomatic_complexity_p90,86,-0.6541313659263731,split_matched
+166,design_smell_density_per_kloc,87,-0.6795836902830686,split_matched
+166,implementation_smell_density_per_kloc,87,-0.7902948011117692,split_matched
+166,"pooled (non-independent, see caveat)",260,-0.7159064102691027,split_matched
+167,cyclomatic_complexity_p90,86,-0.6800792490211802,split_matched
+167,design_smell_density_per_kloc,87,-0.7420666022638207,split_matched
+167,implementation_smell_density_per_kloc,87,-0.7628833097917711,split_matched
+167,"pooled (non-independent, see caveat)",260,-0.7375386361169092,split_matched
+168,cyclomatic_complexity_p90,86,-0.6097703643602468,split_matched
+168,design_smell_density_per_kloc,87,-0.6603539726227147,split_matched
+168,implementation_smell_density_per_kloc,87,-0.6799744839841436,split_matched
+168,"pooled (non-independent, see caveat)",260,-0.6679726879173632,split_matched
+169,cyclomatic_complexity_p90,86,-0.6778308206124875,split_matched
+169,design_smell_density_per_kloc,87,-0.7055939339810072,split_matched
+169,implementation_smell_density_per_kloc,87,-0.8108351938761562,split_matched
+169,"pooled (non-independent, see caveat)",260,-0.7415388838041644,split_matched
+170,cyclomatic_complexity_p90,86,-0.6522600549092865,split_matched
+170,design_smell_density_per_kloc,87,-0.7462041813243898,split_matched
+170,implementation_smell_density_per_kloc,87,-0.7202533375860026,split_matched
+170,"pooled (non-independent, see caveat)",260,-0.6996038579132148,split_matched
+171,cyclomatic_complexity_p90,86,-0.5923920221899353,split_matched
+171,design_smell_density_per_kloc,87,-0.6681369957895121,split_matched
+171,implementation_smell_density_per_kloc,87,-0.8092860071991617,split_matched
+171,"pooled (non-independent, see caveat)",260,-0.6952793084107108,split_matched
+172,cyclomatic_complexity_p90,86,-0.7524010793063759,split_matched
+172,design_smell_density_per_kloc,87,-0.7503235331644278,split_matched
+172,implementation_smell_density_per_kloc,87,-0.7743108397503076,split_matched
+172,"pooled (non-independent, see caveat)",260,-0.7720900174891004,split_matched
+173,cyclomatic_complexity_p90,86,-0.620085193910299,split_matched
+173,design_smell_density_per_kloc,87,-0.6688478573902266,split_matched
+173,implementation_smell_density_per_kloc,87,-0.7730714904087118,split_matched
+173,"pooled (non-independent, see caveat)",260,-0.6949098094368279,split_matched
+174,cyclomatic_complexity_p90,86,-0.5716172613544163,split_matched
+174,design_smell_density_per_kloc,87,-0.6721105298653008,split_matched
+174,implementation_smell_density_per_kloc,87,-0.748813049619538,split_matched
+174,"pooled (non-independent, see caveat)",260,-0.6585293247117951,split_matched
+175,cyclomatic_complexity_p90,86,-0.6911305463568349,split_matched
+175,design_smell_density_per_kloc,87,-0.715637132493666,split_matched
+175,implementation_smell_density_per_kloc,87,-0.7821843532145624,split_matched
+175,"pooled (non-independent, see caveat)",260,-0.7396409616666703,split_matched
+176,cyclomatic_complexity_p90,86,-0.6427533633979281,split_matched
+176,design_smell_density_per_kloc,87,-0.6597342471246559,split_matched
+176,implementation_smell_density_per_kloc,87,-0.7511641682234473,split_matched
+176,"pooled (non-independent, see caveat)",260,-0.6951939624197705,split_matched
+177,cyclomatic_complexity_p90,86,-0.6900231142978442,split_matched
+177,design_smell_density_per_kloc,87,-0.7115177806536281,split_matched
+177,implementation_smell_density_per_kloc,87,-0.7226226819155237,split_matched
+177,"pooled (non-independent, see caveat)",260,-0.7235548709671474,split_matched
+178,cyclomatic_complexity_p90,86,-0.6812242317888917,split_matched
+178,design_smell_density_per_kloc,87,-0.761077593277801,split_matched
+178,implementation_smell_density_per_kloc,87,-0.7074588782065886,split_matched
+178,"pooled (non-independent, see caveat)",260,-0.7259955783933919,split_matched
+179,cyclomatic_complexity_p90,86,-0.6669245428986545,split_matched
+179,design_smell_density_per_kloc,87,-0.7176421267520916,split_matched
+179,implementation_smell_density_per_kloc,87,-0.7769353442383926,split_matched
+179,"pooled (non-independent, see caveat)",260,-0.7337751297003023,split_matched
+180,cyclomatic_complexity_p90,86,-0.714296496872376,split_matched
+180,design_smell_density_per_kloc,87,-0.7261906931811969,split_matched
+180,implementation_smell_density_per_kloc,87,-0.7796145259033124,split_matched
+180,"pooled (non-independent, see caveat)",260,-0.7504180250917469,split_matched
+181,cyclomatic_complexity_p90,86,-0.6485050899587709,split_matched
+181,design_smell_density_per_kloc,87,-0.7336273991579024,split_matched
+181,implementation_smell_density_per_kloc,87,-0.7123069212193012,split_matched
+181,"pooled (non-independent, see caveat)",260,-0.7042147115056628,split_matched
+182,cyclomatic_complexity_p90,86,-0.6073891672091553,split_matched
+182,design_smell_density_per_kloc,87,-0.7134680932504601,split_matched
+182,implementation_smell_density_per_kloc,87,-0.738570191825762,split_matched
+182,"pooled (non-independent, see caveat)",260,-0.6920797527833045,split_matched
+183,cyclomatic_complexity_p90,86,-0.657074928769553,split_matched
+183,design_smell_density_per_kloc,87,-0.7108980551555694,split_matched
+183,implementation_smell_density_per_kloc,87,-0.7335581172825443,split_matched
+183,"pooled (non-independent, see caveat)",260,-0.717037756725008,split_matched
+184,cyclomatic_complexity_p90,86,-0.5615642247275814,split_matched
+184,design_smell_density_per_kloc,87,-0.6639811895084118,split_matched
+184,implementation_smell_density_per_kloc,87,-0.7512006196746708,split_matched
+184,"pooled (non-independent, see caveat)",260,-0.6521073283504948,split_matched
+185,cyclomatic_complexity_p90,86,-0.6416778308206125,split_matched
+185,design_smell_density_per_kloc,87,-0.7219255235769098,split_matched
+185,implementation_smell_density_per_kloc,87,-0.7596391306328883,split_matched
+185,"pooled (non-independent, see caveat)",260,-0.7135856820834527,split_matched
+186,cyclomatic_complexity_p90,86,-0.5188829661776498,split_matched
+186,design_smell_density_per_kloc,87,-0.6653482310482475,split_matched
+186,implementation_smell_density_per_kloc,87,-0.7648516881578348,split_matched
+186,"pooled (non-independent, see caveat)",260,-0.6514115880698637,split_matched
+187,cyclomatic_complexity_p90,86,-0.6141181798454587,split_matched
+187,design_smell_density_per_kloc,87,-0.6705065344585605,split_matched
+187,implementation_smell_density_per_kloc,87,-0.7424340456554427,split_matched
+187,"pooled (non-independent, see caveat)",260,-0.6941496970214218,split_matched
+188,cyclomatic_complexity_p90,86,-0.7118516142423156,split_matched
+188,design_smell_density_per_kloc,87,-0.7630461330951643,split_matched
+188,implementation_smell_density_per_kloc,87,-0.7512006196746708,split_matched
+188,"pooled (non-independent, see caveat)",260,-0.7466715371001383,split_matched
+189,cyclomatic_complexity_p90,86,-0.6286442117180866,split_matched
+189,design_smell_density_per_kloc,87,-0.6773964238193318,split_matched
+189,implementation_smell_density_per_kloc,87,-0.7147309427256572,split_matched
+189,"pooled (non-independent, see caveat)",260,-0.6711689583234473,split_matched
+190,cyclomatic_complexity_p90,86,-0.6981470299645257,split_matched
+190,design_smell_density_per_kloc,87,-0.8070648706778704,split_matched
+190,implementation_smell_density_per_kloc,87,-0.8065703740830182,split_matched
+190,"pooled (non-independent, see caveat)",260,-0.7695520117600027,split_matched
+191,cyclomatic_complexity_p90,86,-0.6303564352699209,split_matched
+191,design_smell_density_per_kloc,87,-0.7066693399923446,split_matched
+191,implementation_smell_density_per_kloc,87,-0.6957215109126532,split_matched
+191,"pooled (non-independent, see caveat)",260,-0.6799006436111869,split_matched
+192,cyclomatic_complexity_p90,86,-0.5909048023398433,split_matched
+192,design_smell_density_per_kloc,87,-0.7571222864225434,split_matched
+192,implementation_smell_density_per_kloc,87,-0.6769490135326013,split_matched
+192,"pooled (non-independent, see caveat)",260,-0.6755434584086227,split_matched
+193,cyclomatic_complexity_p90,86,-0.6674151367058512,split_matched
+193,design_smell_density_per_kloc,87,-0.7483185389060022,split_matched
+193,implementation_smell_density_per_kloc,87,-0.7967284822526997,split_matched
+193,"pooled (non-independent, see caveat)",260,-0.7501656565684152,split_matched
+194,cyclomatic_complexity_p90,86,-0.6983791535369926,split_matched
+194,design_smell_density_per_kloc,87,-0.7124838233417785,split_matched
+194,implementation_smell_density_per_kloc,87,-0.7003508452180253,split_matched
+194,"pooled (non-independent, see caveat)",260,-0.7182209935434051,split_matched
+195,cyclomatic_complexity_p90,86,-0.6902436953383714,split_matched
+195,design_smell_density_per_kloc,87,-0.6949492371908208,split_matched
+195,implementation_smell_density_per_kloc,87,-0.7399917984234747,split_matched
+195,"pooled (non-independent, see caveat)",260,-0.7172991603317161,split_matched
+196,cyclomatic_complexity_p90,86,-0.6203594509174961,split_matched
+196,design_smell_density_per_kloc,87,-0.6980296374605836,split_matched
+196,implementation_smell_density_per_kloc,87,-0.7389711577892194,split_matched
+196,"pooled (non-independent, see caveat)",260,-0.6962680600589776,split_matched
+197,cyclomatic_complexity_p90,86,-0.6834001603849238,split_matched
+197,design_smell_density_per_kloc,87,-0.6445509724222154,split_matched
+197,implementation_smell_density_per_kloc,87,-0.690982822253611,split_matched
+197,"pooled (non-independent, see caveat)",260,-0.6913760295283373,split_matched
+198,cyclomatic_complexity_p90,86,-0.7096223335503288,split_matched
+198,design_smell_density_per_kloc,87,-0.7716493811858629,split_matched
+198,implementation_smell_density_per_kloc,87,-0.7122340183168543,split_matched
+198,"pooled (non-independent, see caveat)",260,-0.7380357679671987,split_matched
+199,cyclomatic_complexity_p90,86,-0.6323977546110665,split_matched
+199,design_smell_density_per_kloc,87,-0.6527896761022912,split_matched
+199,implementation_smell_density_per_kloc,87,-0.7419419510639267,split_matched
+199,"pooled (non-independent, see caveat)",260,-0.6963622820008099,split_matched
+200,cyclomatic_complexity_p90,86,-0.7006273880843435,split_matched
+200,design_smell_density_per_kloc,87,-0.7383847037165303,split_matched
+200,implementation_smell_density_per_kloc,87,-0.7252289606779969,split_matched
+200,"pooled (non-independent, see caveat)",260,-0.7318409397068333,split_matched
+201,cyclomatic_complexity_p90,86,-0.6251945919936599,split_matched
+201,design_smell_density_per_kloc,87,-0.7321327670743488,split_matched
+201,implementation_smell_density_per_kloc,87,-0.6688932428122294,split_matched
+201,"pooled (non-independent, see caveat)",260,-0.6849814799009986,split_matched
+202,cyclomatic_complexity_p90,86,-0.6642860512288316,split_matched
+202,design_smell_density_per_kloc,87,-0.6973552303009314,split_matched
+202,implementation_smell_density_per_kloc,87,-0.720454555877523,split_matched
+202,"pooled (non-independent, see caveat)",260,-0.6995640170564371,split_matched
+203,cyclomatic_complexity_p90,86,-0.6895484650074533,split_matched
+203,design_smell_density_per_kloc,87,-0.7473160417767895,split_matched
+203,implementation_smell_density_per_kloc,87,-0.767877158609377,split_matched
+203,"pooled (non-independent, see caveat)",260,-0.7411906721611277,split_matched
+204,cyclomatic_complexity_p90,86,-0.6528892872305296,split_matched
+204,design_smell_density_per_kloc,87,-0.7410823323551392,split_matched
+204,implementation_smell_density_per_kloc,87,-0.7633025014808402,split_matched
+204,"pooled (non-independent, see caveat)",260,-0.7215919138456414,split_matched
+205,cyclomatic_complexity_p90,86,-0.5722399381097043,split_matched
+205,design_smell_density_per_kloc,87,-0.7762790952007729,split_matched
+205,implementation_smell_density_per_kloc,87,-0.7166264181892741,split_matched
+205,"pooled (non-independent, see caveat)",260,-0.6881798875003285,split_matched
+206,cyclomatic_complexity_p90,86,-0.6371338270673145,split_matched
+206,design_smell_density_per_kloc,87,-0.7621529992891384,split_matched
+206,implementation_smell_density_per_kloc,87,-0.814443887547273,split_matched
+206,"pooled (non-independent, see caveat)",260,-0.745430747896905,split_matched
+207,cyclomatic_complexity_p90,86,-0.6945991971283065,split_matched
+207,design_smell_density_per_kloc,87,-0.7080363815321803,split_matched
+207,implementation_smell_density_per_kloc,87,-0.7553196336629152,split_matched
+207,"pooled (non-independent, see caveat)",260,-0.7375058995426417,split_matched
+208,cyclomatic_complexity_p90,86,-0.6717014953535544,split_matched
+208,design_smell_density_per_kloc,87,-0.7704281574102765,split_matched
+208,implementation_smell_density_per_kloc,87,-0.7870323962272748,split_matched
+208,"pooled (non-independent, see caveat)",260,-0.7489080837646718,split_matched
+209,cyclomatic_complexity_p90,86,-0.5785233126403381,split_matched
+209,design_smell_density_per_kloc,87,-0.6940196489437326,split_matched
+209,implementation_smell_density_per_kloc,87,-0.74378380355703,split_matched
+209,"pooled (non-independent, see caveat)",260,-0.6741763442298435,split_matched
+210,cyclomatic_complexity_p90,86,-0.6776768277150377,split_matched
+210,design_smell_density_per_kloc,87,-0.6955689626888796,split_matched
+210,implementation_smell_density_per_kloc,87,-0.7844990203672484,split_matched
+210,"pooled (non-independent, see caveat)",260,-0.7288468182320949,split_matched
+211,cyclomatic_complexity_p90,86,-0.6230918731248939,split_matched
+211,design_smell_density_per_kloc,87,-0.6842863131801031,split_matched
+211,implementation_smell_density_per_kloc,87,-0.7526769034492186,split_matched
+211,"pooled (non-independent, see caveat)",260,-0.6869311049608894,split_matched
+212,cyclomatic_complexity_p90,86,-0.7020963450761364,split_matched
+212,design_smell_density_per_kloc,87,-0.727120281428285,split_matched
+212,implementation_smell_density_per_kloc,87,-0.7927734997949606,split_matched
+212,"pooled (non-independent, see caveat)",260,-0.7506866084971151,split_matched
+213,cyclomatic_complexity_p90,86,-0.7140970243598694,split_matched
+213,design_smell_density_per_kloc,87,-0.7160016769042888,split_matched
+213,implementation_smell_density_per_kloc,87,-0.7327379596300178,split_matched
+213,"pooled (non-independent, see caveat)",260,-0.7363308557388041,split_matched
+214,cyclomatic_complexity_p90,86,-0.5863916825480687,split_matched
+214,design_smell_density_per_kloc,87,-0.7557005632211143,split_matched
+214,implementation_smell_density_per_kloc,87,-0.7189046338907369,split_matched
+214,"pooled (non-independent, see caveat)",260,-0.6900363334952632,split_matched
+215,cyclomatic_complexity_p90,86,-0.6096005434269864,split_matched
+215,design_smell_density_per_kloc,87,-0.6745165229754114,split_matched
+215,implementation_smell_density_per_kloc,87,-0.7358363329840069,split_matched
+215,"pooled (non-independent, see caveat)",260,-0.6727063179588789,split_matched
+216,cyclomatic_complexity_p90,86,-0.6225635413325282,split_matched
+216,design_smell_density_per_kloc,87,-0.7160381313453511,split_matched
+216,implementation_smell_density_per_kloc,87,-0.7157151319086891,split_matched
+216,"pooled (non-independent, see caveat)",260,-0.69136295157844,split_matched
+217,cyclomatic_complexity_p90,86,-0.6163367737796479,split_matched
+217,design_smell_density_per_kloc,87,-0.6475766910303847,split_matched
+217,implementation_smell_density_per_kloc,87,-0.8188727388709162,split_matched
+217,"pooled (non-independent, see caveat)",260,-0.7068834113822657,split_matched
+218,cyclomatic_complexity_p90,86,-0.6654370489174017,split_matched
+218,design_smell_density_per_kloc,87,-0.7033155314146147,split_matched
+218,implementation_smell_density_per_kloc,87,-0.7690800564997493,split_matched
+218,"pooled (non-independent, see caveat)",260,-0.7075316787141027,split_matched
+219,cyclomatic_complexity_p90,86,-0.5208075852634557,split_matched
+219,design_smell_density_per_kloc,87,-0.7024041703880575,split_matched
+219,implementation_smell_density_per_kloc,87,-0.7763885724700414,split_matched
+219,"pooled (non-independent, see caveat)",260,-0.665317972650721,split_matched
+220,cyclomatic_complexity_p90,86,-0.6725286336962469,split_matched
+220,design_smell_density_per_kloc,87,-0.6704153983559048,split_matched
+220,implementation_smell_density_per_kloc,87,-0.7643595935663189,split_matched
+220,"pooled (non-independent, see caveat)",260,-0.7257191509234606,split_matched
+221,cyclomatic_complexity_p90,86,-0.6581914241237794,split_matched
+221,design_smell_density_per_kloc,87,-0.7349033045950822,split_matched
+221,implementation_smell_density_per_kloc,87,-0.6836196291064838,split_matched
+221,"pooled (non-independent, see caveat)",260,-0.7090016775602254,split_matched
+222,cyclomatic_complexity_p90,86,-0.6973836907603619,split_matched
+222,design_smell_density_per_kloc,87,-0.740426152416018,split_matched
+222,implementation_smell_density_per_kloc,87,-0.757524946461931,split_matched
+222,"pooled (non-independent, see caveat)",260,-0.739081156665465,split_matched
+223,cyclomatic_complexity_p90,86,-0.6401339685834238,split_matched
+223,design_smell_density_per_kloc,87,-0.6969542314492463,split_matched
+223,implementation_smell_density_per_kloc,87,-0.7391716407709482,split_matched
+223,"pooled (non-independent, see caveat)",260,-0.7074067322260208,split_matched
+224,cyclomatic_complexity_p90,86,-0.6446369099846218,split_matched
+224,design_smell_density_per_kloc,87,-0.7533492517725972,split_matched
+224,implementation_smell_density_per_kloc,87,-0.722604456189912,split_matched
+224,"pooled (non-independent, see caveat)",260,-0.7201014324061543,split_matched
+225,cyclomatic_complexity_p90,86,-0.6029549121168379,split_matched
+225,design_smell_density_per_kloc,87,-0.6732588447587627,split_matched
+225,implementation_smell_density_per_kloc,87,-0.7348348499549692,split_matched
+225,"pooled (non-independent, see caveat)",260,-0.6649786301377044,split_matched
+226,cyclomatic_complexity_p90,86,-0.6003320974026587,split_matched
+226,design_smell_density_per_kloc,87,-0.7204491187138873,split_matched
+226,implementation_smell_density_per_kloc,87,-0.69741692379401,split_matched
+226,"pooled (non-independent, see caveat)",260,-0.6794617352423522,split_matched
+227,cyclomatic_complexity_p90,86,-0.5711832745249731,split_matched
+227,design_smell_density_per_kloc,87,-0.6461185133878936,split_matched
+227,implementation_smell_density_per_kloc,87,-0.7313710302091402,split_matched
+227,"pooled (non-independent, see caveat)",260,-0.6561477924795739,split_matched
+228,cyclomatic_complexity_p90,86,-0.5850142460894012,split_matched
+228,design_smell_density_per_kloc,87,-0.730619907770264,split_matched
+228,implementation_smell_density_per_kloc,87,-0.7830774137695357,split_matched
+228,"pooled (non-independent, see caveat)",260,-0.6901303318850217,split_matched
+229,cyclomatic_complexity_p90,86,-0.6073551333094326,split_matched
+229,design_smell_density_per_kloc,87,-0.7183165339117438,split_matched
+229,implementation_smell_density_per_kloc,87,-0.7131088531462159,split_matched
+229,"pooled (non-independent, see caveat)",260,-0.6849073808237117,split_matched
+230,cyclomatic_complexity_p90,86,-0.5492617576300769,split_matched
+230,design_smell_density_per_kloc,87,-0.6780890581995151,split_matched
+230,implementation_smell_density_per_kloc,87,-0.7581276456849768,split_matched
+230,"pooled (non-independent, see caveat)",260,-0.6644305944563857,split_matched
+231,cyclomatic_complexity_p90,86,-0.6513764930090383,split_matched
+231,design_smell_density_per_kloc,87,-0.6956418715710041,split_matched
+231,implementation_smell_density_per_kloc,87,-0.6941905499612703,split_matched
+231,"pooled (non-independent, see caveat)",260,-0.6829403264245185,split_matched
+232,cyclomatic_complexity_p90,86,-0.596388440746087,split_matched
+232,design_smell_density_per_kloc,87,-0.6641816889342543,split_matched
+232,implementation_smell_density_per_kloc,87,-0.7343782749350708,split_matched
+232,"pooled (non-independent, see caveat)",260,-0.679307099323382,split_matched
+233,cyclomatic_complexity_p90,86,-0.6151407653407804,split_matched
+233,design_smell_density_per_kloc,87,-0.7202121648469826,split_matched
+233,implementation_smell_density_per_kloc,87,-0.7549004419738461,split_matched
+233,"pooled (non-independent, see caveat)",260,-0.6928061132350897,split_matched
+234,cyclomatic_complexity_p90,86,-0.667135242228407,split_matched
+234,design_smell_density_per_kloc,87,-0.7876711080327361,split_matched
+234,implementation_smell_density_per_kloc,87,-0.6902720189547547,split_matched
+234,"pooled (non-independent, see caveat)",260,-0.7118911504430822,split_matched
+235,cyclomatic_complexity_p90,86,-0.6376364476899419,split_matched
+235,design_smell_density_per_kloc,87,-0.7161110402274756,split_matched
+235,implementation_smell_density_per_kloc,87,-0.7470087027839796,split_matched
+235,"pooled (non-independent, see caveat)",260,-0.7044924779431747,split_matched
+236,cyclomatic_complexity_p90,86,-0.6663584731211201,split_matched
+236,design_smell_density_per_kloc,87,-0.7404990612981427,split_matched
+236,implementation_smell_density_per_kloc,87,-0.7131817560486626,split_matched
+236,"pooled (non-independent, see caveat)",260,-0.7048817565433918,split_matched
+237,cyclomatic_complexity_p90,86,-0.6184689699416949,split_matched
+237,design_smell_density_per_kloc,87,-0.6887884366512952,split_matched
+237,implementation_smell_density_per_kloc,87,-0.7624641181027021,split_matched
+237,"pooled (non-independent, see caveat)",260,-0.6939977530107505,split_matched
+238,cyclomatic_complexity_p90,86,-0.6147931506203123,split_matched
+238,design_smell_density_per_kloc,87,-0.7040446202358602,split_matched
+238,implementation_smell_density_per_kloc,87,-0.7137649792682371,split_matched
+238,"pooled (non-independent, see caveat)",260,-0.6834723709424847,split_matched
+239,cyclomatic_complexity_p90,86,-0.6787584320015094,split_matched
+239,design_smell_density_per_kloc,87,-0.7766254123908646,split_matched
+239,implementation_smell_density_per_kloc,87,-0.7023192235840889,split_matched
+239,"pooled (non-independent, see caveat)",260,-0.715214863579601,split_matched
+240,cyclomatic_complexity_p90,86,-0.5582244445492712,split_matched
+240,design_smell_density_per_kloc,87,-0.6533911743798189,split_matched
+240,implementation_smell_density_per_kloc,87,-0.6899439558937441,split_matched
+240,"pooled (non-independent, see caveat)",260,-0.6367354964779429,split_matched
+241,cyclomatic_complexity_p90,86,-0.6962658263675302,split_matched
+241,design_smell_density_per_kloc,87,-0.7202303920675137,split_matched
+241,implementation_smell_density_per_kloc,87,-0.7072589501588019,split_matched
+241,"pooled (non-independent, see caveat)",260,-0.7189387700108577,split_matched
+242,cyclomatic_complexity_p90,86,-0.6733619510354261,split_matched
+242,design_smell_density_per_kloc,87,-0.7194283943641434,split_matched
+242,implementation_smell_density_per_kloc,87,-0.7361461703194059,split_matched
+242,"pooled (non-independent, see caveat)",260,-0.7225307194254921,split_matched
+243,cyclomatic_complexity_p90,86,-0.5262939411664811,split_matched
+243,design_smell_density_per_kloc,87,-0.6610648342234293,split_matched
+243,implementation_smell_density_per_kloc,87,-0.7566331157555085,split_matched
+243,"pooled (non-independent, see caveat)",260,-0.6505565858791967,split_matched
+244,cyclomatic_complexity_p90,86,-0.7227175379506195,split_matched
+244,design_smell_density_per_kloc,87,-0.7354136667699541,split_matched
+244,implementation_smell_density_per_kloc,87,-0.7252289606779969,split_matched
+244,"pooled (non-independent, see caveat)",260,-0.7381194926213245,split_matched
+245,cyclomatic_complexity_p90,86,-0.6112421457818367,split_matched
+245,design_smell_density_per_kloc,87,-0.7200663470827333,split_matched
+245,implementation_smell_density_per_kloc,87,-0.7451314530459744,split_matched
+245,"pooled (non-independent, see caveat)",260,-0.6878760557725809,split_matched
+246,cyclomatic_complexity_p90,86,-0.6114460388893607,split_matched
+246,design_smell_density_per_kloc,87,-0.7006179027760057,split_matched
+246,implementation_smell_density_per_kloc,87,-0.7522941632113728,split_matched
+246,"pooled (non-independent, see caveat)",260,-0.6930847875157208,split_matched
+247,cyclomatic_complexity_p90,86,-0.6388474819329395,split_matched
+247,design_smell_density_per_kloc,87,-0.7645772196197802,split_matched
+247,implementation_smell_density_per_kloc,87,-0.7235339681961088,split_matched
+247,"pooled (non-independent, see caveat)",260,-0.7184108030272565,split_matched
+248,cyclomatic_complexity_p90,86,-0.6201824648797563,split_matched
+248,design_smell_density_per_kloc,87,-0.7591819623425624,split_matched
+248,implementation_smell_density_per_kloc,87,-0.7365835877340867,split_matched
+248,"pooled (non-independent, see caveat)",260,-0.7058231930882014,split_matched
+249,cyclomatic_complexity_p90,86,-0.6421118176500556,split_matched
+249,design_smell_density_per_kloc,87,-0.6255582086287662,split_matched
+249,implementation_smell_density_per_kloc,87,-0.7366747163621451,split_matched
+249,"pooled (non-independent, see caveat)",260,-0.6878621764426349,split_matched
+250,cyclomatic_complexity_p90,86,-0.5431250825518426,split_matched
+250,design_smell_density_per_kloc,87,-0.6467929205475457,split_matched
+250,implementation_smell_density_per_kloc,87,-0.7483756322048571,split_matched
+250,"pooled (non-independent, see caveat)",260,-0.6634534470050897,split_matched
+251,cyclomatic_complexity_p90,86,-0.589391852369002,split_matched
+251,design_smell_density_per_kloc,87,-0.6621037857937043,split_matched
+251,implementation_smell_density_per_kloc,87,-0.7235886453729439,split_matched
+251,"pooled (non-independent, see caveat)",260,-0.6646414631989794,split_matched
+252,cyclomatic_complexity_p90,86,-0.6489612619582241,split_matched
+252,design_smell_density_per_kloc,87,-0.6569454823833913,split_matched
+252,implementation_smell_density_per_kloc,87,-0.7468082198022509,split_matched
+252,"pooled (non-independent, see caveat)",260,-0.6952513149256824,split_matched
+253,cyclomatic_complexity_p90,86,-0.6549238636149216,split_matched
+253,design_smell_density_per_kloc,87,-0.6616481052804258,split_matched
+253,implementation_smell_density_per_kloc,87,-0.7808174237936849,split_matched
+253,"pooled (non-independent, see caveat)",260,-0.7195883591462433,split_matched
+254,cyclomatic_complexity_p90,86,-0.6689781400658534,split_matched
+254,design_smell_density_per_kloc,87,-0.7328983103366568,split_matched
+254,implementation_smell_density_per_kloc,87,-0.7849546635075408,split_matched
+254,"pooled (non-independent, see caveat)",260,-0.7464861336614264,split_matched
+255,cyclomatic_complexity_p90,86,-0.7051719908674076,split_matched
+255,design_smell_density_per_kloc,87,-0.7190273955124584,split_matched
+255,implementation_smell_density_per_kloc,87,-0.7803435549277805,split_matched
+255,"pooled (non-independent, see caveat)",260,-0.755937776627693,split_matched
+256,cyclomatic_complexity_p90,86,-0.5718962573000104,split_matched
+256,design_smell_density_per_kloc,87,-0.6483240070721616,split_matched
+256,implementation_smell_density_per_kloc,87,-0.8092313300223265,split_matched
+256,"pooled (non-independent, see caveat)",260,-0.6733445944561958,split_matched
+257,cyclomatic_complexity_p90,86,-0.6711134592524105,split_matched
+257,design_smell_density_per_kloc,87,-0.7239851994969287,split_matched
+257,implementation_smell_density_per_kloc,87,-0.6647013259215382,split_matched
+257,"pooled (non-independent, see caveat)",260,-0.6951980590273357,split_matched
+258,cyclomatic_complexity_p90,86,-0.5876103856894861,split_matched
+258,design_smell_density_per_kloc,87,-0.7293622295536153,split_matched
+258,implementation_smell_density_per_kloc,87,-0.7436187178202033,split_matched
+258,"pooled (non-independent, see caveat)",260,-0.6832671560067743,split_matched
+259,cyclomatic_complexity_p90,86,-0.6695284638753137,split_matched
+259,design_smell_density_per_kloc,87,-0.5863514572662815,split_matched
+259,implementation_smell_density_per_kloc,87,-0.7407937303503895,split_matched
+259,"pooled (non-independent, see caveat)",260,-0.6956937485427171,split_matched
+260,cyclomatic_complexity_p90,86,-0.6625658056116384,split_matched
+260,design_smell_density_per_kloc,87,-0.7840074367059766,split_matched
+260,implementation_smell_density_per_kloc,87,-0.7871599763065567,split_matched
+260,"pooled (non-independent, see caveat)",260,-0.7335641544106979,split_matched
+261,cyclomatic_complexity_p90,86,-0.6319910936674465,split_matched
+261,design_smell_density_per_kloc,87,-0.7172229006798753,split_matched
+261,implementation_smell_density_per_kloc,87,-0.661238438055315,split_matched
+261,"pooled (non-independent, see caveat)",260,-0.670284327972597,split_matched
+262,cyclomatic_complexity_p90,86,-0.715398984848199,split_matched
+262,design_smell_density_per_kloc,87,-0.6849242658986932,split_matched
+262,implementation_smell_density_per_kloc,87,-0.8011409460940677,split_matched
+262,"pooled (non-independent, see caveat)",260,-0.7514495641839627,split_matched
+263,cyclomatic_complexity_p90,86,-0.6749816027322301,split_matched
+263,design_smell_density_per_kloc,87,-0.6555237591819624,split_matched
+263,implementation_smell_density_per_kloc,87,-0.7480111176926231,split_matched
+263,"pooled (non-independent, see caveat)",260,-0.7119547118456045,split_matched
+264,cyclomatic_complexity_p90,86,-0.6826016812431008,split_matched
+264,design_smell_density_per_kloc,87,-0.6849424931192244,split_matched
+264,implementation_smell_density_per_kloc,87,-0.6689479199890646,split_matched
+264,"pooled (non-independent, see caveat)",260,-0.6982465148099243,split_matched
+265,cyclomatic_complexity_p90,86,-0.7183802856765478,split_matched
+265,design_smell_density_per_kloc,87,-0.7642126752091574,split_matched
+265,implementation_smell_density_per_kloc,87,-0.7973663826491092,split_matched
+265,"pooled (non-independent, see caveat)",260,-0.7663936846697776,split_matched
+266,cyclomatic_complexity_p90,86,-0.6085931013661409,split_matched
+266,design_smell_density_per_kloc,87,-0.7172229006798753,split_matched
+266,implementation_smell_density_per_kloc,87,-0.7638492732491913,split_matched
+266,"pooled (non-independent, see caveat)",260,-0.7025314662348838,split_matched
+267,cyclomatic_complexity_p90,86,-0.628846915863162,split_matched
+267,design_smell_density_per_kloc,87,-0.7030421231066475,split_matched
+267,implementation_smell_density_per_kloc,87,-0.7628846250946263,split_matched
+267,"pooled (non-independent, see caveat)",260,-0.7032331231132575,split_matched
+268,cyclomatic_complexity_p90,86,-0.6173934373643791,split_matched
+268,design_smell_density_per_kloc,87,-0.6951497366166633,split_matched
+268,implementation_smell_density_per_kloc,87,-0.7777372761653073,split_matched
+268,"pooled (non-independent, see caveat)",260,-0.701672064516107,split_matched
+269,cyclomatic_complexity_p90,86,-0.6413038350865607,split_matched
+269,design_smell_density_per_kloc,87,-0.7073072927109345,split_matched
+269,implementation_smell_density_per_kloc,87,-0.7917528591607054,split_matched
+269,"pooled (non-independent, see caveat)",260,-0.7270929731597193,split_matched
+270,cyclomatic_complexity_p90,86,-0.6024529458936743,split_matched
+270,design_smell_density_per_kloc,87,-0.6317736908298853,split_matched
+270,implementation_smell_density_per_kloc,87,-0.768369253200893,split_matched
+270,"pooled (non-independent, see caveat)",260,-0.6855329035993466,split_matched
+271,cyclomatic_complexity_p90,86,-0.7066842775602623,split_matched
+271,design_smell_density_per_kloc,87,-0.6868016696134006,split_matched
+271,implementation_smell_density_per_kloc,87,-0.7318995762518796,split_matched
+271,"pooled (non-independent, see caveat)",260,-0.7220514165039974,split_matched
+272,cyclomatic_complexity_p90,86,-0.5942827491862823,split_matched
+272,design_smell_density_per_kloc,87,-0.7651604906767767,split_matched
+272,implementation_smell_density_per_kloc,87,-0.6893607326741695,split_matched
+272,"pooled (non-independent, see caveat)",260,-0.6804264840126533,split_matched
+273,cyclomatic_complexity_p90,86,-0.5827688359718475,split_matched
+273,design_smell_density_per_kloc,87,-0.7475529956436942,split_matched
+273,implementation_smell_density_per_kloc,87,-0.6859160705335581,split_matched
+273,"pooled (non-independent, see caveat)",260,-0.678037369936977,split_matched
+274,cyclomatic_complexity_p90,86,-0.6526751766626099,split_matched
+274,design_smell_density_per_kloc,87,-0.6536099010261925,split_matched
+274,implementation_smell_density_per_kloc,87,-0.7734360049209459,split_matched
+274,"pooled (non-independent, see caveat)",260,-0.7076031696829088,split_matched
+275,cyclomatic_complexity_p90,86,-0.604917305859821,split_matched
+275,design_smell_density_per_kloc,87,-0.6544665803911561,split_matched
+275,implementation_smell_density_per_kloc,87,-0.7580534925046704,split_matched
+275,"pooled (non-independent, see caveat)",260,-0.6793993825044757,split_matched
+276,cyclomatic_complexity_p90,86,-0.6907938185180293,split_matched
+276,design_smell_density_per_kloc,87,-0.75371379618322,split_matched
+276,implementation_smell_density_per_kloc,87,-0.7607873513464255,split_matched
+276,"pooled (non-independent, see caveat)",260,-0.7336228724524648,split_matched
+277,cyclomatic_complexity_p90,86,-0.6033162723844754,split_matched
+277,design_smell_density_per_kloc,87,-0.6662595920748045,split_matched
+277,implementation_smell_density_per_kloc,87,-0.8301909144757826,split_matched
+277,"pooled (non-independent, see caveat)",260,-0.7247097082650742,split_matched
+278,cyclomatic_complexity_p90,86,-0.5626774847870183,split_matched
+278,design_smell_density_per_kloc,87,-0.7042998013232963,split_matched
+278,implementation_smell_density_per_kloc,87,-0.7340319861484486,split_matched
+278,"pooled (non-independent, see caveat)",260,-0.6690570363648902,split_matched
+279,cyclomatic_complexity_p90,86,-0.6379658458345127,split_matched
+279,design_smell_density_per_kloc,87,-0.7251517416109218,split_matched
+279,implementation_smell_density_per_kloc,87,-0.7151865858659497,split_matched
+279,"pooled (non-independent, see caveat)",260,-0.6985152166988876,split_matched
+280,cyclomatic_complexity_p90,86,-0.6278845972413534,split_matched
+280,design_smell_density_per_kloc,87,-0.7216521152689426,split_matched
+280,implementation_smell_density_per_kloc,87,-0.7669111951519569,split_matched
+280,"pooled (non-independent, see caveat)",260,-0.7024825100460766,split_matched
+281,cyclomatic_complexity_p90,86,-0.6675692249634416,split_matched
+281,design_smell_density_per_kloc,87,-0.7389679747735268,split_matched
+281,implementation_smell_density_per_kloc,87,-0.7294391032943,split_matched
+281,"pooled (non-independent, see caveat)",260,-0.7132742181583228,split_matched
+282,cyclomatic_complexity_p90,86,-0.6654338924844801,split_matched
+282,design_smell_density_per_kloc,87,-0.6783077848458888,split_matched
+282,implementation_smell_density_per_kloc,87,-0.781291292659589,split_matched
+282,"pooled (non-independent, see caveat)",260,-0.7088779972231828,split_matched
+283,cyclomatic_complexity_p90,86,-0.6555810289358731,split_matched
+283,design_smell_density_per_kloc,87,-0.7257896943295117,split_matched
+283,implementation_smell_density_per_kloc,87,-0.8004647560030983,split_matched
+283,"pooled (non-independent, see caveat)",260,-0.7328382808990145,split_matched
+284,cyclomatic_complexity_p90,86,-0.6336962469573749,split_matched
+284,design_smell_density_per_kloc,87,-0.6832291343892969,split_matched
+284,implementation_smell_density_per_kloc,87,-0.6913108853146216,split_matched
+284,"pooled (non-independent, see caveat)",260,-0.674052736311954,split_matched
+285,cyclomatic_complexity_p90,86,-0.6739091466578612,split_matched
+285,design_smell_density_per_kloc,87,-0.6915954286130909,split_matched
+285,implementation_smell_density_per_kloc,87,-0.7573062377545907,split_matched
+285,"pooled (non-independent, see caveat)",260,-0.7153220581076275,split_matched
+286,cyclomatic_complexity_p90,86,-0.6671509708096685,split_matched
+286,design_smell_density_per_kloc,87,-0.75706760476095,split_matched
+286,implementation_smell_density_per_kloc,87,-0.7466624139973572,split_matched
+286,"pooled (non-independent, see caveat)",260,-0.7214798448614715,split_matched
+287,cyclomatic_complexity_p90,86,-0.6087288783221534,split_matched
+287,design_smell_density_per_kloc,87,-0.7707380201593059,split_matched
+287,implementation_smell_density_per_kloc,87,-0.7479382147901764,split_matched
+287,"pooled (non-independent, see caveat)",260,-0.6939539513841759,split_matched
+288,cyclomatic_complexity_p90,86,-0.7304538978989179,split_matched
+288,design_smell_density_per_kloc,87,-0.721305798078851,split_matched
+288,implementation_smell_density_per_kloc,87,-0.7560304369617715,split_matched
+288,"pooled (non-independent, see caveat)",260,-0.7519777663338338,split_matched
+289,cyclomatic_complexity_p90,86,-0.686032908144011,split_matched
+289,design_smell_density_per_kloc,87,-0.7860671126259957,split_matched
+289,implementation_smell_density_per_kloc,87,-0.7253383150316671,split_matched
+289,"pooled (non-independent, see caveat)",260,-0.7295964053609608,split_matched
+290,cyclomatic_complexity_p90,86,-0.5835990716455649,split_matched
+290,design_smell_density_per_kloc,87,-0.632502779651131,split_matched
+290,implementation_smell_density_per_kloc,87,-0.7736364879026746,split_matched
+290,"pooled (non-independent, see caveat)",260,-0.6786061156206036,split_matched
+291,cyclomatic_complexity_p90,86,-0.6804377564979479,split_matched
+291,design_smell_density_per_kloc,87,-0.6236990321345898,split_matched
+291,implementation_smell_density_per_kloc,87,-0.7121975668656308,split_matched
+291,"pooled (non-independent, see caveat)",260,-0.6941815219847784,split_matched
+292,cyclomatic_complexity_p90,86,-0.5572998726355017,split_matched
+292,design_smell_density_per_kloc,87,-0.707380201593059,split_matched
+292,implementation_smell_density_per_kloc,87,-0.7333029571239805,split_matched
+292,"pooled (non-independent, see caveat)",260,-0.66797826340768,split_matched
+293,cyclomatic_complexity_p90,86,-0.6471875766552824,split_matched
+293,design_smell_density_per_kloc,87,-0.7459307730164227,split_matched
+293,implementation_smell_density_per_kloc,87,-0.7443112953934479,split_matched
+293,"pooled (non-independent, see caveat)",260,-0.7167680633936365,split_matched
+294,cyclomatic_complexity_p90,86,-0.6057929993395603,split_matched
+294,design_smell_density_per_kloc,87,-0.593405391611833,split_matched
+294,implementation_smell_density_per_kloc,87,-0.7705381145486855,split_matched
+294,"pooled (non-independent, see caveat)",260,-0.6650159529590067,split_matched
+295,cyclomatic_complexity_p90,86,-0.7055465926995179,split_matched
+295,design_smell_density_per_kloc,87,-0.722217159105408,split_matched
+295,implementation_smell_density_per_kloc,87,-0.7274160477514011,split_matched
+295,"pooled (non-independent, see caveat)",260,-0.7259566606082373,split_matched
+296,cyclomatic_complexity_p90,86,-0.6181859350529275,split_matched
+296,design_smell_density_per_kloc,87,-0.7476259045258189,split_matched
+296,implementation_smell_density_per_kloc,87,-0.6837472091857657,split_matched
+296,"pooled (non-independent, see caveat)",260,-0.6716173031144801,split_matched
+297,cyclomatic_complexity_p90,86,-0.6792867588093778,split_matched
+297,design_smell_density_per_kloc,87,-0.6803674607659078,split_matched
+297,implementation_smell_density_per_kloc,87,-0.7804893607326743,split_matched
+297,"pooled (non-independent, see caveat)",260,-0.7180353769253197,split_matched
+298,cyclomatic_complexity_p90,86,-0.6238277638356888,split_matched
+298,design_smell_density_per_kloc,87,-0.6720011665421141,split_matched
+298,implementation_smell_density_per_kloc,87,-0.7970200938624868,split_matched
+298,"pooled (non-independent, see caveat)",260,-0.7061196147959906,split_matched
+299,cyclomatic_complexity_p90,86,-0.7070183880067552,split_matched
+299,design_smell_density_per_kloc,87,-0.7232378834551518,split_matched
+299,implementation_smell_density_per_kloc,87,-0.7589830045108671,split_matched
+299,"pooled (non-independent, see caveat)",260,-0.7311650473386233,split_matched

@@ -1,0 +1,5 @@
+metric,n,spearman_rho,p
+cyclomatic_complexity_p90,92,-0.6867243266577248,4.1245294829430913e-14
+design_smell_density_per_kloc,91,-0.8986859918770407,1.3024026064954929e-33
+implementation_smell_density_per_kloc,91,-0.8301308339770185,2.66258713926134e-24
+pooled (non-independent),274,-0.7760666688348715,2.167332463477217e-56
