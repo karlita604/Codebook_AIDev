@@ -314,17 +314,48 @@ def _format_eta(seconds):
     return f"eta {h}h{m:02d}m" if h else f"eta {m}m{s:02d}s"
 
 
-def get_pilot_repos(pilot_size=5):
-    """Reads the repo-summary CSV from Phase 1a rather than re-deriving the
-    candidate list here (same reasoning as repo_snapshot_pipeline.py)."""
+def _latest_repo_summary():
     summary_files = sorted(REPO_SUMMARY_GLOB.glob("*-repo-summary-*.csv"))
     if not summary_files:
         raise FileNotFoundError(
             f"No repo-summary CSV found in {REPO_SUMMARY_GLOB} - "
             "run repo_pr_selection.py first"
         )
-    repo_summary = pd.read_csv(summary_files[-1])
-    return suggest_pilot(repo_summary, n=pilot_size)
+    return pd.read_csv(summary_files[-1])
+
+
+def get_pilot_repos(pilot_size=5):
+    """Reads the repo-summary CSV from Phase 1a rather than re-deriving the
+    candidate list here (same reasoning as repo_snapshot_pipeline.py)."""
+    return suggest_pilot(_latest_repo_summary(), n=pilot_size)
+
+
+def get_target_repos(repos_file):
+    """Targets an exact, externally-determined repo set instead of
+    suggest_pilot's stratified n-based pick - needed because which repos
+    end up e.g. RQ1 regression-eligible is a downstream data fact with no
+    relationship to suggest_pilot's language-stratified ordering, so there's
+    no n for which suggest_pilot(n) would reproduce that set. `repos_file`
+    is a CSV with a full_name column, or a newline-delimited list of
+    full_names (owner/repo). Every requested full_name must resolve against
+    the latest repo-summary CSV (same source get_pilot_repos reads, so
+    repo_id/language/intervention_date are available for B1/B2) - raises
+    loudly rather than silently sampling a subset of what was asked for."""
+    repo_summary = _latest_repo_summary()
+    path = Path(repos_file)
+    if path.suffix == ".csv":
+        wanted = pd.read_csv(path)["full_name"].tolist()
+    else:
+        wanted = [line.strip() for line in path.read_text().splitlines() if line.strip()]
+
+    target = repo_summary[repo_summary["full_name"].isin(wanted)]
+    missing = set(wanted) - set(target["full_name"])
+    if missing:
+        raise ValueError(
+            f"{len(missing)} repo(s) from {repos_file} not found in the "
+            f"repo-summary CSV: {sorted(missing)}"
+        )
+    return target
 
 
 def main():
@@ -340,16 +371,30 @@ def main():
              "value for real.",
     )
     parser.add_argument("--repo", help="Only sample this one full_name (owner/repo), for smoke-testing")
+    parser.add_argument(
+        "--repos-file",
+        help="Path to a CSV (full_name column) or newline-delimited list of "
+             "exact full_names to target, bypassing suggest_pilot's "
+             "stratified --target-total pick entirely - use this to close "
+             "coverage gaps against an externally-determined repo set (e.g. "
+             "RQ1's regression-eligible repos). Overrides --target-total.",
+    )
+    parser.add_argument(
+        "--tag", default="pr-sample",
+        help="Output filename tag (default 'pr-sample') - override to keep "
+             "a targeted run's output distinctly named from the general "
+             "pilot-scaling runs, e.g. --tag pr-sample-rq1gap",
+    )
     parser.add_argument("--tracks", default="B1,B2", help="Comma-separated subset of tracks to run")
     parser.add_argument("--dry-run", action="store_true",
                          help="Print grid sizes only, no API calls (no GITHUB_TOKEN needed)")
     args = parser.parse_args()
 
-    pilot = get_pilot_repos(pilot_size=args.target_total)
+    pilot = get_target_repos(args.repos_file) if args.repos_file else get_pilot_repos(pilot_size=args.target_total)
     if args.repo:
         pilot = pilot[pilot["full_name"] == args.repo]
         if pilot.empty:
-            raise SystemExit(f"{args.repo} not found in the pilot set")
+            raise SystemExit(f"{args.repo} not found in the target repo set")
 
     tracks = {t.strip().upper() for t in args.tracks.split(",")}
     units = build_units(pilot, tracks)
@@ -372,7 +417,7 @@ def main():
     # crash appends to what's already there instead of starting a fresh,
     # empty file under today's date. Only mint a new dated stem for a
     # genuinely new scope (different --target-total/--tracks/--repo).
-    tag = "pr-sample"
+    tag = args.tag
     existing = sorted(OUT_DIR.glob(f"*-{tag}-{total}.csv"), key=lambda p: p.stat().st_mtime)
     if existing:
         stem = existing[-1].stem

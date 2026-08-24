@@ -165,7 +165,10 @@ round-robins additional tokens through a `TokenPool`, dividing the pacing
 delay by token count so aggregate throughput scales roughly linearly.
 Resumable at the query-unit level via a *query ledger* CSV (not just the PR
 rows) — necessary because a legitimately-empty window can't otherwise be
-told apart from "not yet queried."
+told apart from "not yet queried." `--repos-file` targets an exact,
+externally-determined repo set (e.g. RQ1's regression-eligible repos)
+instead of `suggest_pilot`'s stratified `--target-total` pick, for
+closing coverage gaps against a specific downstream repo list.
 
 ### `src/phase0/long_analysis.py`
 
