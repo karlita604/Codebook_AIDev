@@ -444,7 +444,16 @@ def run():
     print(f"\n=== {len(labeled)} lineages labeled across {labeled['full_name'].nunique()} repos: "
           f"{n_agent_born} agent-born, {n_human_born} human-born ===")
 
-    for value_col in ["touches_after_birth", "touches_per_day"]:
+    coverage = labeled.groupby("is_born_agent")["change_entropy"].agg(
+        n_total="size", n_with_entropy=lambda s: s.notna().sum(),
+    ).reset_index()
+    coverage["coverage_pct"] = 100 * coverage["n_with_entropy"] / coverage["n_total"]
+    coverage_path = OUT_DIR / f"{prefix}-agent-survival-fc-entropy-coverage.csv"
+    coverage.to_csv(coverage_path, index=False)
+    print(f"\n=== change_entropy coverage (needs >=3 touches, MIN_TOUCHES_FOR_ENTROPY) -> {coverage_path} ===")
+    print(coverage.to_string(index=False))
+
+    for value_col in ["touches_after_birth", "touches_per_day", "change_entropy"]:
         test = frequency_test(labeled, value_col)
         test_path = OUT_DIR / f"{prefix}-agent-survival-fc-freq-{value_col}.csv"
         test.to_csv(test_path, index=False)

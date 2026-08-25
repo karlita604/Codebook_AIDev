@@ -434,3 +434,71 @@ Full output, including the group-size diagnostics (11/32 repos with <5
 rows in at least one cohort for the `full_survival` model, flagged not
 silently absorbed): `results/analysis/08-24-agent-survival-fc-mixed-effects.csv`,
 `08-24-agent-survival-fc-mixed-effects-group-diagnostics.csv`.
+
+## Finding 4: change entropy — a fourth naive-pooled result, and a fourth composition artifact (2026-08-24)
+
+**Data used**: `results/analysis/08-24-agent-survival-fc-labeled-lineages.csv`
+(166,369 lineages, 1,007 agent-born / 165,362 human-born — same labeled
+pool Findings 1-3 above use, re-confirmed current before this run: no
+newer `08-24-agent-survival-fc-labeled-lineages.csv` or
+`08-19-entity-history-pooled.csv` had landed). `change_entropy` (Shannon
+entropy over normalized inter-touch time gaps — `EntityLineage
+.change_entropy` in `src/inhouse/entity_matching.py`, a proxy for
+Hassan's entropy-of-changes, ICSE 2009 — see that property's own
+docstring) was already a column on both files; nobody had compared it
+between cohorts before this pass. Added as a third outcome to
+`agent_code_survival_full_corpus.py`'s existing `frequency_test`/
+`stratified_permutation_test` harness (same functions Finding 1 uses,
+unmodified) rather than a new computation.
+
+**Coverage, checked before trusting anything**: `change_entropy` is
+`None` below `MIN_TOUCHES_FOR_ENTROPY=3` (a lineage touched only once or
+twice has 0-1 gaps — not enough to call anything "spread out" or
+"clustered"). At this corpus's full scale, **9.44% of all lineages
+clear the bar (15,713/166,369)** — up from the 7.5% `Results.md`
+measured at the smaller 21-repo cut, but still a small, non-random
+minority: entities that get touched at least 3 times are inherently the
+more actively-maintained tail of the corpus, not a representative sample
+of it. Coverage differs by cohort too — **12.02% of agent-born lineages
+(121/1,007) vs. 9.43% of human-born (15,592/165,362)** — consistent with
+Finding 1's own result (agent-born entities get touched again more
+often, so more of them clear a touch-count floor). Every number below is
+computed only on this 15,713-lineage resolved subset, same convention as
+Finding 3's modification-similarity subsample.
+Output: `results/analysis/08-24-agent-survival-fc-entropy-coverage.csv`.
+
+**Naive pooled result looked real**: median entropy 0.653 (agent-born,
+n=121) vs. 0.977 (human-born, n=15,592), Cliff's δ=-0.195, Mann-Whitney
+p=0.00022 — agent-born entities' touches read as *more clustered in
+time* (lower entropy) than human-born entities', not more evenly spread
+out. `results/analysis/08-24-agent-survival-fc-freq-change_entropy.csv`.
+
+**Does not survive the repo-stratified permutation check.** The real
+pooled δ=-0.195 lands at the **49.3rd percentile** of the null built by
+shuffling `is_born_agent` within each repo (300 draws) — dead center,
+empirical p=0.99. This is the same failure mode as Finding 2's deletion
+result: a naive pooled p<0.001 that repo composition alone fully
+explains once controlled for.
+Output: `results/analysis/08-24-agent-survival-fc-freq-change_entropy-stratified-permutation.csv`.
+
+One per-repo result worth naming, same "interesting but uncorrected"
+status as Finding 3's `microsoft/testfx` and getsentry's pilot result:
+**`dotnet/aspire` alone shows the opposite direction and a real-looking
+per-repo effect** (median entropy 1.997 agent-born vs. 0.999 human-born,
+δ=+0.719, p=0.00014, n=10 vs. 159) — agent-born touches on this one repo
+read as *more* evenly spread out, not more clustered. Consistent with
+this repo's general pattern of being an outlier across this project's
+analyses (see [[phase1b_aspire_excluded]] for its unrelated GitHub
+Search API exclusion) rather than evidence either direction generalizes.
+
+**Bottom line: no real cross-repo change-entropy difference between
+agent-born and human-born code.** This is the fourth time a naive pooled
+result in this analysis (and the third in this specific
+touched-more/survives-worse/entropy trio) initially looked significant
+and evaporated under stratification — reinforcing, not just repeating,
+the project's now-standard read that Finding 1 (touch frequency) is the
+outlier: the one outcome tested here that's both naive-pooled significant
+*and* stratification-robust. Coverage is also a real limitation
+independent of the null result: at 9.44%, any change-entropy finding —
+had one survived — would describe only the actively-touched minority of
+the corpus, not the median (single-touch) entity.
